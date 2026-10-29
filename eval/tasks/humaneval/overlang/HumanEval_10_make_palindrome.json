@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_10_make_palindrome",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_10_make_palindrome",
+ "entry_point": "make_palindrome",
+ "prompt": "// Find the shortest palindrome that begins with a supplied string.\n// Algorithm idea is simple:\n// - Find the longest postfix of supplied string that is a palindrome.\n// - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\n// Examples:\n//   make_palindrome(\"\") == \"\"\n//   make_palindrome(\"cat\") == \"catac\"\n//   make_palindrome(\"cata\") == \"catac\"\nfn make_palindrome(string: Str) -> Str {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(make_palindrome(\"\"), \"\");\n}\n\ntest check_2 {\n  assert_eq(make_palindrome(\"x\"), \"x\");\n}\n\ntest check_3 {\n  assert_eq(make_palindrome(\"xyz\"), \"xyzyx\");\n}\n\ntest check_4 {\n  assert_eq(make_palindrome(\"xyx\"), \"xyx\");\n}\n\ntest check_5 {\n  assert_eq(make_palindrome(\"jerry\"), \"jerryrrej\");\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(make_palindrome(\"\"), \"\");\n}\n",
+ "solution": "// Find the shortest palindrome that begins with a supplied string.\n// Algorithm idea is simple:\n// - Find the longest postfix of supplied string that is a palindrome.\n// - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\n// Examples:\n//   make_palindrome(\"\") == \"\"\n//   make_palindrome(\"cat\") == \"catac\"\n//   make_palindrome(\"cata\") == \"catac\"\nfn make_palindrome(string: Str) -> Str {\n  let n = str_len(string);\n  let mut i = 0;\n  while !is_palindrome(substr(string, i, n)) {\n    i = i + 1;\n  }\n  string ++ join(reverse(chars(substr(string, 0, i))), \"\")\n}\n\nfn is_palindrome(s: Str) -> Bool {\n  chars(s) == reverse(chars(s))\n}\n"
+}

@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_19_sort_numbers",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_19_sort_numbers",
+ "entry_point": "sort_numbers",
+ "prompt": "// Input is a space-delimited string of numberals from 'zero' to 'nine'.\n// Valid choices are 'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight' and 'nine'.\n// Return the string with numbers sorted from smallest to largest\n// Examples:\n//   sort_numbers(\"three one five\") == \"one three five\"\nfn sort_numbers(numbers: Str) -> Str {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(sort_numbers(\"\"), \"\");\n}\n\ntest check_2 {\n  assert_eq(sort_numbers(\"three\"), \"three\");\n}\n\ntest check_3 {\n  assert_eq(sort_numbers(\"three five nine\"), \"three five nine\");\n}\n\ntest check_4 {\n  assert_eq(sort_numbers(\"five zero four seven nine eight\"), \"zero four five seven eight nine\");\n}\n\ntest check_5 {\n  assert_eq(sort_numbers(\"six five four three two one zero\"), \"zero one two three four five six\");\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(sort_numbers(\"\"), \"\");\n}\n",
+ "solution": "// Input is a space-delimited string of numberals from 'zero' to 'nine'.\n// Valid choices are 'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight' and 'nine'.\n// Return the string with numbers sorted from smallest to largest\n// Examples:\n//   sort_numbers(\"three one five\") == \"one three five\"\nfn sort_numbers(numbers: Str) -> Str {\n  let words = filter(split(numbers, \" \"), |w| str_len(w) > 0);\n  join(sort_by(words, |w| unwrap_or(index_of(names(), w), 0)), \" \")\n}\n\nfn names() -> List[Str] {\n  [\"zero\", \"one\", \"two\", \"three\", \"four\", \"five\", \"six\", \"seven\", \"eight\", \"nine\"]\n}\n"
+}

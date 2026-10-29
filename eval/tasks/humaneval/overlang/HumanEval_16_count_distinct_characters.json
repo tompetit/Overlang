@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_16_count_distinct_characters",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_16_count_distinct_characters",
+ "entry_point": "count_distinct_characters",
+ "prompt": "// Given a string, find out how many distinct characters (regardless of case) does it consist of\n// Examples:\n//   count_distinct_characters(\"xyzXYZ\") == 3\n//   count_distinct_characters(\"Jerry\") == 4\nfn count_distinct_characters(string: Str) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(count_distinct_characters(\"\"), 0);\n}\n\ntest check_2 {\n  assert_eq(count_distinct_characters(\"abcde\"), 5);\n}\n\ntest check_3 {\n  assert_eq(count_distinct_characters(\"abcdecadeCADE\"), 5);\n}\n\ntest check_4 {\n  assert_eq(count_distinct_characters(\"aaaaAAAAaaaa\"), 1);\n}\n\ntest check_5 {\n  assert_eq(count_distinct_characters(\"Jerry jERRY JeRRRY\"), 5);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(count_distinct_characters(\"\"), 0);\n}\n",
+ "solution": "// Given a string, find out how many distinct characters (regardless of case) does it consist of\n// Examples:\n//   count_distinct_characters(\"xyzXYZ\") == 3\n//   count_distinct_characters(\"Jerry\") == 4\nfn count_distinct_characters(string: Str) -> Int {\n  len(unique(chars(to_lower(string))))\n}\n"
+}

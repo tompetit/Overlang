@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_33_sort_third",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_33_sort_third",
+ "entry_point": "sort_third",
+ "prompt": "// This function takes a list l and returns a list l' such that\n// l' is identical to l in the indicies that are not divisible by three, while its values at the indicies that are divisible by three are equal\n// to the values of the corresponding indicies of l, but sorted.\n// Examples:\n//   sort_third([1, 2, 3]) == [1, 2, 3]\n//   sort_third([5, 6, 3, 4, 8, 9, 2]) == [2, 6, 3, 4, 8, 9, 5]\nfn sort_third(l: List[Int]) -> List[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(sort_third([5, 6, 3, 4, 8, 9, 2]), [2, 6, 3, 4, 8, 9, 5]);\n}\n\ntest check_2 {\n  assert_eq(sort_third([5, 8, 3, 4, 6, 9, 2]), [2, 8, 3, 4, 6, 9, 5]);\n}\n\ntest check_3 {\n  assert_eq(sort_third([5, 6, 9, 4, 8, 3, 2]), [2, 6, 9, 4, 8, 3, 5]);\n}\n\ntest check_4 {\n  assert_eq(sort_third([5, 6, 3, 4, 8, 9, 2, 1]), [2, 6, 3, 4, 8, 9, 5, 1]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(sort_third([5, 6, 3, 4, 8, 9, 2]), [2, 6, 3, 4, 8, 9, 5]);\n}\n",
+ "solution": "// This function takes a list l and returns a list l' such that\n// l' is identical to l in the indicies that are not divisible by three, while its values at the indicies that are divisible by three are equal\n// to the values of the corresponding indicies of l, but sorted.\n// Examples:\n//   sort_third([1, 2, 3]) == [1, 2, 3]\n//   sort_third([5, 6, 3, 4, 8, 9, 2]) == [2, 6, 3, 4, 8, 9, 5]\nfn sort_third(l: List[Int]) -> List[Int] {\n  let vals = sort(map(filter(enumerate(l), |p| p.0 % 3 == 0), |p| p.1));\n  map(enumerate(l), |p| if p.0 % 3 == 0 { vals[p.0 / 3] } else { p.1 })\n}\n"
+}

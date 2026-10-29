@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_3_below_zero",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_3_below_zero",
+ "entry_point": "below_zero",
+ "prompt": "// You're given a list of deposit and withdrawal operations on a bank account that starts with\n// zero balance. Your task is to detect if at any point the balance of account fallls below zero, and\n// at that point function should return True. Otherwise it should return False.\n// Examples:\n//   below_zero([1, 2, 3]) == false\n//   below_zero([1, 2, -4, 5]) == true\nfn below_zero(operations: List[Int]) -> Bool {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(below_zero([]), false);\n}\n\ntest check_2 {\n  assert_eq(below_zero([1, 2, -3, 1, 2, -3]), false);\n}\n\ntest check_3 {\n  assert_eq(below_zero([1, 2, -4, 5, 6]), true);\n}\n\ntest check_4 {\n  assert_eq(below_zero([1, -1, 2, -2, 5, -5, 4, -4]), false);\n}\n\ntest check_5 {\n  assert_eq(below_zero([1, -1, 2, -2, 5, -5, 4, -5]), true);\n}\n\ntest check_6 {\n  assert_eq(below_zero([1, -2, 2, -2, 5, -5, 4, -4]), true);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(below_zero([]), false);\n}\n",
+ "solution": "// You're given a list of deposit and withdrawal operations on a bank account that starts with\n// zero balance. Your task is to detect if at any point the balance of account fallls below zero, and\n// at that point function should return True. Otherwise it should return False.\n// Examples:\n//   below_zero([1, 2, 3]) == false\n//   below_zero([1, 2, -4, 5]) == true\nfn below_zero(operations: List[Int]) -> Bool {\n  let mut bal = 0;\n  for op in operations {\n    bal = bal + op;\n    if bal < 0 {\n      return true;\n    }\n  }\n  false\n}\n"
+}

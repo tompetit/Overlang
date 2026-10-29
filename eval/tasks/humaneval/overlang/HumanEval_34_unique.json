@@ -1,0 +1,12 @@
+{
+ "id": "HumanEval_34_unique",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_34_unique",
+ "entry_point": "unique_sorted",
+ "prompt": "// Return sorted unique elements in a list\n// Examples:\n//   unique_sorted([5, 3, 5, 2, 3, 3, 9, 0, 123]) == [0, 2, 3, 5, 9, 123]\nfn unique_sorted(l: List[Int]) -> List[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(unique_sorted([5, 3, 5, 2, 3, 3, 9, 0, 123]), [0, 2, 3, 5, 9, 123]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(unique_sorted([5, 3, 5, 2, 3, 3, 9, 0, 123]), [0, 2, 3, 5, 9, 123]);\n}\n",
+ "solution": "// Return sorted unique elements in a list\n// Examples:\n//   unique_sorted([5, 3, 5, 2, 3, 3, 9, 0, 123]) == [0, 2, 3, 5, 9, 123]\nfn unique_sorted(l: List[Int]) -> List[Int] {\n  sort(unique(l))\n}\n",
+ "renamed_from": "unique"
+}

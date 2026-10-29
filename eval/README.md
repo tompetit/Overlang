@@ -2,8 +2,8 @@
 
 Implements Benchmark A of `docs/PLAN.md` section 6 (single-function tasks, same
 problems in Python, Rust and Overlang). Standard library only (Python 3.14).
-The Overlang adapter is a stub until the compiler works; everything else is
-testable now with a mock agent.
+Everything is testable with a mock agent; the Overlang adapter needs the built
+compiler (`cargo build --release`).
 
 ## How it works
 
@@ -140,10 +140,33 @@ exposing:
 | `grade(dir, timeout)` | run hidden tests, return `{"passed": bool, "output": str}`; use `adapters.run` (kills the process group on timeout) |
 | `reference(task)` | full solution text for `--mock-solve`, or `None` |
 
-`overlang.py` documents what the real adapter will do (`.ov` stub, `ov check` /
-`ov test` as the test command, grading with `ov run` on a fixture-style
-program) and raises `NotImplementedError("compiler not ready")`; `run.py`
-exits with that message.
+### Overlang
+
+`tasks/humaneval/overlang/<id>.json` are hand translations of the first 40
+shared HumanEval tasks (see `NOTES.md` there for what was skipped or renamed and
+the compiler/language gaps found; `build.py` regenerates and validates them with
+the real `ov`). Fields: the common ones plus `prompt` (`//` comment + signature
+with a `todo()` body, written verbatim to `solution.ov`), `tests` (hidden `test
+check_N` blocks), `visible_test` (first block only, plus float-tolerance helpers
+if needed) and `solution` (reference, used by `--mock-solve`).
+
+Workspace: `solution.ov`, `test_visible.ov`, `run_tests.sh`, `ov` (a wrapper
+exec'ing the compiler), `CLAUDE.md` (= `docs/CARD.md` + rules). Test command:
+`./run_tests.sh`, which runs `ov test ../solution.ov ../test_visible.ov` from
+`.ovtest/` so build products stay out of the agent's directory. Overlang has no
+modules, so `ov` loads the two files as one program. Grading runs
+`ov test solution.ov tests.ov` in `hidden/` under the grade timeout; passed iff
+exit 0 and every hidden block printed `ok <name>`. The compiler is found via
+`$OV_BIN`, else `target/release/ov` of this checkout, else `ov` on `PATH`
+(`cargo build --release` first). Example:
+
+```
+python3 eval/run.py --benchmark humaneval --lang overlang --agent mock --mock-solve \
+        --tasks 0:40 --runs 1 --out eval/runs/smoke-ov.jsonl   # all 40 pass
+```
+
+Only the first 40 tasks have Overlang versions; `--tasks` beyond that fails with
+a missing-file error.
 
 ## Not done / caveats
 

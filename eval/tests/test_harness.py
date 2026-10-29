@@ -18,6 +18,12 @@ import report  # noqa: E402
 import run  # noqa: E402
 from adapters import overlang, python as py, rust  # noqa: E402
 
+try:
+    overlang.ov_bin()
+    HAVE_OV = True
+except FileNotFoundError:
+    HAVE_OV = False
+
 SCRATCH = EVAL / "runs" / "_test"
 
 PY_ORIG = '''from typing import List
@@ -50,6 +56,15 @@ RS_ROW = {
 }
 
 
+OV_TASK = {
+    "id": "HumanEval_0_add", "benchmark": "humaneval", "lang": "overlang", "entry_point": "add",
+    "prompt": "// Add two numbers.\nfn add(a: Int, b: Int) -> Int {\n  todo()\n}\n",
+    "visible_test": "test check_1 {\n  assert_eq(add(1, 2), 3);\n}\n",
+    "tests": "test check_1 {\n  assert_eq(add(1, 2), 3);\n}\n\ntest check_2 {\n  assert_eq(add(0, 0), 0);\n}\n",
+    "solution": "// Add two numbers.\nfn add(a: Int, b: Int) -> Int {\n  a + b\n}\n",
+}
+
+
 def fake_http_get(calls):
     def get(url, retries=5):
         calls.append(url)
@@ -72,6 +87,8 @@ class Base(unittest.TestCase):
             fetch_tasks.main()
         cls.py_task = json.loads((cls.tasks / "humaneval/python/HumanEval_0_add.json").read_text())
         cls.rs_task = json.loads((cls.tasks / "humaneval/rust/HumanEval_0_add.json").read_text())
+        (cls.tasks / "humaneval/overlang").mkdir()
+        (cls.tasks / "humaneval/overlang/HumanEval_0_add.json").write_text(json.dumps(OV_TASK))
 
     @classmethod
     def tearDownClass(cls):
@@ -154,10 +171,61 @@ class TestAdapters(Base):
         self.assertEqual(rc, 0, out)
         self.assertIn("visible test passed", out)
 
-    def test_overlang_is_a_stub(self):
-        for fn in (lambda: overlang.workspace({}, "x"), lambda: overlang.grade("x"), overlang.test_command):
-            with self.assertRaisesRegex(NotImplementedError, "compiler not ready"):
-                fn()
+    @unittest.skipUnless(HAVE_OV, "ov binary not built")
+    def test_overlang_workspace(self):
+        d = SCRATCH / "ovws" / "work"
+        overlang.workspace(OV_TASK, d)
+        self.assertEqual(sorted(p.name for p in d.iterdir()),
+                         ["CLAUDE.md", "ov", "run_tests.sh", "solution.ov", "test_visible.ov"])
+        self.assertIn("todo()", (d / "solution.ov").read_text())
+        visible = (d / "test_visible.ov").read_text()
+        self.assertIn("add(1, 2)", visible)
+        self.assertNotIn("add(0, 0)", visible)  # only the first assertion is visible
+        md = (d / "CLAUDE.md").read_text()
+        self.assertIn("# Overlang card", md)
+        self.assertIn("./run_tests.sh", md)
+        self.assertNotIn("<!--", md)
+        self.assertEqual(overlang.test_command(), "./run_tests.sh")
+        self.assertIn("add(0, 0)", (adapters.hidden_dir(d) / "tests.ov").read_text())
+
+    @unittest.skipUnless(HAVE_OV, "ov binary not built")
+    def test_overlang_grade(self):
+        d = SCRATCH / "ovgrade" / "work"
+        overlang.workspace(OV_TASK, d)
+        self.assertFalse(overlang.grade(d)["passed"])  # todo() traps
+        (d / "solution.ov").write_text(overlang.reference(OV_TASK))
+        g = overlang.grade(d)
+        self.assertTrue(g["passed"], g["output"])
+        self.assertIn("ok check_2", g["output"])
+        (d / "solution.ov").write_text(OV_TASK["prompt"].replace("todo()", "a - b"))
+        self.assertFalse(overlang.grade(d)["passed"])  # wrong answer
+        (d / "solution.ov").write_text(OV_TASK["prompt"].replace("todo()", "a +"))
+        self.assertFalse(overlang.grade(d)["passed"])  # does not compile
+        (d / "solution.ov").write_text(OV_TASK["prompt"].replace("todo()", "while true { }\n  0"))
+        self.assertTrue(overlang.grade(d, timeout=10)["output"].endswith("[timeout]"))
+
+    @unittest.skipUnless(HAVE_OV, "ov binary not built")
+    def test_overlang_visible_command(self):
+        d = SCRATCH / "ovvis" / "work"
+        overlang.workspace(OV_TASK, d)
+        rc, out, _ = adapters.run(["sh", "-c", overlang.test_command()], d, 60)
+        self.assertEqual(rc, 3, out)  # stub traps with kind todo
+        self.assertIn('"kind": "todo"', out)
+        (d / "solution.ov").write_text(overlang.reference(OV_TASK))
+        rc, out, _ = adapters.run(["sh", "-c", overlang.test_command()], d, 60)
+        self.assertEqual(rc, 0, out)
+        self.assertIn("ok check_1", out)
+        self.assertNotIn(".ovbuild", [p.name for p in d.iterdir()])  # build products stay in .ovtest/
+
+    def test_overlang_task_files(self):
+        for path in sorted((EVAL / "tasks/humaneval/overlang").glob("HumanEval_*.json")):
+            t = json.loads(path.read_text())
+            for key in ("id", "lang", "prompt", "tests", "visible_test", "solution", "entry_point"):
+                self.assertIn(key, t, path.name)
+            self.assertEqual((t["id"], t["lang"]), (path.stem, "overlang"))
+            self.assertIn("todo()", t["prompt"], path.name)
+            self.assertNotIn("todo()", t["solution"], path.name)
+            self.assertEqual(t["visible_test"].count("test check_"), 1, path.name)
 
 
 STREAM = "\n".join(json.dumps(e) for e in [
@@ -218,9 +286,15 @@ class TestRun(Base):
         lines = self.run_cli("rust", "mock_rs")
         self.assertEqual([x["passed"] for x in lines], [False, False])
 
-    def test_overlang_exits_cleanly(self):
-        with self.assertRaisesRegex(SystemExit, "compiler not ready"):
-            self.run_cli("overlang", "mock_ov")
+    @unittest.skipUnless(HAVE_OV, "ov binary not built")
+    def test_mock_end_to_end_overlang(self):
+        lines = self.run_cli("overlang", "mock_ov", "--mock-solve")
+        self.assertEqual([x["passed"] for x in lines], [True, True])
+        self.assertEqual((lines[0]["lang"], lines[0]["task"]), ("overlang", "HumanEval_0_add"))
+        self.assertTrue((SCRATCH / "mock_ov/HumanEval_0_add/1/work/solution.ov").exists())
+        self.assertEqual(len(self.run_cli("overlang", "mock_ov", "--mock-solve")), 2)  # resumes
+        stubs = self.run_cli("overlang", "mock_ov_stub")
+        self.assertEqual([x["passed"] for x in stubs], [False, False])
 
 
 def rec(lang, passed, tok, cost, turns, failed, model="m"):

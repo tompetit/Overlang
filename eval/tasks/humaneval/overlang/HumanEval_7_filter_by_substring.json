@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_7_filter_by_substring",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_7_filter_by_substring",
+ "entry_point": "filter_by_substring",
+ "prompt": "// Filter an input list of strings only for ones that contain given substring\n// Examples:\n//   filter_by_substring([], \"a\") == []\n//   filter_by_substring([\"abc\", \"bacd\", \"cde\", \"array\"], \"a\") == [\"abc\", \"bacd\", \"array\"]\nfn filter_by_substring(strings: List[Str], substring: Str) -> List[Str] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(filter_by_substring([], \"john\"), []);\n}\n\ntest check_2 {\n  assert_eq(filter_by_substring([\"xxx\", \"asd\", \"xxy\", \"john doe\", \"xxxAAA\", \"xxx\"], \"xxx\"), [\"xxx\", \"xxxAAA\", \"xxx\"]);\n}\n\ntest check_3 {\n  assert_eq(filter_by_substring([\"xxx\", \"asd\", \"aaaxxy\", \"john doe\", \"xxxAAA\", \"xxx\"], \"xx\"), [\"xxx\", \"aaaxxy\", \"xxxAAA\", \"xxx\"]);\n}\n\ntest check_4 {\n  assert_eq(filter_by_substring([\"grunt\", \"trumpet\", \"prune\", \"gruesome\"], \"run\"), [\"grunt\", \"prune\"]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(filter_by_substring([], \"john\"), []);\n}\n",
+ "solution": "// Filter an input list of strings only for ones that contain given substring\n// Examples:\n//   filter_by_substring([], \"a\") == []\n//   filter_by_substring([\"abc\", \"bacd\", \"cde\", \"array\"], \"a\") == [\"abc\", \"bacd\", \"array\"]\nfn filter_by_substring(strings: List[Str], substring: Str) -> List[Str] {\n  filter(strings, |s| str_contains(s, substring))\n}\n"
+}

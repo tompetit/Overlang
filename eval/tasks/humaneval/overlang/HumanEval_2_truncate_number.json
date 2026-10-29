@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_2_truncate_number",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_2_truncate_number",
+ "entry_point": "truncate_number",
+ "prompt": "// Given a positive floating point number, it can be decomposed into\n// and integer part (largest integer smaller than given number) and decimals\n// (leftover part always smaller than 1).\n//\n// Return the decimal part of the number.\n// Examples:\n//   truncate_number(3.5) == 0.5\nfn truncate_number(number: Float) -> Float {\n  todo()\n}\n",
+ "tests": "fn tst_close(a: Float, b: Float) -> Bool {\n  fabs(a - b) < 1.0e-6\n}\n\ntest check_1 {\n  assert(tst_close(truncate_number(3.5), 0.5));\n}\n\ntest check_2 {\n  assert(tst_close(truncate_number(1.25), 0.25));\n}\n\ntest check_3 {\n  assert(tst_close(truncate_number(123.0), 0.0));\n}\n",
+ "visible_test": "fn tst_close(a: Float, b: Float) -> Bool {\n  fabs(a - b) < 1.0e-6\n}\n\ntest check_1 {\n  assert(tst_close(truncate_number(3.5), 0.5));\n}\n",
+ "solution": "// Given a positive floating point number, it can be decomposed into\n// and integer part (largest integer smaller than given number) and decimals\n// (leftover part always smaller than 1).\n//\n// Return the decimal part of the number.\n// Examples:\n//   truncate_number(3.5) == 0.5\nfn truncate_number(number: Float) -> Float {\n  number - floor(number)\n}\n"
+}

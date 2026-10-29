@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_36_fizz_buzz",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_36_fizz_buzz",
+ "entry_point": "fizz_buzz",
+ "prompt": "// Return the number of times the digit 7 appears in integers less than n which are divisible by 11 or 13.\n// Examples:\n//   fizz_buzz(50) == 0\n//   fizz_buzz(78) == 2\n//   fizz_buzz(79) == 3\nfn fizz_buzz(n: Int) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(fizz_buzz(50), 0);\n}\n\ntest check_2 {\n  assert_eq(fizz_buzz(78), 2);\n}\n\ntest check_3 {\n  assert_eq(fizz_buzz(79), 3);\n}\n\ntest check_4 {\n  assert_eq(fizz_buzz(100), 3);\n}\n\ntest check_5 {\n  assert_eq(fizz_buzz(200), 6);\n}\n\ntest check_6 {\n  assert_eq(fizz_buzz(4000), 192);\n}\n\ntest check_7 {\n  assert_eq(fizz_buzz(10000), 639);\n}\n\ntest check_8 {\n  assert_eq(fizz_buzz(100000), 8026);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(fizz_buzz(50), 0);\n}\n",
+ "solution": "// Return the number of times the digit 7 appears in integers less than n which are divisible by 11 or 13.\n// Examples:\n//   fizz_buzz(50) == 0\n//   fizz_buzz(78) == 2\n//   fizz_buzz(79) == 3\nfn fizz_buzz(n: Int) -> Int {\n  let mut count = 0;\n  for i in range(0, n) {\n    if i % 11 == 0 || i % 13 == 0 {\n      count = count + len(filter(chars(show(i)), |c| c == \"7\"));\n    }\n  }\n  count\n}\n"
+}

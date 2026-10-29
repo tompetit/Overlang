@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_35_max_element",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_35_max_element",
+ "entry_point": "max_element",
+ "prompt": "// Return maximum element in the list.\n// Examples:\n//   max_element([1, 2, 3]) == 3\n//   max_element([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10]) == 123\nfn max_element(l: List[Int]) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(max_element([1, 2, 3]), 3);\n}\n\ntest check_2 {\n  assert_eq(max_element([5, 3, -5, 2, -3, 3, 9, 0, 124, 1, -10]), 124);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(max_element([1, 2, 3]), 3);\n}\n",
+ "solution": "// Return maximum element in the list.\n// Examples:\n//   max_element([1, 2, 3]) == 3\n//   max_element([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10]) == 123\nfn max_element(l: List[Int]) -> Int {\n  unwrap_or(max_of(l), 0)\n}\n"
+}

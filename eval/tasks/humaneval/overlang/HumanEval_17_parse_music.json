@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_17_parse_music",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_17_parse_music",
+ "entry_point": "parse_music",
+ "prompt": "// Input to this function is a string representing musical notes in a special ASCII format.\n// Your task is to parse this string and return list of integers corresponding to how many beats does each\n// not last.\n//\n// Here is a legend:\n// 'o' - whole note, lasts four beats\n// 'o|' - half note, lasts two beats\n// '.|' - quater note, lasts one beat\n//\n// Examples:\n//   parse_music(\"o o| .| o| o| .| .| .| .| o o\") == [4, 2, 1, 2, 2, 1, 1, 1, 1, 4, 4]\nfn parse_music(music_string: Str) -> List[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(parse_music(\"\"), []);\n}\n\ntest check_2 {\n  assert_eq(parse_music(\"o o o o\"), [4, 4, 4, 4]);\n}\n\ntest check_3 {\n  assert_eq(parse_music(\".| .| .| .|\"), [1, 1, 1, 1]);\n}\n\ntest check_4 {\n  assert_eq(parse_music(\"o| o| .| .| o o o o\"), [2, 2, 1, 1, 4, 4, 4, 4]);\n}\n\ntest check_5 {\n  assert_eq(parse_music(\"o| .| o| .| o o| o o|\"), [2, 1, 2, 1, 4, 2, 4, 2]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(parse_music(\"\"), []);\n}\n",
+ "solution": "// Input to this function is a string representing musical notes in a special ASCII format.\n// Your task is to parse this string and return list of integers corresponding to how many beats does each\n// not last.\n//\n// Here is a legend:\n// 'o' - whole note, lasts four beats\n// 'o|' - half note, lasts two beats\n// '.|' - quater note, lasts one beat\n//\n// Examples:\n//   parse_music(\"o o| .| o| o| .| .| .| .| o o\") == [4, 2, 1, 2, 2, 1, 1, 1, 1, 4, 4]\nfn parse_music(music_string: Str) -> List[Int] {\n  map(filter(split(music_string, \" \"), |t| str_len(t) > 0), |t| beats(t))\n}\n\nfn beats(note: Str) -> Int {\n  match note {\n    \"o\" => 4,\n    \"o|\" => 2,\n    _ => 1,\n  }\n}\n"
+}

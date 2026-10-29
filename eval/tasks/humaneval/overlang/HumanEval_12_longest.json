@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_12_longest",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_12_longest",
+ "entry_point": "longest",
+ "prompt": "// Out of list of strings, return the longest one. Return the first one in case of multiple\n// strings of the same length. Return None in case the input list is empty.\n// Examples:\n//   longest([]) == None\n//   longest([\"a\", \"b\", \"c\"]) == Some(\"a\")\n//   longest([\"a\", \"bb\", \"ccc\"]) == Some(\"ccc\")\nfn longest(strings: List[Str]) -> Option[Str] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(longest([]), None);\n}\n\ntest check_2 {\n  assert_eq(longest([\"x\", \"y\", \"z\"]), Some(\"x\"));\n}\n\ntest check_3 {\n  assert_eq(longest([\"x\", \"yyy\", \"zzzz\", \"www\", \"kkkk\", \"abc\"]), Some(\"zzzz\"));\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(longest([]), None);\n}\n",
+ "solution": "// Out of list of strings, return the longest one. Return the first one in case of multiple\n// strings of the same length. Return None in case the input list is empty.\n// Examples:\n//   longest([]) == None\n//   longest([\"a\", \"b\", \"c\"]) == Some(\"a\")\n//   longest([\"a\", \"bb\", \"ccc\"]) == Some(\"ccc\")\nfn longest(strings: List[Str]) -> Option[Str] {\n  let mut best: Option[Str] = None;\n  for s in strings {\n    match best {\n      None => { best = Some(s); },\n      Some(b) => { if str_len(s) > str_len(b) { best = Some(s); } },\n    }\n  }\n  best\n}\n"
+}
