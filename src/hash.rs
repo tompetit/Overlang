@@ -1,7 +1,8 @@
 //! Canonical form and hashing (spec section 10.1).
 //!
 //! Each definition is turned into a `serde_json::Value` with comments,
-//! spans, its own name and every local name removed: locals become de Bruijn
+//! spans, its own name (except for types, which are nominal) and every local
+//! name removed: locals become de Bruijn
 //! indices (`{"var": 0}` is the innermost binding), type parameters become
 //! positions, and references to other definitions become their hashes.
 //! `serde_json::Value` keeps object keys sorted, so the serialization is
@@ -11,6 +12,11 @@
 //! `{"local": i}` markers. Strongly connected components of that reference
 //! graph (Tarjan) are then hashed dependencies first, replacing each marker
 //! by the referenced hash, or by a cycle position inside a cycle.
+//!
+//! What the store keeps is not the canonical form but the named AST (spec
+//! section 10.1b) with its resolution table: which hash each global name
+//! written in it resolved to. Re-hashing the named AST against a scope built
+//! from that table, with some hashes replaced, is how propagation works.
 
 use crate::ast::*;
 use crate::diag::{Diag, Fix};
@@ -18,7 +24,7 @@ use crate::parser;
 use crate::printer::{escape_str, Printer};
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
-use std::collections::{BTreeSet, HashMap};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::sync::OnceLock;
 
 /// Types that hash to their own name.
@@ -64,7 +70,7 @@ pub struct Hashed {
     /// `fn`, `type`, `declare`, `foreign`, `test` or `intrinsic`.
     pub kind: String,
     pub hash: String,
-    /// The canonical form, serialized.
+    /// The named AST and its resolution table, serialized (see `named_ast`).
     pub ast: String,
     /// Canonical pretty-printed text, with the definition's name.
     pub source: String,
@@ -138,6 +144,7 @@ fn hash_with_symbols(items: &[Item], symbols: &HashMap<u32, String>, scope: &Sco
     let mut forms = Vec::new();
     let mut edges = Vec::new();
     let mut ext_deps = Vec::new();
+    let mut refs = Vec::new();
     let mut diags = Vec::new();
     for item in &items {
         let mut c = Canon {
@@ -151,6 +158,8 @@ fn hash_with_symbols(items: &[Item], symbols: &HashMap<u32, String>, scope: &Sco
             eparams: Vec::new(),
             local_deps: BTreeSet::new(),
             ext_deps: BTreeSet::new(),
+            refs: BTreeMap::new(),
+            vars: BTreeSet::new(),
             diags: Vec::new(),
         };
         let mut form = c.item(item);
@@ -161,6 +170,7 @@ fn hash_with_symbols(items: &[Item], symbols: &HashMap<u32, String>, scope: &Sco
             m.insert("symbol".into(), json!(sym));
         }
         forms.push(form);
+        refs.push((c.refs, c.vars));
         edges.push(c.local_deps.into_iter().collect::<Vec<_>>());
         ext_deps.push(c.ext_deps);
         diags.extend(c.diags);
@@ -215,17 +225,48 @@ fn hash_with_symbols(items: &[Item], symbols: &HashMap<u32, String>, scope: &Sco
             let sym = finals[i]["symbol"].as_str().unwrap();
             source = format!("intrinsic {} = {}", source.trim_start_matches("declare "), escape_str(sym));
         }
+        let (table, vars) = &refs[i];
+        // Pairs, not objects: a name could be `local`, which `subst` would take for a marker.
+        let mut resolved = json!({ "values": [], "types": [], "ctors": [], "vars": vars });
+        for ((table, name), target) in table {
+            resolved[*table].as_array_mut().unwrap().push(json!([name, subst(target, &|j| json!(hashes[j]))]));
+        }
         out.push(Hashed {
             name: item_name(item).unwrap().to_string(),
             kind,
             hash: hashes[i].clone(),
-            ast: finals[i].to_string(),
+            ast: json!({ "item": named_ast(item), "refs": resolved }).to_string(),
             source,
             deps: deps.into_iter().collect(),
             item: (*item).clone(),
         });
     }
     Ok(out)
+}
+
+/// The stored form of a definition: the item as written, with spans and
+/// comments stripped. Expression ids stay: the resolution table names the
+/// `Var` expressions that are global references by id.
+pub fn named_ast(item: &Item) -> Value {
+    fn strip(v: &mut Value) {
+        match v {
+            Value::Object(m) => {
+                m.remove("span");
+                if let Some(c) = m.get_mut("comments") {
+                    *c = json!([]);
+                }
+                m.values_mut().for_each(strip);
+            }
+            Value::Array(a) => {
+                a.retain(|x| x.get("kind").and_then(|k| k.get("Comment")).is_none());
+                a.iter_mut().for_each(strip);
+            }
+            _ => {}
+        }
+    }
+    let mut v = serde_json::to_value(item).expect("AST always serializes");
+    strip(&mut v);
+    v
 }
 
 /// Replace every `{"local": i}` marker by `f(i)`.
@@ -240,7 +281,7 @@ fn subst(v: &Value, f: &dyn Fn(usize) -> Value) -> Value {
 
 /// Strongly connected components, each emitted after every component it
 /// references (dependencies first).
-fn tarjan(edges: &[Vec<usize>]) -> Vec<Vec<usize>> {
+pub fn tarjan(edges: &[Vec<usize>]) -> Vec<Vec<usize>> {
     struct T<'a> {
         edges: &'a [Vec<usize>],
         index: Vec<Option<usize>>,
@@ -330,6 +371,11 @@ struct Canon<'a> {
     eparams: Vec<String>,
     local_deps: BTreeSet<usize>,
     ext_deps: BTreeSet<String>,
+    /// (`values` | `types` | `ctors`, written name) to hash or local marker;
+    /// a constructor maps to its type.
+    refs: BTreeMap<(&'static str, String), Value>,
+    /// Ids of the `Var` expressions that refer to top-level definitions.
+    vars: BTreeSet<NodeId>,
     diags: Vec<Diag>,
 }
 
@@ -342,6 +388,10 @@ impl Canon<'_> {
         }
         self.diags.push(d);
         Value::Null
+    }
+
+    fn note(&mut self, table: &'static str, name: &str, target: &Value) {
+        self.refs.insert((table, name.to_string()), target.clone());
     }
 
     fn local(&mut self, i: usize) -> Value {
@@ -362,14 +412,16 @@ impl Canon<'_> {
         if let Some(i) = self.var_index(name) {
             return json!({ "var": i });
         }
-        if let Some(&i) = self.local_values.get(name) {
-            return json!({ "ref": self.local(i) });
-        }
-        if let Some(h) = self.scope.values.get(name) {
-            return json!({ "ref": self.ext(h) });
-        }
-        let fixes = nearest(name, self.locals.iter().chain(self.local_values.keys()).chain(self.scope.values.keys()));
-        self.error("E0100", span, format!("unknown name `{name}`"), fixes)
+        let target = match (self.local_values.get(name), self.scope.values.get(name)) {
+            (Some(&i), _) => self.local(i),
+            (None, Some(h)) => self.ext(h),
+            (None, None) => {
+                let fixes = nearest(name, self.locals.iter().chain(self.local_values.keys()).chain(self.scope.values.keys()));
+                return self.error("E0100", span, format!("unknown name `{name}`"), fixes);
+            }
+        };
+        self.note("values", name, &target);
+        json!({ "ref": target })
     }
 
     fn type_ref(&mut self, name: &str, span: Span) -> Value {
@@ -377,10 +429,14 @@ impl Canon<'_> {
             return json!(name);
         }
         if let Some(&i) = self.local_types.get(name) {
-            return self.local(i);
+            let t = self.local(i);
+            self.note("types", name, &t);
+            return t;
         }
         if let Some(h) = self.scope.types.get(name) {
-            return self.ext(h);
+            let t = self.ext(h);
+            self.note("types", name, &t);
+            return t;
         }
         let builtins: Vec<String> = BUILTIN_TYPES.iter().map(|s| s.to_string()).collect();
         let fixes = nearest(name, self.local_types.keys().chain(self.scope.types.keys()).chain(builtins.iter()));
@@ -392,11 +448,14 @@ impl Canon<'_> {
             return json!([t, i]);
         }
         if let Some(&(t, i)) = self.local_ctors.get(name) {
-            return json!([self.local(t), i]);
+            let t = self.local(t);
+            self.note("ctors", name, &t);
+            return json!([t, i]);
         }
         if let Some((h, i)) = self.scope.ctors.get(name) {
-            let (h, i) = (h.clone(), *i);
-            return json!([self.ext(&h), i]);
+            let (t, i) = (self.ext(h), *i);
+            self.note("ctors", name, &t);
+            return json!([t, i]);
         }
         let fixes = nearest(name, self.local_ctors.keys().chain(self.scope.ctors.keys()));
         self.error("E0103", span, format!("unknown constructor `{name}`"), fixes)
@@ -445,7 +504,8 @@ impl Canon<'_> {
                         json!({ "sum": vs })
                     }
                 };
-                json!({ "kind": item_kind(item), "tparams": t.params.len(), "body": body })
+                // Types are nominal: the name is part of the hash.
+                json!({ "kind": item_kind(item), "name": t.name, "tparams": t.params.len(), "body": body })
             }
             Item::Comment(_) => Value::Null,
         }
@@ -555,7 +615,13 @@ impl Canon<'_> {
             ExprKind::Str(s) => json!({ "str": s }),
             ExprKind::Bool(b) => json!({ "bool": b }),
             ExprKind::Unit => json!("unit"),
-            ExprKind::Var(name) => self.value_ref(name, e.span),
+            ExprKind::Var(name) => {
+                let v = self.value_ref(name, e.span);
+                if v.get("ref").is_some() {
+                    self.vars.insert(e.id);
+                }
+                v
+            }
             ExprKind::ResultRef => json!("result"),
             ExprKind::Tuple(es) => json!({ "tuple": self.exprs(es) }),
             ExprKind::List(es) => json!({ "list": self.exprs(es) }),
@@ -786,9 +852,30 @@ mod tests {
     fn types_and_constructors_resolve() {
         let src = "type Shape = Circle(r: Float) | Square(s: Float)\nfn area(s: Shape) -> Float { match s { Circle(r) => r * r, Square(x) => x * x } }\n";
         let a = hashes(src);
+        // Types are nominal: renaming one changes its hash and its users' hashes.
         let b = hashes(&src.replace("Shape", "Form"));
-        assert_eq!(a["area"], b["area"]);
+        assert_ne!(a["Shape"], b["Form"]);
+        assert_ne!(a["area"], b["area"]);
         assert_ne!(a["area"], hashes(&src.replace("Circle(r) => r * r, Square(x) => x * x", "Square(x) => x * x, Circle(r) => r * r"))["area"]);
+    }
+
+    #[test]
+    fn identical_record_types_with_different_names_differ() {
+        let h = hashes("type P = { x: Int, y: Int }\ntype Q = { x: Int, y: Int }\n");
+        assert_ne!(h["P"], h["Q"]);
+    }
+
+    #[test]
+    fn named_ast_keeps_names_and_drops_spans_and_comments() {
+        let src = "fn f(x: Int) -> Int {\n  // note\n  g(x)\n}\nfn g(y: Int) -> Int { y }\n";
+        let (program, _) = parser::parse(src);
+        let h = hash_items(&program.items, &prelude().scope).unwrap();
+        let ast: Value = serde_json::from_str(&h[0].ast).unwrap();
+        let text = ast["item"].to_string();
+        assert!(text.contains("\"g\"") && text.contains("\"x\"") && !text.contains("span") && !text.contains("note"), "{text}");
+        assert_eq!(ast["refs"]["values"], json!([["g", h[1].hash]]));
+        let item: Item = serde_json::from_value(ast["item"].clone()).unwrap();
+        assert_eq!(Printer { records: HashMap::new() }.item(&item), "fn f(x: Int) -> Int {\n  g(x)\n}");
     }
 
     #[test]

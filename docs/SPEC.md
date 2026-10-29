@@ -294,12 +294,15 @@ directory of the `ov` command), created on first use.
 Tables:
 
 - `defs(hash TEXT PRIMARY KEY, kind TEXT, ast TEXT, source TEXT, created_at INTEGER)`.
-  `ast` is the canonical JSON serialization (section 10.1). `kind` is
-  `fn`, `type`, `declare`, `foreign` or `test`, or `intrinsic` for prelude
-  bindings. `source` is the canonical text (section 10.3) with the
-  definition's name, which is what `ov view` prints; re-adding a definition
-  with the same hash replaces it (so a rename shows the new name) without
-  adding a row. Every prelude definition is in `defs`, unbound in `names`;
+  `ast` is the named AST (section 10.1b) as JSON
+  `{"item": ..., "refs": ...}`: `refs` is its resolution table, the hash each
+  global name written in it resolved to (`values`, `types`, and `ctors`
+  mapping to the constructor's type), plus the ids of the expressions that
+  are global references. `kind` is `fn`, `type`, `declare`, `foreign` or
+  `test`, or `intrinsic` for prelude bindings. `source` is the definition's
+  canonical text as last written, comments included (`ov view --raw`).
+  Re-adding a definition with the same hash replaces `ast` and `source`
+  without adding a row. Every prelude definition is in `defs`, unbound in `names`;
   prelude names resolve without being bound.
 - `names(name TEXT PRIMARY KEY, hash TEXT, updated_at INTEGER)`.
 - `history(name TEXT, hash TEXT, at INTEGER)`. Append-only.
@@ -312,7 +315,10 @@ Tables:
 A definition's hash is the SHA-256 of its canonical form, hex-encoded. The
 canonical form is the AST serialized as JSON with:
 
-- the definition's own name removed;
+- for `fn`, `declare`, `foreign`, `intrinsic` and `test` definitions, the
+  definition's own name removed. For `type` definitions the name is kept:
+  types are nominal, so two structurally identical record types with
+  different names are different types and have different hashes;
 - every local variable replaced by its de Bruijn index;
 - every reference to another top-level definition replaced by that
   definition's hash;
@@ -337,6 +343,40 @@ and its hash is the plain SHA-256 of that form, with no suffix.
 
 Short hash prefixes are accepted anywhere a hash is expected when they are
 unambiguous.
+
+### 10.1a Propagation
+
+A definition references its dependencies by hash, so when a dependency is
+edited, every definition that referenced the old hash still does. `ov add`
+and `ov edit` therefore propagate: after storing the new definition and
+rebinding its name, every transitive dependent (through `deps`) is re-hashed
+with the new dependency hash, stored, and its name rebound, newest first in
+`history`. The command's output lists every rebound name with old and new
+hash. Propagation never changes a dependent's named AST, only the hashes it
+resolves to, so a dependent's text does not change.
+
+A `type` edit propagates the same way to every definition that mentions the
+type.
+
+`ov add` and `ov edit` print the rebound dependents after the `name hash`
+lines, one `name old_hash new_hash` line each; with `--json` the output is
+`{"defs": [{name, hash}], "propagated": [{name, old, new}]}`. Only bound
+dependents are re-hashed: old versions no name points to stay as they are.
+Dependents are re-hashed dependencies first, a cycle of dependents as one
+unit, so the result is what adding the edited code to an empty store gives.
+If a dependent no longer resolves (a constructor it uses was removed), the
+command fails with that diagnostic and stores nothing.
+
+### 10.1b Named AST and rendering
+
+`defs.ast` holds the *named* AST of the definition (spans and comments
+stripped, local and global names kept). The canonical form of section 10.1 is
+derived from it for hashing and is not stored. `ov view` and `ov ctx` render
+from the named AST, replacing each global reference by the name currently
+bound to the referenced hash (falling back to the name the definition was
+written with if the hash has no binding), so a renamed dependency shows its
+current name in every caller. Comments are kept in `defs.source`, the text as
+last written, which `ov view --raw` prints.
 
 ### 10.2 Commands
 

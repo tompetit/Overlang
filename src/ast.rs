@@ -53,6 +53,7 @@ pub enum Item {
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Comment {
     pub text: String,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -68,6 +69,7 @@ pub struct Signature {
     pub params: Vec<Param>,
     pub ret: TypeExpr,
     pub effects: Vec<String>,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -75,6 +77,7 @@ pub struct Signature {
 pub struct Param {
     pub name: String,
     pub ty: TypeExpr,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -84,6 +87,7 @@ pub struct FnDef {
     pub requires: Vec<Expr>,
     pub ensures: Vec<Expr>,
     pub body: Block,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -92,6 +96,7 @@ pub struct DeclareDef {
     pub sig: Signature,
     pub requires: Vec<Expr>,
     pub ensures: Vec<Expr>,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -101,6 +106,7 @@ pub struct ForeignDef {
     pub header: String,
     pub link: Option<String>,
     pub sig: Signature,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -108,6 +114,7 @@ pub struct ForeignDef {
 pub struct TestDef {
     pub name: String,
     pub body: Block,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -116,6 +123,7 @@ pub struct TypeDef {
     pub name: String,
     pub params: Vec<String>,
     pub body: TypeBody,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -131,6 +139,7 @@ pub enum TypeBody {
 pub struct Field {
     pub name: String,
     pub ty: TypeExpr,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -138,6 +147,7 @@ pub struct Field {
 pub struct Variant {
     pub name: String,
     pub fields: Vec<Field>,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -146,6 +156,7 @@ pub struct Variant {
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct TypeExpr {
     pub kind: TypeKind,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -165,6 +176,7 @@ pub enum TypeKind {
 pub struct Expr {
     pub id: NodeId,
     pub kind: ExprKind,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -236,6 +248,7 @@ pub enum ExprKind {
 pub struct FieldInit {
     pub name: String,
     pub value: Expr,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -243,6 +256,7 @@ pub struct FieldInit {
 pub struct LambdaParam {
     pub name: String,
     pub ty: Option<TypeExpr>,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -252,6 +266,7 @@ pub struct Arm {
     pub pat: Pat,
     pub guard: Option<Expr>,
     pub body: Expr,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -260,12 +275,14 @@ pub struct Arm {
 pub struct Block {
     pub stmts: Vec<Stmt>,
     pub tail: Option<Box<Expr>>,
+    #[serde(default)]
     pub span: Span,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Stmt {
     pub kind: StmtKind,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -288,6 +305,7 @@ pub enum StmtKind {
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Pat {
     pub kind: PatKind,
+    #[serde(default)]
     pub span: Span,
 }
 
@@ -316,5 +334,6 @@ pub enum PatKind {
 pub struct FieldPat {
     pub name: String,
     pub pat: Pat,
+    #[serde(default)]
     pub span: Span,
 }

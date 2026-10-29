@@ -196,3 +196,114 @@ fn re_adding_an_identical_definition_adds_no_row() {
     assert_eq!(defs_rows(&dir), rows);
     assert_eq!(json(&dir, &["history", "total"]).as_array().unwrap().len(), 1);
 }
+
+/// Write `text` to `dir/name` and `ov add` it; returns the `add` output.
+fn add_text(dir: &Path, name: &str, text: &str) -> String {
+    let file = dir.join(name);
+    fs::write(&file, text).unwrap();
+    ov(dir, &["add", file.to_str().unwrap()])
+}
+
+fn hash_of(dir: &Path, name: &str) -> String {
+    json(dir, &["view", name])["hash"].as_str().unwrap().to_string()
+}
+
+/// The `item` part of the stored named AST of `hash`.
+fn stored_item(dir: &Path, hash: &str) -> Value {
+    let conn = rusqlite::Connection::open(dir.join(".ovstore/store.sqlite")).unwrap();
+    let ast: String = conn.query_row("SELECT ast FROM defs WHERE hash = ?1", [hash], |r| r.get(0)).unwrap();
+    serde_json::from_str::<Value>(&ast).unwrap()["item"].take()
+}
+
+const HELPER: &str = "fn helper(x: Int) -> Int { x + 1 }\n// calls helper\nfn caller(y: Int) -> Int {\n  // twice\n  helper(helper(y))\n}\n";
+
+#[test]
+fn view_renders_current_names_and_raw_keeps_comments() {
+    let dir = workdir("rename_render");
+    add_text(&dir, "a.ov", HELPER);
+    let helper = hash_of(&dir, "helper");
+    let out = add_text(&dir, "b.ov", "fn helper2(x: Int) -> Int { x + 1 }\n");
+    assert_eq!(out, format!("helper2 {helper}\n"), "a rename is the same hash and propagates nothing");
+    ov(&dir, &["rm", "helper"]);
+    assert_eq!(ov(&dir, &["view", "caller"]), "fn caller(y: Int) -> Int {\n  helper2(helper2(y))\n}\n");
+    assert!(ov(&dir, &["ctx", "caller"]).lines().any(|l| l == "fn helper2(x: Int) -> Int"));
+    // The text as written keeps its comments and its names.
+    let raw = ov(&dir, &["view", "caller", "--raw"]);
+    assert!(raw.contains("// twice") && raw.contains("helper(helper(y))"), "{raw}");
+}
+
+#[test]
+fn editing_a_dependency_rebinds_its_dependents() {
+    let dir = workdir("propagate_edit");
+    add_text(&dir, "a.ov", HELPER);
+    let (old_caller, old_helper) = (hash_of(&dir, "caller"), hash_of(&dir, "helper"));
+    let (code, out) = ov_in(&dir, &["edit", "helper"], "fn helper(x: Int) -> Int { x + 2 }\n");
+    assert_eq!(code, 0, "{out}");
+    let new_caller = hash_of(&dir, "caller");
+    assert_ne!(new_caller, old_caller);
+    let new_helper = hash_of(&dir, "helper");
+    assert_eq!(out, format!("helper {new_helper}\ncaller {old_caller} {new_caller}\n"));
+    assert_eq!(json(&dir, &["history", "caller"]).as_array().unwrap().len(), 2);
+    assert_eq!(stored_item(&dir, &old_caller), stored_item(&dir, &new_caller));
+    let deps: Vec<String> = json(&dir, &["deps", "caller"]).as_array().unwrap().iter().map(|d| d["hash"].as_str().unwrap().to_string()).collect();
+    assert!(deps.contains(&new_helper) && !deps.contains(&old_helper), "{deps:?}");
+    assert!(ov(&dir, &["view", "caller"]).contains("helper(helper(y))"));
+    assert!(ov(&dir, &["ctx", "caller"]).lines().any(|l| l == "fn helper(x: Int) -> Int"));
+}
+
+#[test]
+fn propagation_follows_chains_and_matches_a_fresh_add() {
+    let chain = "fn c(x: Int) -> Int { x }\nfn b(x: Int) -> Int { c(x) * 2 }\nfn a(x: Int) -> Int { b(x) + 1 }\n";
+    let dir = workdir("propagate_chain");
+    add_text(&dir, "chain.ov", chain);
+    let (code, out) = ov_in(&dir, &["edit", "c", "--json"], "fn c(x: Int) -> Int { x - 1 }\n");
+    assert_eq!(code, 0, "{out}");
+    let v: Value = serde_json::from_str(&out).unwrap();
+    let rebound: Vec<&str> = v["propagated"].as_array().unwrap().iter().map(|p| p["name"].as_str().unwrap()).collect();
+    assert_eq!(rebound, ["b", "a"], "dependencies first");
+    // Same hashes as adding the edited file to an empty store.
+    let fresh = workdir("propagate_chain_fresh");
+    add_text(&fresh, "chain.ov", &chain.replace("{ x }", "{ x - 1 }"));
+    for n in ["a", "b", "c"] {
+        assert_eq!(hash_of(&dir, n), hash_of(&fresh, n), "{n}");
+    }
+    // A definition nothing depends on propagates nothing.
+    let (code, out) = ov_in(&dir, &["edit", "a", "--json"], "fn a(x: Int) -> Int { b(x) + 3 }\n");
+    assert_eq!(code, 0, "{out}");
+    assert_eq!(serde_json::from_str::<Value>(&out).unwrap()["propagated"], serde_json::json!([]));
+}
+
+#[test]
+fn editing_a_type_rebinds_what_mentions_it() {
+    let dir = workdir("propagate_type");
+    add_text(&dir, "p.ov", "type P = { x: Int }\nfn mk() -> P { P { x: 1 } }\nfn get(p: P) -> Int { p.x }\nfn other() -> Int { 3 }\n");
+    let (code, out) = ov_in(&dir, &["edit", "P"], "type P = { x: Int, y: Int }\n");
+    assert_eq!(code, 0, "{out}");
+    let mut rebound: Vec<&str> = out.lines().skip(1).map(|l| l.split(' ').next().unwrap()).collect();
+    rebound.sort();
+    assert_eq!(rebound, ["get", "mk"]);
+}
+
+#[test]
+fn a_cycle_is_re_hashed_as_a_unit() {
+    let text = "fn step(n: Int) -> Int { n - 1 }\n\
+                fn is_even(n: Int) -> Bool { if n == 0 { true } else { is_odd(step(n)) } }\n\
+                fn is_odd(n: Int) -> Bool { if n == 0 { false } else { is_even(step(n)) } }\n";
+    let dir = workdir("propagate_cycle");
+    add_text(&dir, "parity.ov", text);
+    ov_in(&dir, &["edit", "step"], "fn step(n: Int) -> Int { n - 2 }\n");
+    let fresh = workdir("propagate_cycle_fresh");
+    add_text(&fresh, "parity.ov", &text.replace("n - 1", "n - 2"));
+    for n in ["is_even", "is_odd"] {
+        assert_eq!(hash_of(&dir, n), hash_of(&fresh, n), "{n}");
+    }
+    // Editing one member re-forms the cycle with the other.
+    let even = "fn is_even(n: Int) -> Bool { if n <= 0 { true } else { is_odd(step(n)) } }\n";
+    let (code, out) = ov_in(&dir, &["edit", "is_even"], even);
+    assert_eq!(code, 0, "{out}");
+    let fresh = workdir("propagate_cycle_member");
+    add_text(&fresh, "parity.ov", &text.replace("n - 1", "n - 2").replace("if n == 0 { true }", "if n <= 0 { true }"));
+    for n in ["is_even", "is_odd"] {
+        assert_eq!(hash_of(&dir, n), hash_of(&fresh, n), "{n}");
+    }
+}

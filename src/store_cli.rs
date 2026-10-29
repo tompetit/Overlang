@@ -2,16 +2,16 @@
 //! dependents, ctx, history, diff. Each prints text, or JSON with `--json`;
 //! failures are JSON diagnostics.
 
-use crate::ast::{Item, Span, TypeExpr, TypeKind};
+use crate::ast::{Item, Span, TypeBody, TypeDef, TypeExpr, TypeKind};
 use crate::cli::{driver_error, load, report};
 use crate::diag::Diag;
-use crate::hash::{hash_items, item_name, nearest, prelude, Scope};
+use crate::hash::{hash_items, item_name, nearest, prelude, tarjan, Scope};
 use crate::parser;
-use crate::printer::print_signature;
+use crate::printer::{print_signature, Printer};
 use crate::store::{Def, Store};
 use clap::Subcommand;
 use serde_json::{json, Value};
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::io::Read;
 use std::path::{Path, PathBuf};
 
@@ -27,6 +27,9 @@ pub enum StoreCommand {
     /// Print a definition (by name or hash) in canonical form.
     View {
         target: String,
+        /// The text as last written, comments included, instead.
+        #[arg(long)]
+        raw: bool,
         #[arg(long)]
         json: bool,
     },
@@ -121,7 +124,7 @@ fn db<T>(r: rusqlite::Result<T>) -> Result<T, Vec<Diag>> {
 fn exec(store: &Store, cmd: StoreCommand) -> Out {
     match cmd {
         StoreCommand::Add { files, json } => add(store, &files, json),
-        StoreCommand::View { target, json } => view(store, &target, json),
+        StoreCommand::View { target, raw, json } => view(store, &target, raw, json),
         StoreCommand::Edit { name, file, json } => edit(store, &name, file.as_ref(), json),
         StoreCommand::Rm { name, json } => rm(store, &name, json),
         StoreCommand::Ls { kind, json } => ls(store, kind.as_deref(), json),
@@ -182,26 +185,101 @@ fn name_of(store: &Store, hash: &str) -> Result<String, Vec<Diag>> {
     if let Some(d) = prelude().defs.iter().find(|d| d.hash == hash) {
         return Ok(d.name.clone());
     }
-    let source = db(store.get(hash))?.map(|d| d.source).unwrap_or_default();
-    Ok(parse_item(&source).and_then(|i| item_name(&i).map(String::from)).unwrap_or_default())
+    match db(store.get(hash))? {
+        Some(d) => Ok(item_name(&item_of(&d)?).unwrap_or_default().to_string()),
+        None => Ok(String::new()),
+    }
 }
 
-/// The single definition in stored canonical text (none for intrinsics,
-/// which the parser does not read yet).
-fn parse_item(source: &str) -> Option<Item> {
-    let (p, diags) = parser::parse(source);
-    if !diags.is_empty() {
-        return None;
+/// The stored `{"item", "refs"}` of a definition (spec section 10.1b).
+fn ast(d: &Def) -> Result<Value, Vec<Diag>> {
+    serde_json::from_str(&d.ast).map_err(|e| vec![driver_error(format!("store error: bad AST for {}: {e}", d.hash), None)])
+}
+
+/// The named AST of a definition, as written.
+fn item_of(d: &Def) -> Result<Item, Vec<Diag>> {
+    serde_json::from_value(ast(d)?["item"].take()).map_err(|e| vec![driver_error(format!("store error: bad AST for {}: {e}", d.hash), None)])
+}
+
+/// (written name, hash) pairs of one table of a resolution table.
+fn pairs<'a>(refs: &'a Value, table: &str) -> impl Iterator<Item = (&'a str, &'a str)> {
+    refs[table].as_array().into_iter().flatten().filter_map(|p| Some((p[0].as_str()?, p[1].as_str()?)))
+}
+
+/// The named AST with every global reference, and the definition's own name,
+/// replaced by the name currently bound to the referenced hash; with a
+/// printer that knows the referenced record types' field order.
+fn render(store: &Store, d: &Def) -> Result<(Item, Printer), Vec<Diag>> {
+    fn rename(v: &mut Value, vars: &HashSet<u64>, values: &HashMap<String, String>, types: &HashMap<String, String>) {
+        fn swap(n: Option<&mut Value>, to: &HashMap<String, String>) {
+            if let Some(n) = n
+                && let Some(new) = n.as_str().and_then(|s| to.get(s))
+            {
+                *n = json!(new);
+            }
+        }
+        match v {
+            Value::Object(m) => {
+                if m.get("id").and_then(Value::as_u64).is_some_and(|id| vars.contains(&id)) {
+                    swap(m.get_mut("kind").and_then(|k| k.get_mut("Var")), values);
+                }
+                for key in ["Named", "Record"] {
+                    swap(m.get_mut(key).and_then(|r| r.get_mut("name")), types);
+                }
+                m.values_mut().for_each(|x| rename(x, vars, values, types));
+            }
+            Value::Array(a) => a.iter_mut().for_each(|x| rename(x, vars, values, types)),
+            _ => {}
+        }
     }
-    p.items.into_iter().find(|i| !matches!(i, Item::Comment(_)))
+    let mut v = ast(d)?;
+    let refs = &v["refs"];
+    let vars: HashSet<u64> = refs["vars"].as_array().into_iter().flatten().filter_map(Value::as_u64).collect();
+    let mut values = HashMap::new();
+    for (n, h) in pairs(refs, "values") {
+        values.insert(n.to_string(), name_of(store, h)?);
+    }
+    let mut types = HashMap::new();
+    let mut records = HashMap::new();
+    for (n, h) in pairs(refs, "types") {
+        let current = name_of(store, h)?;
+        if let Item::Type(TypeDef { body: TypeBody::Record(fs), .. }) = item_of(&def(store, h)?)? {
+            records.insert(current.clone(), fs.iter().map(|f| f.name.clone()).collect());
+        }
+        types.insert(n.to_string(), current);
+    }
+    let mut item = v["item"].take();
+    rename(&mut item, &vars, &values, &types);
+    let mut item: Item = serde_json::from_value(item).map_err(|e| vec![driver_error(format!("store error: bad AST for {}: {e}", d.hash), None)])?;
+    let name = name_of(store, &d.hash)?;
+    match &mut item {
+        Item::Fn(f) => f.sig.name = name,
+        Item::Declare(x) => x.sig.name = name,
+        Item::Foreign(x) => x.sig.name = name,
+        Item::Test(t) => t.name = name,
+        Item::Type(t) => t.name = name,
+        Item::Comment(_) => {}
+    }
+    Ok((item, Printer { records }))
+}
+
+/// Canonical text of a definition under the current names. Intrinsics keep
+/// their stored text: the printer has no `intrinsic` form.
+fn text(store: &Store, d: &Def) -> Result<String, Vec<Diag>> {
+    if d.kind == "intrinsic" {
+        return Ok(d.source.clone());
+    }
+    let (item, printer) = render(store, d)?;
+    Ok(printer.item(&item))
 }
 
 /// Signature text: a `fn` without its body; other kinds have no body.
-fn signature(d: &Def) -> String {
-    if d.kind != "fn" {
-        return d.source.clone();
+fn signature(store: &Store, d: &Def) -> Result<String, Vec<Diag>> {
+    if d.kind == "intrinsic" {
+        return Ok(d.source.clone());
     }
-    parse_item(&d.source).and_then(|i| print_signature(&i)).unwrap_or_else(|| d.source.clone())
+    let (item, printer) = render(store, d)?;
+    Ok(print_signature(&item).unwrap_or_else(|| printer.item(&item)))
 }
 
 /// The prelude plus every bound name in the store.
@@ -210,11 +288,7 @@ fn store_scope(store: &Store) -> Result<Scope, Vec<Diag>> {
     for (name, hash, kind) in db(store.names(None))? {
         match kind.as_str() {
             "test" => {}
-            "type" => {
-                if let Some(item) = parse_item(&def(store, &hash)?.source) {
-                    scope.bind(&name, &hash, &item);
-                }
-            }
+            "type" => scope.bind(&name, &hash, &item_of(&def(store, &hash)?)?),
             _ => {
                 scope.values.insert(name, hash);
             }
@@ -237,15 +311,96 @@ fn store_items(store: &Store, items: &[Item], file_of: &HashMap<String, String>,
         ds
     })?;
     db(store.begin())?;
+    let mut changed = HashMap::new();
     for h in &hashed {
+        if let Some(old) = db(store.hash_of_name(&h.name))?
+            && old != h.hash
+        {
+            changed.insert(old, h.hash.clone());
+        }
         db(store.put(&h.hash, &h.kind, &h.ast, &h.source, &h.deps))?;
         db(store.bind(&h.name, &h.hash))?;
     }
+    let propagated = propagate(store, changed)?;
     db(store.commit())?;
     if json {
-        return json_out(hashed.iter().map(|h| json!({ "name": h.name, "hash": h.hash })).collect());
+        return json_out(json!({
+            "defs": hashed.iter().map(|h| json!({ "name": h.name, "hash": h.hash })).collect::<Vec<_>>(),
+            "propagated": propagated.iter().map(|(n, o, h)| json!({ "name": n, "old": o, "new": h })).collect::<Vec<_>>(),
+        }));
     }
-    Ok(hashed.iter().map(|h| format!("{} {}\n", h.name, h.hash)).collect())
+    let mut out: String = hashed.iter().map(|h| format!("{} {}\n", h.name, h.hash)).collect();
+    out.extend(propagated.iter().map(|(n, o, h)| format!("{n} {o} {h}\n")));
+    Ok(out)
+}
+
+/// Spec section 10.1a: re-hash every bound transitive dependent of the
+/// `changed` (old -> new) hashes against the new hashes, store it and rebind
+/// its names. Dependencies go first and cycles are re-hashed together, so
+/// each dependent is re-hashed once. Returns (name, old, new) per rebinding.
+fn propagate(store: &Store, mut map: HashMap<String, String>) -> Result<Vec<(String, String, String)>, Vec<Diag>> {
+    // Unbound dependents (old versions) are left alone and not walked through.
+    let mut affected: Vec<String> = Vec::new();
+    let mut queue: Vec<String> = map.keys().cloned().collect();
+    while let Some(h) = queue.pop() {
+        for d in db(store.dependents(&h))? {
+            if !affected.contains(&d) && !db(store.names_of(&d))?.is_empty() {
+                affected.push(d.clone());
+                queue.push(d);
+            }
+        }
+    }
+    let index: HashMap<&str, usize> = affected.iter().enumerate().map(|(i, h)| (h.as_str(), i)).collect();
+    let mut edges = Vec::new();
+    for a in &affected {
+        let deps = db(store.deps(a))?;
+        edges.push(deps.iter().filter_map(|d| index.get(map.get(d).unwrap_or(d).as_str()).copied()).collect::<Vec<_>>());
+    }
+    let mut out = Vec::new();
+    for scc in tarjan(&edges) {
+        let defs = scc.iter().map(|&i| def(store, &affected[i])).collect::<Result<Vec<_>, _>>()?;
+        // Each member's names resolve to what they resolved to, moved to the
+        // new hashes; members resolve to each other as local definitions.
+        // shortcut: one scope for the whole cycle, so two members that wrote
+        // one name for different hashes would clash; never produced by `ov add`.
+        let mut scope = Scope::default();
+        let mut items = Vec::new();
+        for d in &defs {
+            let v = ast(d)?;
+            let new = |h: &str| map.get(h).cloned().unwrap_or_else(|| h.to_string());
+            for (n, h) in pairs(&v["refs"], "values") {
+                scope.values.insert(n.to_string(), new(h));
+            }
+            for (n, h) in pairs(&v["refs"], "types") {
+                scope.types.insert(n.to_string(), new(h));
+            }
+            // A constructor that the new type no longer has is reported as unknown.
+            for (n, h) in pairs(&v["refs"], "ctors") {
+                if let Item::Type(TypeDef { body: TypeBody::Sum(vs), .. }) = item_of(&def(store, &new(h))?)?
+                    && let Some(i) = vs.iter().position(|v| v.name == n)
+                {
+                    scope.ctors.insert(n.to_string(), (new(h), i));
+                }
+            }
+            items.push(item_of(d)?);
+        }
+        let hashed = hash_items(&items, &scope)?;
+        for (d, h) in defs.iter().zip(&hashed) {
+            if h.hash == d.hash {
+                continue;
+            }
+            db(store.put(&h.hash, &h.kind, &h.ast, &d.source, &h.deps))?;
+            for v in map.values_mut().filter(|v| **v == d.hash) {
+                *v = h.hash.clone();
+            }
+            map.insert(d.hash.clone(), h.hash.clone());
+            for name in db(store.names_of(&d.hash))? {
+                db(store.bind(&name, &h.hash))?;
+                out.push((name, d.hash.clone(), h.hash.clone()));
+            }
+        }
+    }
+    Ok(out)
 }
 
 fn add(store: &Store, files: &[PathBuf], json: bool) -> Out {
@@ -296,13 +451,14 @@ fn edit(store: &Store, name: &str, file: Option<&PathBuf>, json: bool) -> Out {
 
 // ---------------------------------------------------------------- view, rm, ls, history
 
-fn view(store: &Store, target: &str, json: bool) -> Out {
+fn view(store: &Store, target: &str, raw: bool, json: bool) -> Out {
     let hash = resolve(store, target)?;
     let d = def(store, &hash)?;
+    let source = if raw { d.source.clone() } else { text(store, &d)? };
     if json {
-        return json_out(json!({ "name": name_of(store, &hash)?, "hash": hash, "kind": d.kind, "source": d.source }));
+        return json_out(json!({ "name": name_of(store, &hash)?, "hash": hash, "kind": d.kind, "source": source }));
     }
-    Ok(format!("{}\n", d.source))
+    Ok(format!("{source}\n"))
 }
 
 fn rm(store: &Store, name: &str, json: bool) -> Out {
@@ -377,7 +533,7 @@ fn sig_type_names(item: &Item) -> BTreeSet<String> {
 
 fn ctx(store: &Store, target: &str, depth: u32, json: bool) -> Out {
     let hash = resolve(store, target)?;
-    let main = def(store, &hash)?;
+    let main = text(store, &def(store, &hash)?)?;
     // Types to show: those the definition references, those named in its
     // dependencies' signatures, and the types those types reference.
     let mut pending = Vec::new();
@@ -391,16 +547,15 @@ fn ctx(store: &Store, target: &str, depth: u32, json: bool) -> Out {
         if h == hash {
             continue;
         }
-        if let Some(item) = parse_item(&d.source) {
-            let names = sig_type_names(&item);
-            for t in db(store.deps(&h))? {
-                let td = def(store, &t)?;
-                if td.kind == "type" && parse_item(&td.source).is_some_and(|i| item_name(&i).is_some_and(|n| names.contains(n))) {
-                    pending.push(t);
-                }
+        let names = sig_type_names(&item_of(&d)?);
+        for t in db(store.deps(&h))? {
+            let td = def(store, &t)?;
+            if td.kind == "type" && item_name(&item_of(&td)?).is_some_and(|n| names.contains(n)) {
+                pending.push(t);
             }
         }
-        deps.insert((name_of(store, &h)?, h), d);
+        let full = if depth >= 1 { Some(text(store, &d)?) } else { None };
+        deps.insert((name_of(store, &h)?, h), (signature(store, &d)?, full));
     }
     let mut types = BTreeMap::new();
     let mut seen = BTreeSet::new();
@@ -414,16 +569,16 @@ fn ctx(store: &Store, target: &str, depth: u32, json: bool) -> Out {
                 pending.push(u);
             }
         }
-        types.insert((name_of(store, &t)?, t), td.source);
+        types.insert((name_of(store, &t)?, t), text(store, &td)?);
     }
 
     if json {
         let deps: Vec<Value> = deps
             .iter()
-            .map(|((n, h), d)| {
-                let mut v = json!({ "name": n, "hash": h, "signature": signature(d) });
-                if depth >= 1 {
-                    v["source"] = json!(d.source);
+            .map(|((n, h), (sig, full))| {
+                let mut v = json!({ "name": n, "hash": h, "signature": sig });
+                if let Some(full) = full {
+                    v["source"] = json!(full);
                 }
                 v
             })
@@ -432,15 +587,14 @@ fn ctx(store: &Store, target: &str, depth: u32, json: bool) -> Out {
         return json_out(json!({
             "name": name_of(store, &hash)?,
             "hash": hash,
-            "source": main.source,
+            "source": main,
             "deps": deps,
             "types": types,
         }));
     }
-    let mut out = format!("{}\n", main.source);
-    for d in deps.values() {
-        let text = if depth >= 1 { d.source.clone() } else { signature(d) };
-        out.push_str(&format!("\n{text}\n"));
+    let mut out = format!("{main}\n");
+    for (sig, full) in deps.values() {
+        out.push_str(&format!("\n{}\n", full.as_ref().unwrap_or(sig)));
     }
     for s in types.values() {
         out.push_str(&format!("\n{s}\n"));
@@ -480,7 +634,7 @@ fn line_diff(a: &str, b: &str) -> Vec<(char, String)> {
 
 fn diff(store: &Store, a: &str, b: &str, json: bool) -> Out {
     let (ha, hb) = (resolve(store, a)?, resolve(store, b)?);
-    let lines = line_diff(&def(store, &ha)?.source, &def(store, &hb)?.source);
+    let lines = line_diff(&text(store, &def(store, &ha)?)?, &text(store, &def(store, &hb)?)?);
     let (na, nb) = (name_of(store, &ha)?, name_of(store, &hb)?);
     if json {
         let lines: Vec<Value> = lines.iter().map(|(op, l)| json!({ "op": op.to_string(), "line": l })).collect();

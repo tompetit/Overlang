@@ -52,8 +52,8 @@ impl Store {
         self.conn.execute_batch("COMMIT")
     }
 
-    /// Store a definition; idempotent by hash. An existing row keeps its
-    /// canonical form and only takes the newer `source` text (a rename).
+    /// Store a definition; idempotent by hash. An existing row takes the
+    /// newer named AST and `source` text (a rename, or new comments).
     /// Returns true if the row is new.
     pub fn put(&self, hash: &str, kind: &str, ast: &str, source: &str, deps: &[String]) -> R<bool> {
         let added = self.conn.execute(
@@ -61,7 +61,7 @@ impl Store {
             params![hash, kind, ast, source, now()],
         )? == 1;
         if !added {
-            self.conn.execute("UPDATE defs SET source = ?2 WHERE hash = ?1 AND source != ?2", params![hash, source])?;
+            self.conn.execute("UPDATE defs SET ast = ?2, source = ?3 WHERE hash = ?1 AND (ast != ?2 OR source != ?3)", params![hash, ast, source])?;
         }
         for d in deps {
             self.conn.execute("INSERT OR IGNORE INTO deps(hash, dep_hash) VALUES (?1, ?2)", params![hash, d])?;
