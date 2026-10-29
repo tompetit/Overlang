@@ -89,8 +89,8 @@ declare fn refund(r: Receipt, gw: Gateway) -> Result[Unit, ChargeError] !net
 
 fn describe(e: ChargeError) -> Str {
   match e {
-    Declined(reason) -> "declined: " ++ reason
-    Timeout          -> "timed out"
+    Declined(reason) => "declined: " ++ reason
+    Timeout => "timed out",
     // Missing AlreadyPaid: compile error, with the missing arm as a suggested fix.
   }
 }
@@ -133,10 +133,10 @@ always sets it.
 Diagnostic shape:
 
 ```json
-{"code": "E0412", "severity": "error", "name": "describe", "hash": "a3f9…",
+{"code": "E0104", "severity": "error", "name": "describe", "hash": "a3f9…",
  "span": {"line": 3, "col": 3}, "message": "non-exhaustive match on ChargeError",
  "expected": ["AlreadyPaid"], "actual": ["Declined", "Timeout"],
- "fixes": [{"rank": 1, "description": "add arm", "patch": "AlreadyPaid -> todo()"}]}
+ "fixes": [{"rank": 1, "description": "add arm", "patch": "AlreadyPaid => todo(),"}]}
 ```
 
 ## 5. Phases and budget
