@@ -58,6 +58,9 @@ enum Command {
         #[arg(long)]
         json: bool,
     },
+    /// Store commands (add, view, edit, rm, ls, deps, dependents, ctx, history, diff).
+    #[command(flatten)]
+    Store(crate::store_cli::StoreCommand),
 }
 
 /// Runs the CLI and returns the process exit code.
@@ -131,6 +134,7 @@ pub fn run() -> i32 {
             }
             0
         }
+        Command::Store(cmd) => crate::store_cli::run(cmd),
     }
 }
 
@@ -144,7 +148,7 @@ fn execute(exe: &std::path::Path) -> i32 {
 }
 
 /// Read and parse a file; any diagnostic is fatal. Diagnostics carry `file`.
-fn load(file: &PathBuf) -> Result<Program, Vec<Diag>> {
+pub(crate) fn load(file: &PathBuf) -> Result<Program, Vec<Diag>> {
     let src = std::fs::read_to_string(file).map_err(|e| vec![driver_error(format!("cannot read file: {e}"), Some(file))])?;
     let (program, mut diags) = parser::parse(&src);
     if diags.is_empty() {
@@ -158,13 +162,13 @@ fn load(file: &PathBuf) -> Result<Program, Vec<Diag>> {
 
 /// E0000: a failure outside the program text (bad arguments, unreadable
 /// file). Not in the spec's code table; it has no source position.
-fn driver_error(message: String, file: Option<&PathBuf>) -> Diag {
+pub(crate) fn driver_error(message: String, file: Option<&PathBuf>) -> Diag {
     let mut d = Diag::error("E0000", Span::default(), message);
     d.file = file.map(|f| f.display().to_string());
     d
 }
 
-fn report(diags: &[Diag]) -> i32 {
+pub(crate) fn report(diags: &[Diag]) -> i32 {
     for d in diags {
         println!("{}", d.to_json());
     }
