@@ -3,7 +3,8 @@
 
 use crate::ast::{Program, Span};
 use crate::diag::Diag;
-use crate::{parser, printer};
+use crate::diag::Severity;
+use crate::{parser, printer, types};
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
@@ -22,6 +23,12 @@ enum Command {
         /// Rewrite the file in place instead of printing it.
         #[arg(long)]
         write: bool,
+    },
+    /// Typecheck, effect-check and exhaustiveness-check files as one program.
+    /// Prints one JSON diagnostic per line; exit 1 if any is an error.
+    Check {
+        #[arg(required = true)]
+        files: Vec<PathBuf>,
     },
     /// Parse a file and dump its AST.
     Parse {
@@ -61,6 +68,20 @@ pub fn run() -> i32 {
                 Ok(()) => 0,
                 Err(e) => report(&[driver_error(format!("cannot write file: {e}"), Some(&file))]),
             }
+        }
+        Command::Check { files } => {
+            let mut sources = Vec::new();
+            for f in &files {
+                match std::fs::read_to_string(f) {
+                    Ok(src) => sources.push((f.display().to_string(), src)),
+                    Err(e) => return report(&[driver_error(format!("cannot read file: {e}"), Some(f))]),
+                }
+            }
+            let (_, diags) = types::check_sources(&sources);
+            for d in &diags {
+                println!("{}", d.to_json());
+            }
+            i32::from(diags.iter().any(|d| d.severity == Severity::Error))
         }
         Command::Parse { file, json } => {
             let program = match load(&file) {

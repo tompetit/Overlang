@@ -1,6 +1,6 @@
 declare fn charge(amount: Int) -> Result[Int, Str] !net
 
-fn main() -> Unit !io {
+fn main() -> Unit !io !net {
   println("before");
   println(show(charge(5)));
 }

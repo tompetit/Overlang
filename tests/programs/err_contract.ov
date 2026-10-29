@@ -1,0 +1,14 @@
+fn log_positive(x: Int) -> Bool !io {
+  println("checking " ++ show(x));
+  x > 0
+}
+
+fn halve(x: Int) -> Int
+  requires log_positive(x)
+{
+  x / 2
+}
+
+fn main() -> Unit !io {
+  println(show(halve(4)));
+}

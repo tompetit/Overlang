@@ -46,6 +46,8 @@ pub enum Item {
     Declare(DeclareDef),
     Foreign(ForeignDef),
     Test(TestDef),
+    /// `intrinsic fn name[T](..) -> R = "symbol"`, legal only in the prelude.
+    Intrinsic(IntrinsicDef),
     Comment(Comment),
 }
 
@@ -95,12 +97,23 @@ pub struct DeclareDef {
     pub span: Span,
 }
 
-/// `foreign c "header.h" link "lib" fn name(...) -> T !eff`
+/// `foreign c "header.h" link "lib" fn name(...) -> T !eff = "c_symbol"`
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct ForeignDef {
     pub header: String,
     pub link: Option<String>,
     pub sig: Signature,
+    /// The C function's name when it differs from `sig.name`.
+    pub symbol: Option<String>,
+    pub span: Span,
+}
+
+/// `intrinsic fn name[T](params) -> R !eff = "symbol"`: a runtime C function
+/// (`ov_...`) or a compiler-generated instance (`@show`).
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub struct IntrinsicDef {
+    pub sig: Signature,
+    pub symbol: String,
     pub span: Span,
 }
 
@@ -272,7 +285,8 @@ pub struct Stmt {
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub enum StmtKind {
     /// `let p = e;` or, with `mutable`, `let mut x = e;` (then `pat` is a `Bind`).
-    Let { mutable: bool, pat: Pat, value: Expr },
+    /// `ty` is the annotation of `let x: T = e;`, only on a `Bind` pattern.
+    Let { mutable: bool, pat: Pat, ty: Option<TypeExpr>, value: Expr },
     /// `x = e;`
     Assign { name: String, value: Expr },
     While { cond: Expr, body: Block },
@@ -285,8 +299,11 @@ pub enum StmtKind {
 
 // ---------------------------------------------------------------- patterns
 
+/// Patterns carry a `NodeId` from the same counter as expressions, so the
+/// typechecker can key bindings by it.
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Pat {
+    pub id: NodeId,
     pub kind: PatKind,
     pub span: Span,
 }

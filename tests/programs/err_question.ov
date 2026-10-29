@@ -1,0 +1,8 @@
+fn parse_or_fail(s: Str) -> Int {
+  let n = parse_int(s)?;
+  n * 2
+}
+
+fn main() -> Unit !io {
+  println(show(parse_or_fail("21")));
+}

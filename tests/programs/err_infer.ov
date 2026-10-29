@@ -1,0 +1,4 @@
+fn main() -> Unit !io {
+  let xs = [];
+  println(show(len(xs)));
+}

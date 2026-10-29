@@ -169,9 +169,14 @@ impl Printer {
                 if let Some(link) = &f.link {
                     prefix.push_str(&format!("link {} ", escape_str(link)));
                 }
-                self.signature(&prefix, &f.sig, "")
+                let mut out = self.signature(&prefix, &f.sig, "");
+                if let Some(sym) = &f.symbol {
+                    out.push_str(&format!(" = {}", escape_str(sym)));
+                }
+                out
             }
             Item::Test(t) => format!("test {} {}", t.name, self.block(&t.body, 0)),
+            Item::Intrinsic(i) => format!("{} = {}", self.signature("intrinsic ", &i.sig, ""), escape_str(&i.symbol)),
             Item::Type(t) => self.type_def(t),
             Item::Comment(c) => format!("//{}", c.text),
         }
@@ -194,7 +199,7 @@ impl Printer {
 
     /// `suffix` is what follows the signature on its last line (` {` or
     /// nothing); it counts toward the 100-column limit.
-    fn signature(&self, prefix: &str, s: &Signature, suffix: &str) -> String {
+    pub fn signature(&self, prefix: &str, s: &Signature, suffix: &str) -> String {
         let mut generics: Vec<String> = s.type_params.clone();
         generics.extend(s.effect_params.iter().map(|e| format!("!{e}")));
         let generics = if generics.is_empty() { String::new() } else { format!("[{}]", generics.join(", ")) };
@@ -282,9 +287,10 @@ impl Printer {
     /// statement needs its `;` to stay a statement rather than the tail.
     fn stmt(&self, s: &Stmt, indent: usize, is_last: bool) -> String {
         match &s.kind {
-            StmtKind::Let { mutable, pat, value } => {
+            StmtKind::Let { mutable, pat, ty, value } => {
                 let m = if *mutable { "mut " } else { "" };
-                format!("let {m}{} = {};", self.pat(pat), self.expr(value, indent))
+                let ty = ty.as_ref().map(|t| format!(": {}", self.ty(t))).unwrap_or_default();
+                format!("let {m}{}{ty} = {};", self.pat(pat), self.expr(value, indent))
             }
             StmtKind::Assign { name, value } => format!("{name} = {};", self.expr(value, indent)),
             StmtKind::While { cond, body } => format!("while {} {}", self.expr(cond, indent), self.block(body, indent)),

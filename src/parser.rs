@@ -20,6 +20,14 @@ type PResult<T> = Result<T, Diag>;
 /// Parse a whole file. Returns every definition that parsed, plus all lexical
 /// and parse diagnostics. The program is only meaningful if `diags` is empty.
 pub fn parse(src: &str) -> (Program, Vec<Diag>) {
+    let (program, diags, _) = parse_with(src, false, 0);
+    (program, diags)
+}
+
+/// `parse` with options: `allow_intrinsic` accepts `intrinsic fn` (only the
+/// prelude is parsed this way), and node ids start at `first_id` so several
+/// files checked together never share an id. Also returns the next free id.
+pub fn parse_with(src: &str, allow_intrinsic: bool, first_id: NodeId) -> (Program, Vec<Diag>, NodeId) {
     let lexed = lex(src);
     let mut p = Parser {
         toks: lexed.tokens,
@@ -27,8 +35,9 @@ pub fn parse(src: &str) -> (Program, Vec<Diag>) {
         comments: lexed.comments,
         next_comment: 0,
         expected: Vec::new(),
-        next_id: 0,
+        next_id: first_id,
         in_ensures: false,
+        allow_intrinsic,
     };
     let mut diags = lexed.diags;
     let mut items = Vec::new();
@@ -49,7 +58,7 @@ pub fn parse(src: &str) -> (Program, Vec<Diag>) {
         }
     }
     diags.sort_by_key(|d| (d.span.line, d.span.col));
-    (Program { items }, diags)
+    (Program { items }, diags, p.next_id)
 }
 
 struct Parser {
@@ -62,6 +71,7 @@ struct Parser {
     next_id: NodeId,
     /// Inside an `ensures` clause, the identifier `result` is `ResultRef`.
     in_ensures: bool,
+    allow_intrinsic: bool,
 }
 
 fn binop(tok: &Tok) -> Option<(BinOp, u8)> {
@@ -243,7 +253,7 @@ impl Parser {
         }
         loop {
             match self.peek() {
-                Tok::Eof | Tok::Type | Tok::Declare | Tok::Foreign | Tok::Test => break,
+                Tok::Eof | Tok::Type | Tok::Declare | Tok::Foreign | Tok::Test | Tok::Intrinsic => break,
                 // `fn name` starts a definition; `fn(` is a function type.
                 Tok::Fn if matches!(self.peek_at(1), Tok::Ident(_)) => break,
                 _ => {
@@ -258,6 +268,12 @@ impl Parser {
         let id = self.next_id;
         self.next_id += 1;
         Expr { id, kind, span: start.to(self.prev_span()) }
+    }
+
+    fn pat_node(&mut self, kind: PatKind, start: Span) -> Pat {
+        let id = self.next_id;
+        self.next_id += 1;
+        Pat { id, kind, span: start.to(self.prev_span()) }
     }
 
     // ------------------------------------------------------------ definitions
@@ -289,12 +305,21 @@ impl Parser {
             let link = if self.eat(&Tok::Link) { Some(self.string_lit()?) } else { None };
             self.expect(&Tok::Fn)?;
             let sig = self.signature(start)?;
-            return Ok(Item::Foreign(ForeignDef { header, link, sig, span: start.to(self.prev_span()) }));
+            let symbol = if self.eat(&Tok::Eq) { Some(self.string_lit()?) } else { None };
+            return Ok(Item::Foreign(ForeignDef { header, link, sig, symbol, span: start.to(self.prev_span()) }));
         }
         if self.eat(&Tok::Test) {
             let name = self.ident()?;
             let body = self.block()?;
             return Ok(Item::Test(TestDef { name, body, span: start.to(self.prev_span()) }));
+        }
+        // Outside the prelude `intrinsic` is not even listed as expected.
+        if self.allow_intrinsic && self.eat(&Tok::Intrinsic) {
+            self.expect(&Tok::Fn)?;
+            let sig = self.signature(start)?;
+            self.expect(&Tok::Eq)?;
+            let symbol = self.string_lit()?;
+            return Ok(Item::Intrinsic(IntrinsicDef { sig, symbol, span: start.to(self.prev_span()) }));
         }
         Err(self.error())
     }
@@ -460,14 +485,16 @@ impl Parser {
                 let pat = if mutable {
                     let pstart = self.span();
                     let name = self.ident()?;
-                    Pat { kind: PatKind::Bind(name), span: pstart.to(self.prev_span()) }
+                    self.pat_node(PatKind::Bind(name), pstart)
                 } else {
                     self.pattern()?
                 };
+                // `let x: T = e;`: the annotation is only allowed on a plain name.
+                let ty = if matches!(pat.kind, PatKind::Bind(_)) && self.eat(&Tok::Colon) { Some(self.ty()?) } else { None };
                 self.expect(&Tok::Eq)?;
                 let value = self.expr()?;
                 self.expect(&Tok::Semi)?;
-                StmtKind::Let { mutable, pat, value }
+                StmtKind::Let { mutable, pat, ty, value }
             } else if self.eat(&Tok::While) {
                 let cond = self.expr()?;
                 StmtKind::While { cond, body: self.block()? }
@@ -740,7 +767,7 @@ impl Parser {
         while self.eat(&Tok::Pipe) {
             alts.push(self.pattern_single()?);
         }
-        Ok(Pat { kind: PatKind::Or(alts), span: start.to(self.prev_span()) })
+        Ok(self.pat_node(PatKind::Or(alts), start))
     }
 
     fn pattern_single(&mut self) -> PResult<Pat> {
@@ -813,7 +840,7 @@ impl Parser {
                 return Err(self.error());
             }
         };
-        Ok(Pat { kind, span: start.to(self.prev_span()) })
+        Ok(self.pat_node(kind, start))
     }
 
     /// After `[`. `..name` may appear once, as the first or the last element.
