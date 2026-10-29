@@ -1,0 +1,24 @@
+Some(40)
+None
+[3, 2]
+origin
+special
+diag 2
+other
+2 then c
+none
+5 7 9 -1
+[2, 4]
+["1", "2"]
+dbl 42
+[0, 100, 200]
+0=x
+1=y
+1.5 -1
+()[(1, "a")]23
+0.3333333333333333 1000000000000000000000 -0.5
+Some(2.5)Some("é")Some(65)é
+"tab\there \"q\""
+big
+[-1, 2, 3.5]["a", "b"]
+truetruetruefalse

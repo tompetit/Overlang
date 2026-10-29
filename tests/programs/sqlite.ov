@@ -1,0 +1,27 @@
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_open(path: Str) -> Int !fs = "ov_sqlite_open"
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_exec(db: Int, sql: Str) -> Int !fs = "ov_sqlite_exec"
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_exec_2s(db: Int, sql: Str, p1: Str, p2: Str) -> Int !fs = "ov_sqlite_exec_2s"
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_query(db: Int, sql: Str) -> Option[Str] !fs = "ov_sqlite_query"
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_close(db: Int) -> Unit !fs = "ov_sqlite_close"
+
+fn rows(text: Str) -> List[List[Str]] {
+  map(split(text, "\u{1e}"), |r| split(r, "\u{1f}"))
+}
+
+fn main() -> Unit !io !fs {
+  let db = sqlite_open(":memory:");
+  println(show(db > 0));
+  println(show(sqlite_exec(db, "create table pets (name text, kind text)")));
+  println(show(sqlite_exec_2s(db, "insert into pets values (?1, ?2)", "Rex", "dog")));
+  println(show(sqlite_exec_2s(db, "insert into pets values (?1, ?2)", "Tom", "cat")));
+  match sqlite_query(db, "select name, kind from pets order by name") {
+    Some(text) => {
+      for r in rows(text) {
+        println(join(r, " | "));
+      }
+    },
+    None => println("query failed"),
+  }
+  println(show(sqlite_query(db, "select nope from nowhere")));
+  sqlite_close(db);
+}

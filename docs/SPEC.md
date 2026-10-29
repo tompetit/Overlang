@@ -113,7 +113,8 @@ Float and Str only. `show[T](x: T) -> Str` is defined structurally on every
 non-function type by monomorphization. `show` prints Int as decimal, Float as
 the shortest decimal that round-trips with no trailing `.0` (`3.0` shows as
 `3`, `2.5` as `2.5`), Bool as `true`/`false`, Str quoted and escaped, Unit as
-`()`, lists as `[a, b]`, tuples as `(a, b)`, records as `Name { f: v }`, and
+`()`, lists as `[a, b]`, maps as `{k: v, k: v}` and sets as `{a, b}` (in
+insertion order), tuples as `(a, b)`, records as `Name { f: v }`, and
 constructors as `Ctor(a, b)` or `Ctor`. `print` and `println` take a Str and
 print it raw, so `println("x")` prints `x` without quotes.
 
@@ -460,7 +461,9 @@ Codes:
   `Unit` is `uint8_t` (value 0), `Str` is `ov_str*`, `List[T]` is
   `ov_list*` holding `ov_value` slots (**shortcut**: unboxed specializations
   later), records are structs, sums are `struct { uint32_t tag; union {...} }`,
-  tuples are structs, closures are `struct { void* fn; void* env; }`.
+  tuples are structs, closures are `ov_closure` (`struct { void* fn; void* env; }`,
+  `fn` taking the env first). Records, sums, tuples and closures are
+  GC-allocated and passed by pointer, so every value fits an `ov_value` slot.
 - All heap allocation goes through `GC_MALLOC`. Nothing is freed.
 - Int arithmetic uses `__builtin_*_overflow` and traps on overflow.
 - Contracts become checks at function entry and before every return.

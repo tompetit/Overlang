@@ -4,7 +4,7 @@
 use crate::ast::{Program, Span};
 use crate::diag::Diag;
 use crate::diag::Severity;
-use crate::{parser, printer, types};
+use crate::{build, parser, printer, types};
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
@@ -27,6 +27,27 @@ enum Command {
     /// Typecheck, effect-check and exhaustiveness-check files as one program.
     /// Prints one JSON diagnostic per line; exit 1 if any is an error.
     Check {
+        #[arg(required = true)]
+        files: Vec<PathBuf>,
+    },
+    /// Compile files to a native executable (`./<entry>` unless `-o`).
+    Build {
+        #[arg(required = true)]
+        files: Vec<PathBuf>,
+        #[arg(long, default_value = "main")]
+        entry: String,
+        #[arg(short = 'o')]
+        output: Option<PathBuf>,
+    },
+    /// Build, then run the program, forwarding stdin, stdout, stderr and the exit code.
+    Run {
+        #[arg(required = true)]
+        files: Vec<PathBuf>,
+        #[arg(long, default_value = "main")]
+        entry: String,
+    },
+    /// Build and run every test block in order: `ok <name>` per passing block.
+    Test {
         #[arg(required = true)]
         files: Vec<PathBuf>,
     },
@@ -83,6 +104,21 @@ pub fn run() -> i32 {
             }
             i32::from(diags.iter().any(|d| d.severity == Severity::Error))
         }
+        Command::Build { files, entry, output } => {
+            let out = output.unwrap_or_else(|| PathBuf::from(&entry));
+            match build::build(&files, build::Target::Entry(&entry), Some(&out)) {
+                Ok(_) => 0,
+                Err(diags) => report(&diags),
+            }
+        }
+        Command::Run { files, entry } => match build::build(&files, build::Target::Entry(&entry), None) {
+            Ok(exe) => execute(&exe),
+            Err(diags) => report(&diags),
+        },
+        Command::Test { files } => match build::build(&files, build::Target::Tests, None) {
+            Ok(exe) => execute(&exe),
+            Err(diags) => report(&diags),
+        },
         Command::Parse { file, json } => {
             let program = match load(&file) {
                 Ok(p) => p,
@@ -95,6 +131,15 @@ pub fn run() -> i32 {
             }
             0
         }
+    }
+}
+
+/// Run a built program with inherited stdio; its exit code (128 + signal if killed).
+fn execute(exe: &std::path::Path) -> i32 {
+    use std::os::unix::process::ExitStatusExt;
+    match std::process::Command::new(exe).status() {
+        Ok(s) => s.code().unwrap_or_else(|| 128 + s.signal().unwrap_or(0)),
+        Err(e) => report(&[driver_error(format!("cannot run {}: {e}", exe.display()), None)]),
     }
 }
 

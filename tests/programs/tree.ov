@@ -1,0 +1,48 @@
+type Tree = Leaf | Node(left: Tree, value: Int, right: Tree)
+type Chain[T] = End | Link(head: T, rest: Chain[T])
+
+fn insert(t: Tree, v: Int) -> Tree {
+  match t {
+    Leaf => Node(Leaf, v, Leaf),
+    Node(l, x, r) if v < x => Node(insert(l, v), x, r),
+    Node(l, x, r) => Node(l, x, insert(r, v)),
+  }
+}
+
+fn to_list(t: Tree) -> List[Int] {
+  match t {
+    Leaf => [],
+    Node(l, x, r) => concat(push(to_list(l), x), to_list(r)),
+  }
+}
+
+fn depth(t: Tree) -> Int {
+  match t {
+    Leaf => 0,
+    Node(l, _, r) => 1 + max(depth(l), depth(r)),
+  }
+}
+
+fn chain_of[T](xs: List[T]) -> Chain[T] {
+  fold(reverse(xs), End, |acc, x| Link(x, acc))
+}
+
+fn chain_len[T](c: Chain[T]) -> Int {
+  match c {
+    End => 0,
+    Link(_, rest) => 1 + chain_len(rest),
+  }
+}
+
+fn main() -> Unit !io {
+  let t = fold([5, 3, 8, 1, 4], Leaf, |acc, v| insert(acc, v));
+  println(show(to_list(t)));
+  println(show(depth(t)));
+  println(show(insert(Leaf, 7)));
+  let c = chain_of(["a", "b"]);
+  println(show(c));
+  println(show(chain_len(c)));
+  println(show(c == chain_of(["a", "b"])));
+  println(show(c == chain_of(["a"])));
+  println(show(Some((1, 2.5))));
+}

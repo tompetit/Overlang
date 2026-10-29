@@ -1,0 +1,78 @@
+type P = { x: Int, y: Int, tag: Str }
+type Op = { name: Str, run: fn(Int) -> Int }
+type E = Bad(code: Int) | Worse
+
+fn first_even(xs: List[Int]) -> Option[Int] {
+  let h = head(filter(xs, |x| x % 2 == 0))?;
+  Some(h * 10)
+}
+
+fn positives(xs: List[Int]) -> List[Int]
+  ensures all(result, |r| r > 0 && len(result) <= len(xs))
+{
+  filter(xs, |x| x > 0)
+}
+
+fn kind(p: P) -> Str {
+  match p {
+    P { x: 0, y: 0, .. } => "origin",
+    P { tag: "special", .. } => "special",
+    P { x: x, y: y, .. } if x == y => "diag " ++ show(x),
+    _ => "other",
+  }
+}
+
+fn ends(xs: List[Str]) -> Str {
+  match xs {
+    [] => "none",
+    [..init, last] => show(len(init)) ++ " then " ++ last,
+  }
+}
+
+fn pick(t: (Int, Option[Int])) -> Int {
+  match t {
+    (0, Some(b)) | (b, None) if b > 0 => b,
+    (_, Some(c)) => c,
+    _ => -1,
+  }
+}
+
+fn twice(n: Int) -> Int { n * 2 }
+
+fn main() -> Unit !io {
+  println(show(first_even([1, 3, 4, 6])));
+  println(show(first_even([1, 3])));
+  println(show(positives([3, -1, 2])));
+  println(kind(P { x: 0, y: 0, tag: "" }));
+  println(kind(P { x: 1, y: 0, tag: "special" }));
+  println(kind(P { x: 2, y: 2, tag: "" }));
+  println(kind(P { x: 2, y: 3, tag: "" }));
+  println(ends(["a", "b", "c"]));
+  println(ends([]));
+  println(show(pick((0, Some(5)))) ++ " " ++ show(pick((7, None))) ++ " " ++ show(pick((-1, Some(9)))) ++ " " ++ show(pick((-1, None))));
+  println(show(map([1, 2], twice)));
+  println(show(map([1, 2], show)));
+  let op = Op { name: "dbl", run: twice };
+  println(op.name ++ " " ++ show(op.run(21)));
+  let mut i = 0;
+  let mut acc = [];
+  while i < 3 {
+    let j = i;
+    acc = push(acc, || j * 100);
+    i = i + 1;
+  }
+  println(show(map(acc, |f| f())));
+  for (k, v) in enumerate(["x", "y"]) {
+    println(show(k) ++ "=" ++ v);
+  }
+  let (a, b) = (5.5 % 2.0, -7 % 3);
+  println(show(a) ++ " " ++ show(b));
+  println(show(()) ++ show([(1, "a")]) ++ show(to_int(2.9)) ++ show(to_float(3)));
+  println(show(1.0 / 3.0) ++ " " ++ show(1.0e21) ++ " " ++ show(-0.5));
+  println(show(parse_float("2.50")) ++ show(char_at("hé", 1)) ++ show(code_point("A")) ++ from_code_point(233));
+  println(show("tab\there \"q\""));
+  let s = if len(acc) > 2 { "big" } else { "small" };
+  println(s);
+  println(show(sort([3.5, -1.0, 2.0])) ++ show(sort(["b", "a"])));
+  println(show(Bad(3) == Bad(3)) ++ show(Bad(3) != Worse) ++ show([1, 2] == [1, 2]) ++ show((1, "a") == (1, "b")));
+}

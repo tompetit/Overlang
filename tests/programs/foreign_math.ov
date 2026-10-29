@@ -1,0 +1,10 @@
+foreign c "math.h" fn cbrt(x: Float) -> Float
+foreign c "math.h" fn hypotenuse(a: Float, b: Float) -> Float = "hypot"
+foreign c "stdlib.h" fn getenv(name: Str) -> Option[Str] !io
+
+fn main() -> Unit !io {
+  println(show(cbrt(8.0)));
+  println(show(round(cbrt(27.0) * 1000.0) / 1000.0));
+  println(show(hypotenuse(3.0, 4.0)));
+  println(show(getenv("OV_SURELY_UNSET_VARIABLE")));
+}
