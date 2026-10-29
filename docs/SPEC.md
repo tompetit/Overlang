@@ -19,8 +19,8 @@ simplifications with a named upgrade path.
 - Identifiers: value and function names match `[a-z_][A-Za-z0-9_]*`. Type
   and constructor names match `[A-Z][A-Za-z0-9_]*`. Effect names match
   `[a-z][a-z0-9_]*` and appear only after `!`.
-- Keywords: `fn type declare foreign link let mut if else match while for in
-  return requires ensures test true false result`.
+- Keywords: `fn type declare foreign link intrinsic let mut if else match while
+  for in return requires ensures test true false result`.
   `result` is a keyword only inside an `ensures` clause.
 - Literals:
   - Int: decimal digits with optional `_` separators (`1_000_000`). Must fit
@@ -67,6 +67,13 @@ test name { Block }
   whatever the declaration says; the compiler trusts it.
 - `test name { ... }` is a test block. Its body has type Unit and may use any
   effects. `ov test` runs every test block.
+- `intrinsic fn name[T](params) -> Type !eff = "symbol"` binds a signature to
+  a runtime C function (`"ov_..."`) or to a compiler-generated instance
+  (`"@show"`, `"@sort"`). It is legal only in `src/prelude.ov`, which is
+  compiled into `ov` and loaded before every program. Elsewhere it is E0002.
+- Comments are kept by the parser and printer (`ov fmt` never drops one); a
+  comment inside an expression or signature moves to the next statement, arm
+  or definition. Hashing strips them.
 
 ## 3. Types
 
@@ -83,7 +90,8 @@ type Option[T] = Some(value: T) | None
 type Result[T, E] = Ok(value: T) | Err(error: E)
 ```
 
-Records: `type P = { x: Int, y: Int }`. Construct with `P { x: 1, y: 2 }`.
+Records: `type P = { x: Int, y: Int }`. A record type has at least one
+field. Construct with `P { x: 1, y: 2 }`.
 Update with `P { ..p, y: 3 }` (the base comes first). Access with `p.x`.
 Field order in construction is free; the printer canonicalizes to declaration
 order.
@@ -176,9 +184,11 @@ unary `- !`, postfix (`?`, call, field, index). Comparisons do not chain.
 - Lambda: `|x, y| expr` or `|x, y| { block }`. Captures by value.
 - Block: `{ stmt; stmt; expr }`. The final expression is the value; a block
   ending in `;` has type Unit.
-- Statements: `let p = e;` (pattern must be irrefutable, E0110), `let mut x = e;`,
+- Statements: `let p = e;` (pattern must be irrefutable, E0110), `let x: T = e;`
+  (annotation on a plain name, the fix E0107 points to), `let mut x = e;`,
   `x = e;` (x must be `mut`), `while c { }`, `for p in e { }` where e is a
-  List, `return e;`, `e;`.
+  List, `return e;` (a value is required; write `return ();`), `e;`. As in
+  Rust, a statement that is an `if`, `match` or block needs no `;` after it.
 - `e?` on `Result[T, E]` evaluates to `T` or returns `Err(e)` from the
   enclosing function, whose return type must be `Result[_, E]`. On
   `Option[T]` it returns `None` likewise.
@@ -381,6 +391,7 @@ Codes:
 
 | Code | Meaning | Required content |
 |---|---|---|
+| E0000 | Command-line or file error | `message` |
 | E0001 | Lexical error | `message` |
 | E0002 | Parse error | `expected` tokens |
 | E0100 | Unknown name | `fixes`: nearest names by edit distance |
