@@ -151,10 +151,11 @@ assume frontier-model pricing and a roughly $25 to $40 per agent-hour burn.
 | 1b. C runtime | `rt.c`: Boehm GC integration, Str, List, Map, Set, Option, Result, overflow-trapping Int, closures, structured contract-failure output. | Runtime has its own C test suite. Valgrind or ASan clean on the test suite. | $1,000 |
 | 2. Store and context | SQLite store, hashing, pretty-printer, `add` / `view` / `edit` / `deps` / `ctx` / `diff`, JSON diagnostics with fixes, hash-cached C emission. | Round-trip property: parse → store → view → parse yields the same hash, fuzzed over 1,000 generated programs. | $1,500 |
 | 3. Contracts and FFI | `requires` / `ensures` as runtime checks, fuzz bridge through `--fuzz`, hash-cached `ov test`, `foreign c`, stdlib. | Contract fuzzing finds a seeded bug in each of 20 planted-bug programs. | $1,800 |
+| 3b. Web app milestone | A runnable example, `examples/todo/`: an HTTP todo app backed by SQLite. Two small C shims under `runtime/ext/` (`ov_sqlite.c`: open, exec, query returning rows as delimited text; `ov_http.c`: listen, accept one request as text, respond) bound with `foreign c`, plus the Overlang app on top: routing, HTML rendering, CRUD. Opaque handles are Ints. This is the "does it feel like a real language" check, and the app doubles as the Benchmark B codebase. | `ov run main` serves on a port; `curl` can create, list and delete todos; data survives a restart. | $800 |
 | 4. Corpus | MultiPL-T loop: translate ~1,500 Python functions with tests (MBPP+, HumanEval+) into Overlang, keep only those whose tests pass. Produce the **language card**: a 3k-token reference that goes into the agent's CLAUDE.md. | ≥70% of translations pass on first or second attempt. Every compiler bug found gets a regression test. | $900 |
 | 5. Evaluation | See section 6. | Results table and a short write-up. | $2,500 |
 | Reserve | Compiler bugs found in phase 5 always exist. | | $1,300 |
-| **Total** | | | **$11,500** |
+| **Total** | | | **$12,300** |
 
 The C backend adds about $1,500 over the compile-to-Python version: the
 runtime, the monomorphizer, and the fuzz generator and shrinker. To hold $10,000, drop Map and Set from the runtime and cut the
@@ -178,9 +179,10 @@ comparison. This tests first-pass correctness and the familiarity tax. Expect
 Overlang to lose on total tokens here. The number to watch is compile-fix rounds
 versus Rust.
 
-**Benchmark B: maintenance tasks.** Take a small real Python project (~3,000
-lines, 30 to 50 functions), translate it to Overlang in phase 4, and write 25
-modification tasks against it ("add a field and propagate it", "change this
+**Benchmark B: maintenance tasks.** Use the todo web app from phase 3b (plus
+a Python port of it written in phase 4, so both languages have the same
+codebase, ~1,000 lines, 30 to 50 functions), and write 25 modification tasks
+against it ("add a field and propagate it", "change this
 error type", "make this function pure"). Same harness, both languages. This is
 the only place the locality hypothesis can show, because single-function tasks
 do not involve reading.
