@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_394_check_distinct",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_394_check_distinct",
+ "entry_point": "check_distinct",
+ "prompt": "/// Write a function to check if given vector contains no duplicates.\nfn check_distinct(test_tup: Vec<isize>) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = check_distinct;\n    assert_eq!(candidate(vec![1, 4, 5, 6, 1, 4]), false);\n    assert_eq!(candidate(vec![1, 4, 5, 6]), true);\n    assert_eq!(candidate(vec![2, 3, 4, 5, 6]), true);\n}\n",
+ "raw": {
+  "name": "mbpp_394_check_distinct",
+  "language": "rs",
+  "prompt": "/// Write a function to check if given vector contains no duplicates.\nfn check_distinct(test_tup: Vec<isize>) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_394_check_distinct.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = check_distinct;\n    assert_eq!(candidate(vec![1, 4, 5, 6, 1, 4]), false);\n    assert_eq!(candidate(vec![1, 4, 5, 6]), true);\n    assert_eq!(candidate(vec![2, 3, 4, 5, 6]), true);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_622_get_median",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_622_get_median",
+ "entry_point": "get_median",
+ "prompt": "/// Write a function to find the median of two sorted vectors of same size.\nfn get_median(arr1: Vec<isize>, arr2: Vec<isize>, n: isize) -> f64 {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = get_median;\n    assert_eq!(candidate(vec![1, 12, 15, 26, 38], vec![2, 13, 17, 30, 45], 5), 16.0);\n    assert_eq!(candidate(vec![2, 4, 8, 9], vec![7, 13, 19, 28], 4), 8.5);\n    assert_eq!(candidate(vec![3, 6, 14, 23, 36, 42], vec![2, 18, 27, 39, 49, 55], 6), 25.0);\n}\n",
+ "raw": {
+  "name": "mbpp_622_get_median",
+  "language": "rs",
+  "prompt": "/// Write a function to find the median of two sorted vectors of same size.\nfn get_median(arr1: Vec<isize>, arr2: Vec<isize>, n: isize) -> f64 {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_622_get_median.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = get_median;\n    assert_eq!(candidate(vec![1, 12, 15, 26, 38], vec![2, 13, 17, 30, 45], 5), 16.0);\n    assert_eq!(candidate(vec![2, 4, 8, 9], vec![7, 13, 19, 28], 4), 8.5);\n    assert_eq!(candidate(vec![3, 6, 14, 23, 36, 42], vec![2, 18, 27, 39, 49, 55], 6), 25.0);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

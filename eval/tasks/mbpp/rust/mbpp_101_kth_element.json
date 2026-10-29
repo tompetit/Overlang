@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_101_kth_element",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_101_kth_element",
+ "entry_point": "kth_element",
+ "prompt": "/// Write a function to find the kth element in the given vector using 1-based indexing.\nfn kth_element(arr: Vec<isize>, k: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = kth_element;\n    assert_eq!(candidate(vec![12, 3, 5, 7, 19], 2), 3);\n    assert_eq!(candidate(vec![17, 24, 8, 23], 3), 8);\n    assert_eq!(candidate(vec![16, 21, 25, 36, 4], 4), 36);\n}\n",
+ "raw": {
+  "name": "mbpp_101_kth_element",
+  "language": "rs",
+  "prompt": "/// Write a function to find the kth element in the given vector using 1-based indexing.\nfn kth_element(arr: Vec<isize>, k: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_101_kth_element.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = kth_element;\n    assert_eq!(candidate(vec![12, 3, 5, 7, 19], 2), 3);\n    assert_eq!(candidate(vec![17, 24, 8, 23], 3), 8);\n    assert_eq!(candidate(vec![16, 21, 25, 36, 4], 4), 36);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

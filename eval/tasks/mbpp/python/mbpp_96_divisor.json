@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_96_divisor",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_96_divisor",
+ "entry_point": "divisor",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef divisor(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the number of divisors of a given integer.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(15) == 4\n    assert candidate(12) == 6\n    assert candidate(9) == 3\n\ndef test_check():\n    check(divisor)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_96_divisor.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef divisor(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the number of divisors of a given integer.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(15) == 4\n    assert candidate(12) == 6\n    assert candidate(9) == 3\n\ndef test_check():\n    check(divisor)\n\n"
+ }
+}

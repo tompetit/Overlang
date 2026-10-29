@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_428_shell_sort",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_428_shell_sort",
+ "entry_point": "shell_sort",
+ "prompt": "/// Write a function to sort the given vector by using shell sort.\nfn shell_sort(my_list: Vec<isize>) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = shell_sort;\n    assert_eq!(candidate(vec![12, 23, 4, 5, 3, 2, 12, 81, 56, 95]), vec![2, 3, 4, 5, 12, 12, 23, 56, 81, 95]);\n    assert_eq!(candidate(vec![24, 22, 39, 34, 87, 73, 68]), vec![22, 24, 34, 39, 68, 73, 87]);\n    assert_eq!(candidate(vec![32, 30, 16, 96, 82, 83, 74]), vec![16, 30, 32, 74, 82, 83, 96]);\n}\n",
+ "raw": {
+  "name": "mbpp_428_shell_sort",
+  "language": "rs",
+  "prompt": "/// Write a function to sort the given vector by using shell sort.\nfn shell_sort(my_list: Vec<isize>) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_428_shell_sort.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = shell_sort;\n    assert_eq!(candidate(vec![12, 23, 4, 5, 3, 2, 12, 81, 56, 95]), vec![2, 3, 4, 5, 12, 12, 23, 56, 81, 95]);\n    assert_eq!(candidate(vec![24, 22, 39, 34, 87, 73, 68]), vec![22, 24, 34, 39, 68, 73, 87]);\n    assert_eq!(candidate(vec![32, 30, 16, 96, 82, 83, 74]), vec![16, 30, 32, 74, 82, 83, 96]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

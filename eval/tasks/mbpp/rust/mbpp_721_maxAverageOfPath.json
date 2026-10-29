@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_721_maxAverageOfPath",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_721_maxAverageOfPath",
+ "entry_point": "maxAverageOfPath",
+ "prompt": "/// Given a square matrix of size N*N given as a vector of vectors, where each cell is associated with a specific cost. A path is defined as a specific sequence of cells that starts from the top-left cell move only right or down and ends on bottom right cell. We want to find a path with the maximum average over all existing paths. Average is computed as total cost divided by the number of cells visited in the path.\nfn maxAverageOfPath(cost: Vec<Vec<isize>>) -> f64 {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = maxAverageOfPath;\n    assert_eq!(candidate(vec![vec![1, 2, 3], vec![6, 5, 4], vec![7, 3, 9]]), 5.2);\n    assert_eq!(candidate(vec![vec![2, 3, 4], vec![7, 6, 5], vec![8, 4, 10]]), 6.2);\n    assert_eq!(candidate(vec![vec![3, 4, 5], vec![8, 7, 6], vec![9, 5, 11]]), 7.2);\n    assert_eq!(candidate(vec![vec![1, 2, 3], vec![4, 5, 6], vec![7, 8, 9]]), 5.8);\n}\n",
+ "raw": {
+  "name": "mbpp_721_maxAverageOfPath",
+  "language": "rs",
+  "prompt": "/// Given a square matrix of size N*N given as a vector of vectors, where each cell is associated with a specific cost. A path is defined as a specific sequence of cells that starts from the top-left cell move only right or down and ends on bottom right cell. We want to find a path with the maximum average over all existing paths. Average is computed as total cost divided by the number of cells visited in the path.\nfn maxAverageOfPath(cost: Vec<Vec<isize>>) -> f64 {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_721_maxAverageOfPath.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = maxAverageOfPath;\n    assert_eq!(candidate(vec![vec![1, 2, 3], vec![6, 5, 4], vec![7, 3, 9]]), 5.2);\n    assert_eq!(candidate(vec![vec![2, 3, 4], vec![7, 6, 5], vec![8, 4, 10]]), 6.2);\n    assert_eq!(candidate(vec![vec![3, 4, 5], vec![8, 7, 6], vec![9, 5, 11]]), 7.2);\n    assert_eq!(candidate(vec![vec![1, 2, 3], vec![4, 5, 6], vec![7, 8, 9]]), 5.8);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

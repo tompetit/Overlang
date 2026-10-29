@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_808_check_K",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_808_check_K",
+ "entry_point": "check_K",
+ "prompt": "/// Write a function to check if the given tuples contain the k or not.\nfn check_K(test_tup: Vec<isize>, K: isize) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = check_K;\n    assert_eq!(candidate(vec![10, 4, 5, 6, 8], 6), true);\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5, 6], 7), false);\n    assert_eq!(candidate(vec![7, 8, 9, 44, 11, 12], 11), true);\n}\n",
+ "raw": {
+  "name": "mbpp_808_check_K",
+  "language": "rs",
+  "prompt": "/// Write a function to check if the given tuples contain the k or not.\nfn check_K(test_tup: Vec<isize>, K: isize) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_808_check_K.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = check_K;\n    assert_eq!(candidate(vec![10, 4, 5, 6, 8], 6), true);\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5, 6], 7), false);\n    assert_eq!(candidate(vec![7, 8, 9, 44, 11, 12], 11), true);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

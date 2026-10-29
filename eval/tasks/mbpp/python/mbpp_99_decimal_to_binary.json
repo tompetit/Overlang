@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_99_decimal_to_binary",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_99_decimal_to_binary",
+ "entry_point": "decimal_to_binary",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef decimal_to_binary(n: int) -> str:\n    \"\"\"\n\tWrite a function to convert the given decimal number to its binary equivalent, represented as a string with no leading zeros.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(8) == '1000'\n    assert candidate(18) == '10010'\n    assert candidate(7) == '111'\n\ndef test_check():\n    check(decimal_to_binary)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_99_decimal_to_binary.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef decimal_to_binary(n: int) -> str:\n    \"\"\"\n\tWrite a function to convert the given decimal number to its binary equivalent, represented as a string with no leading zeros.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(8) == '1000'\n    assert candidate(18) == '10010'\n    assert candidate(7) == '111'\n\ndef test_check():\n    check(decimal_to_binary)\n\n"
+ }
+}

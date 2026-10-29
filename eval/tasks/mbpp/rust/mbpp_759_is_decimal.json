@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_759_is_decimal",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_759_is_decimal",
+ "entry_point": "is_decimal",
+ "prompt": "/// Write a function to check whether a given string is a decimal number with a precision of 2.\nfn is_decimal(num: String) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = is_decimal;\n    assert_eq!(candidate(String::from(\"123.11\")), true);\n    assert_eq!(candidate(String::from(\"e666.86\")), false);\n    assert_eq!(candidate(String::from(\"3.124587\")), false);\n    assert_eq!(candidate(String::from(\"1.11\")), true);\n    assert_eq!(candidate(String::from(\"1.1.11\")), false);\n}\n",
+ "raw": {
+  "name": "mbpp_759_is_decimal",
+  "language": "rs",
+  "prompt": "/// Write a function to check whether a given string is a decimal number with a precision of 2.\nfn is_decimal(num: String) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_759_is_decimal.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = is_decimal;\n    assert_eq!(candidate(String::from(\"123.11\")), true);\n    assert_eq!(candidate(String::from(\"e666.86\")), false);\n    assert_eq!(candidate(String::from(\"3.124587\")), false);\n    assert_eq!(candidate(String::from(\"1.11\")), true);\n    assert_eq!(candidate(String::from(\"1.1.11\")), false);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

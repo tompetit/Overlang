@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_404_minimum",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_404_minimum",
+ "entry_point": "minimum",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef minimum(a: int, b: int) -> int:\n    \"\"\"\n\tWrite a python function to find the minimum of two numbers.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(1, 2) == 1\n    assert candidate(-5, -4) == -5\n    assert candidate(0, 0) == 0\n\ndef test_check():\n    check(minimum)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_404_minimum.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef minimum(a: int, b: int) -> int:\n    \"\"\"\n\tWrite a python function to find the minimum of two numbers.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(1, 2) == 1\n    assert candidate(-5, -4) == -5\n    assert candidate(0, 0) == 0\n\ndef test_check():\n    check(minimum)\n\n"
+ }
+}

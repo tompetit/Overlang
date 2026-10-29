@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_242_count_charac",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_242_count_charac",
+ "entry_point": "count_charac",
+ "prompt": "/// Write a function to count the total number of characters in a string.\nfn count_charac(str1: String) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = count_charac;\n    assert_eq!(candidate(String::from(\"python programming\")), 18);\n    assert_eq!(candidate(String::from(\"language\")), 8);\n    assert_eq!(candidate(String::from(\"words\")), 5);\n}\n",
+ "raw": {
+  "name": "mbpp_242_count_charac",
+  "language": "rs",
+  "prompt": "/// Write a function to count the total number of characters in a string.\nfn count_charac(str1: String) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_242_count_charac.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = count_charac;\n    assert_eq!(candidate(String::from(\"python programming\")), 18);\n    assert_eq!(candidate(String::from(\"language\")), 8);\n    assert_eq!(candidate(String::from(\"words\")), 5);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_577_last_Digit_Factorial",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_577_last_Digit_Factorial",
+ "entry_point": "last_Digit_Factorial",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef last_Digit_Factorial(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the last digit in factorial of a given number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(4) == 4\n    assert candidate(21) == 0\n    assert candidate(30) == 0\n\ndef test_check():\n    check(last_Digit_Factorial)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_577_last_Digit_Factorial.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef last_Digit_Factorial(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the last digit in factorial of a given number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(4) == 4\n    assert candidate(21) == 0\n    assert candidate(30) == 0\n\ndef test_check():\n    check(last_Digit_Factorial)\n\n"
+ }
+}

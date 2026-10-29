@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_285_text_match_two_three",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_285_text_match_two_three",
+ "entry_point": "text_match_two_three",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef text_match_two_three(text: str) -> bool:\n    \"\"\"\n\tWrite a function that checks whether a string contains the 'a' character followed by two or three 'b' characters.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('ac') == False\n    assert candidate('dc') == False\n    assert candidate('abbbba') == True\n\ndef test_check():\n    check(text_match_two_three)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_285_text_match_two_three.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef text_match_two_three(text: str) -> bool:\n    \"\"\"\n\tWrite a function that checks whether a string contains the 'a' character followed by two or three 'b' characters.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('ac') == False\n    assert candidate('dc') == False\n    assert candidate('abbbba') == True\n\ndef test_check():\n    check(text_match_two_three)\n\n"
+ }
+}

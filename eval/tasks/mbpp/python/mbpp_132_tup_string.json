@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_132_tup_string",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_132_tup_string",
+ "entry_point": "tup_string",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef tup_string(tup1: List[str]) -> str:\n    \"\"\"\n\tWrite a function to convert a list to a string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(['e', 'x', 'e', 'r', 'c', 'i', 's', 'e', 's']) == 'exercises'\n    assert candidate(['p', 'y', 't', 'h', 'o', 'n']) == 'python'\n    assert candidate(['p', 'r', 'o', 'g', 'r', 'a', 'm']) == 'program'\n\ndef test_check():\n    check(tup_string)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_132_tup_string.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef tup_string(tup1: List[str]) -> str:\n    \"\"\"\n\tWrite a function to convert a list to a string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(['e', 'x', 'e', 'r', 'c', 'i', 's', 'e', 's']) == 'exercises'\n    assert candidate(['p', 'y', 't', 'h', 'o', 'n']) == 'python'\n    assert candidate(['p', 'r', 'o', 'g', 'r', 'a', 'm']) == 'program'\n\ndef test_check():\n    check(tup_string)\n\n"
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_19_test_duplicate",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_19_test_duplicate",
+ "entry_point": "test_duplicate",
+ "prompt": "/// Write a function to find whether a given vector of integers contains any duplicate element.\nfn test_duplicate(arraynums: Vec<isize>) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = test_duplicate;\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5]), false);\n    assert_eq!(candidate(vec![1, 2, 3, 4, 4]), true);\n    assert_eq!(candidate(vec![1, 1, 2, 2, 3, 3, 4, 4, 5]), true);\n}\n",
+ "raw": {
+  "name": "mbpp_19_test_duplicate",
+  "language": "rs",
+  "prompt": "/// Write a function to find whether a given vector of integers contains any duplicate element.\nfn test_duplicate(arraynums: Vec<isize>) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_19_test_duplicate.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = test_duplicate;\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5]), false);\n    assert_eq!(candidate(vec![1, 2, 3, 4, 4]), true);\n    assert_eq!(candidate(vec![1, 1, 2, 2, 3, 3, 4, 4, 5]), true);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

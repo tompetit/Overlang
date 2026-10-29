@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_604_reverse_words",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_604_reverse_words",
+ "entry_point": "reverse_words",
+ "prompt": "/// Write a function to reverse words seperated by spaces in a given string.\nfn reverse_words(s: String) -> String {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = reverse_words;\n    assert_eq!(candidate(String::from(\"python program\")), String::from(\"program python\"));\n    assert_eq!(candidate(String::from(\"java language\")), String::from(\"language java\"));\n    assert_eq!(candidate(String::from(\"indian man\")), String::from(\"man indian\"));\n}\n",
+ "raw": {
+  "name": "mbpp_604_reverse_words",
+  "language": "rs",
+  "prompt": "/// Write a function to reverse words seperated by spaces in a given string.\nfn reverse_words(s: String) -> String {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_604_reverse_words.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = reverse_words;\n    assert_eq!(candidate(String::from(\"python program\")), String::from(\"program python\"));\n    assert_eq!(candidate(String::from(\"java language\")), String::from(\"language java\"));\n    assert_eq!(candidate(String::from(\"indian man\")), String::from(\"man indian\"));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

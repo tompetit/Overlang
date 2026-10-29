@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_573_unique_product",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_573_unique_product",
+ "entry_point": "unique_product",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef unique_product(list_data: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to calculate the product of the unique numbers in a given list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([10, 20, 30, 40, 20, 50, 60, 40]) == 720000000\n    assert candidate([1, 2, 3, 1]) == 6\n    assert candidate([7, 8, 9, 0, 1, 1]) == 0\n\ndef test_check():\n    check(unique_product)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_573_unique_product.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef unique_product(list_data: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to calculate the product of the unique numbers in a given list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([10, 20, 30, 40, 20, 50, 60, 40]) == 720000000\n    assert candidate([1, 2, 3, 1]) == 6\n    assert candidate([7, 8, 9, 0, 1, 1]) == 0\n\ndef test_check():\n    check(unique_product)\n\n"
+ }
+}

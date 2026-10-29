@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_116_tuple_to_int",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_116_tuple_to_int",
+ "entry_point": "tuple_to_int",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef tuple_to_int(nums: Tuple[int, int, int]) -> int:\n    \"\"\"\n\tWrite a function to convert a given tuple of positive integers into a single integer.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate((1, 2, 3)) == 123\n    assert candidate((4, 5, 6)) == 456\n    assert candidate((5, 6, 7)) == 567\n\ndef test_check():\n    check(tuple_to_int)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_116_tuple_to_int.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef tuple_to_int(nums: Tuple[int, int, int]) -> int:\n    \"\"\"\n\tWrite a function to convert a given tuple of positive integers into a single integer.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate((1, 2, 3)) == 123\n    assert candidate((4, 5, 6)) == 456\n    assert candidate((5, 6, 7)) == 567\n\ndef test_check():\n    check(tuple_to_int)\n\n"
+ }
+}

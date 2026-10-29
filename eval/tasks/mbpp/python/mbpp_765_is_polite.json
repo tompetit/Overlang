@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_765_is_polite",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_765_is_polite",
+ "entry_point": "is_polite",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef is_polite(n: int) -> int:\n    \"\"\"\n\tWrite a function to find nth polite number. geeksforgeeks.org/n-th-polite-number/\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(7) == 11\n    assert candidate(4) == 7\n    assert candidate(9) == 13\n\ndef test_check():\n    check(is_polite)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_765_is_polite.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef is_polite(n: int) -> int:\n    \"\"\"\n\tWrite a function to find nth polite number. geeksforgeeks.org/n-th-polite-number/\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(7) == 11\n    assert candidate(4) == 7\n    assert candidate(9) == 13\n\ndef test_check():\n    check(is_polite)\n\n"
+ }
+}

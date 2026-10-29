@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_17_square_perimeter",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_17_square_perimeter",
+ "entry_point": "square_perimeter",
+ "prompt": "/// Write a function that returns the perimeter of a square given its side length as input.\nfn square_perimeter(a: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = square_perimeter;\n    assert_eq!(candidate(10), 40);\n    assert_eq!(candidate(5), 20);\n    assert_eq!(candidate(4), 16);\n}\n",
+ "raw": {
+  "name": "mbpp_17_square_perimeter",
+  "language": "rs",
+  "prompt": "/// Write a function that returns the perimeter of a square given its side length as input.\nfn square_perimeter(a: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_17_square_perimeter.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = square_perimeter;\n    assert_eq!(candidate(10), 40);\n    assert_eq!(candidate(5), 20);\n    assert_eq!(candidate(4), 16);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

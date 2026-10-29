@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_628_replace_spaces",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_628_replace_spaces",
+ "entry_point": "replace_spaces",
+ "prompt": "/// Write a function to replace all spaces in the given string with '%20'.\nfn replace_spaces(string: String) -> String {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = replace_spaces;\n    assert_eq!(candidate(String::from(\"My Name is Dawood\")), String::from(\"My%20Name%20is%20Dawood\"));\n    assert_eq!(candidate(String::from(\"I am a Programmer\")), String::from(\"I%20am%20a%20Programmer\"));\n    assert_eq!(candidate(String::from(\"I love Coding\")), String::from(\"I%20love%20Coding\"));\n}\n",
+ "raw": {
+  "name": "mbpp_628_replace_spaces",
+  "language": "rs",
+  "prompt": "/// Write a function to replace all spaces in the given string with '%20'.\nfn replace_spaces(string: String) -> String {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_628_replace_spaces.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = replace_spaces;\n    assert_eq!(candidate(String::from(\"My Name is Dawood\")), String::from(\"My%20Name%20is%20Dawood\"));\n    assert_eq!(candidate(String::from(\"I am a Programmer\")), String::from(\"I%20am%20a%20Programmer\"));\n    assert_eq!(candidate(String::from(\"I love Coding\")), String::from(\"I%20love%20Coding\"));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

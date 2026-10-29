@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_129_magic_square_test",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_129_magic_square_test",
+ "entry_point": "magic_square_test",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef magic_square_test(my_matrix: List[List[int]]) -> bool:\n    \"\"\"\n\tWrite a function to calculate whether the matrix is a magic square.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([[7, 12, 1, 14], [2, 13, 8, 11], [16, 3, 10, 5], [9, 6, 15, 4]]) == True\n    assert candidate([[2, 7, 6], [9, 5, 1], [4, 3, 8]]) == True\n    assert candidate([[2, 7, 6], [9, 5, 1], [4, 3, 7]]) == False\n\ndef test_check():\n    check(magic_square_test)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_129_magic_square_test.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef magic_square_test(my_matrix: List[List[int]]) -> bool:\n    \"\"\"\n\tWrite a function to calculate whether the matrix is a magic square.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([[7, 12, 1, 14], [2, 13, 8, 11], [16, 3, 10, 5], [9, 6, 15, 4]]) == True\n    assert candidate([[2, 7, 6], [9, 5, 1], [4, 3, 8]]) == True\n    assert candidate([[2, 7, 6], [9, 5, 1], [4, 3, 7]]) == False\n\ndef test_check():\n    check(magic_square_test)\n\n"
+ }
+}

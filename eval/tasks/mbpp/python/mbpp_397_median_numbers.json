@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_397_median_numbers",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_397_median_numbers",
+ "entry_point": "median_numbers",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef median_numbers(a: int, b: int, c: int) -> float:\n    \"\"\"\n\tWrite a function to find the median of three numbers.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(25, 55, 65) == 55.0\n    assert candidate(20, 10, 30) == 20.0\n    assert candidate(15, 45, 75) == 45.0\n\ndef test_check():\n    check(median_numbers)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_397_median_numbers.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef median_numbers(a: int, b: int, c: int) -> float:\n    \"\"\"\n\tWrite a function to find the median of three numbers.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(25, 55, 65) == 55.0\n    assert candidate(20, 10, 30) == 20.0\n    assert candidate(15, 45, 75) == 45.0\n\ndef test_check():\n    check(median_numbers)\n\n"
+ }
+}

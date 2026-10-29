@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_59_is_octagonal",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_59_is_octagonal",
+ "entry_point": "is_octagonal",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef is_octagonal(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the nth octagonal number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(5) == 65\n    assert candidate(10) == 280\n    assert candidate(15) == 645\n\ndef test_check():\n    check(is_octagonal)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_59_is_octagonal.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef is_octagonal(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the nth octagonal number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(5) == 65\n    assert candidate(10) == 280\n    assert candidate(15) == 645\n\ndef test_check():\n    check(is_octagonal)\n\n"
+ }
+}

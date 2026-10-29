@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_427_change_date_format",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_427_change_date_format",
+ "entry_point": "change_date_format",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef change_date_format(dt: str) -> str:\n    \"\"\"\n\tWrite a function to convert a date of yyyy-mm-dd format to dd-mm-yyyy format.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('2026-01-02') == '02-01-2026'\n    assert candidate('2020-11-13') == '13-11-2020'\n    assert candidate('2021-04-26') == '26-04-2021'\n\ndef test_check():\n    check(change_date_format)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_427_change_date_format.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef change_date_format(dt: str) -> str:\n    \"\"\"\n\tWrite a function to convert a date of yyyy-mm-dd format to dd-mm-yyyy format.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('2026-01-02') == '02-01-2026'\n    assert candidate('2020-11-13') == '13-11-2020'\n    assert candidate('2021-04-26') == '26-04-2021'\n\ndef test_check():\n    check(change_date_format)\n\n"
+ }
+}

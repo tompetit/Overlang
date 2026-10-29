@@ -1,0 +1,14 @@
+{
+ "id": "HumanEval_83_starts_one_ends",
+ "benchmark": "humaneval",
+ "lang": "python",
+ "name": "HumanEval_83_starts_one_ends",
+ "entry_point": "starts_one_ends",
+ "prompt": "\ndef starts_one_ends(n: int) -> int:\n    \"\"\"\n    Given a positive integer n, return the count of the numbers of n-digit\n    positive integers that start or end with 1.\n    \"\"\"\n",
+ "tests": "def check(candidate):\n\n    # Check some simple cases\n    \n    assert candidate(1) == 1\n    assert candidate(2) == 18\n    assert candidate(3) == 180\n    assert candidate(4) == 1800\n    assert candidate(5) == 18000\n\n    # Check some edge cases that are easy to work out by hand.\n    \n\ndef test_check():\n    check(starts_one_ends)\n",
+ "solution": "\ndef starts_one_ends(n: int) -> int:\n    \"\"\"\n    Given a positive integer n, return the count of the numbers of n-digit\n    positive integers that start or end with 1.\n    \"\"\"\n\n    if n == 1: return 1\n    return 18 * (10 ** (n - 2))\n\n",
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/originals-with-cleaned-doctests/HumanEval_83_starts_one_ends.py",
+  "text": "\ndef starts_one_ends(n: int) -> int:\n    \"\"\"\n    Given a positive integer n, return the count of the numbers of n-digit\n    positive integers that start or end with 1.\n    \"\"\"\n    ### Canonical solution below ###\n    if n == 1: return 1\n    return 18 * (10 ** (n - 2))\n\n### Unit tests below ###\ndef check(candidate):\n\n    # Check some simple cases\n    \n    assert candidate(1) == 1\n    assert candidate(2) == 18\n    assert candidate(3) == 180\n    assert candidate(4) == 1800\n    assert candidate(5) == 18000\n\n    # Check some edge cases that are easy to work out by hand.\n    \n\ndef test_check():\n    check(starts_one_ends)\n"
+ }
+}

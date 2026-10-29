@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_119_search",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_119_search",
+ "entry_point": "search",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef search(arr: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find the element that appears only once in a sorted array.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 1, 2, 2, 3]) == 3\n    assert candidate([1, 1, 3, 3, 4, 4, 5, 5, 7, 7, 8]) == 8\n    assert candidate([1, 2, 2, 3, 3, 4, 4]) == 1\n\ndef test_check():\n    check(search)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_119_search.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef search(arr: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find the element that appears only once in a sorted array.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 1, 2, 2, 3]) == 3\n    assert candidate([1, 1, 3, 3, 4, 4, 5, 5, 7, 7, 8]) == 8\n    assert candidate([1, 2, 2, 3, 3, 4, 4]) == 1\n\ndef test_check():\n    check(search)\n\n"
+ }
+}

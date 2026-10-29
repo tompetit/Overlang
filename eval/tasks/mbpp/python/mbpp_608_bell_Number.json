@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_608_bell_Number",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_608_bell_Number",
+ "entry_point": "bell_Number",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef bell_Number(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find nth bell number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(2) == 2\n    assert candidate(3) == 5\n    assert candidate(4) == 15\n\ndef test_check():\n    check(bell_Number)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_608_bell_Number.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef bell_Number(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find nth bell number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(2) == 2\n    assert candidate(3) == 5\n    assert candidate(4) == 15\n\ndef test_check():\n    check(bell_Number)\n\n"
+ }
+}

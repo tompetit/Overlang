@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_271_even_Power_Sum",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_271_even_Power_Sum",
+ "entry_point": "even_Power_Sum",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef even_Power_Sum(n: int) -> int:\n    \"\"\"\n\tWrite a python function that takes in an integer n and finds the sum of the first n even natural numbers that are raised to the fifth power.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(2) == 1056\n    assert candidate(3) == 8832\n    assert candidate(1) == 32\n\ndef test_check():\n    check(even_Power_Sum)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_271_even_Power_Sum.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef even_Power_Sum(n: int) -> int:\n    \"\"\"\n\tWrite a python function that takes in an integer n and finds the sum of the first n even natural numbers that are raised to the fifth power.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(2) == 1056\n    assert candidate(3) == 8832\n    assert candidate(1) == 32\n\ndef test_check():\n    check(even_Power_Sum)\n\n"
+ }
+}

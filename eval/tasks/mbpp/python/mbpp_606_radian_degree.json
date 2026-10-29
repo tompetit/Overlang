@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_606_radian_degree",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_606_radian_degree",
+ "entry_point": "radian_degree",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef radian_degree(degree: int) -> float:\n    \"\"\"\n\tWrite a function to convert degrees to radians.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(90) == 1.5707963267948966\n    assert candidate(60) == 1.0471975511965976\n    assert candidate(120) == 2.0943951023931953\n\ndef test_check():\n    check(radian_degree)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_606_radian_degree.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef radian_degree(degree: int) -> float:\n    \"\"\"\n\tWrite a function to convert degrees to radians.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(90) == 1.5707963267948966\n    assert candidate(60) == 1.0471975511965976\n    assert candidate(120) == 2.0943951023931953\n\ndef test_check():\n    check(radian_degree)\n\n"
+ }
+}

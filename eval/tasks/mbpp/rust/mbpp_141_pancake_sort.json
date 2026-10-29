@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_141_pancake_sort",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_141_pancake_sort",
+ "entry_point": "pancake_sort",
+ "prompt": "/// Write a function to sort a vector of elements.\nfn pancake_sort(nums: Vec<isize>) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = pancake_sort;\n    assert_eq!(candidate(vec![15, 79, 25, 38, 69]), vec![15, 25, 38, 69, 79]);\n    assert_eq!(candidate(vec![98, 12, 54, 36, 85]), vec![12, 36, 54, 85, 98]);\n    assert_eq!(candidate(vec![41, 42, 32, 12, 23]), vec![12, 23, 32, 41, 42]);\n}\n",
+ "raw": {
+  "name": "mbpp_141_pancake_sort",
+  "language": "rs",
+  "prompt": "/// Write a function to sort a vector of elements.\nfn pancake_sort(nums: Vec<isize>) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_141_pancake_sort.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = pancake_sort;\n    assert_eq!(candidate(vec![15, 79, 25, 38, 69]), vec![15, 25, 38, 69, 79]);\n    assert_eq!(candidate(vec![98, 12, 54, 36, 85]), vec![12, 36, 54, 85, 98]);\n    assert_eq!(candidate(vec![41, 42, 32, 12, 23]), vec![12, 23, 32, 41, 42]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

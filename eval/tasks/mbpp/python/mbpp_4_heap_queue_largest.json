@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_4_heap_queue_largest",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_4_heap_queue_largest",
+ "entry_point": "heap_queue_largest",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef heap_queue_largest(nums: List[int], n: int) -> List[int]:\n    \"\"\"\n\tWrite a function to find the n largest integers from a given list of numbers, returned in descending order.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]\n    assert candidate([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75]\n    assert candidate([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35]\n\ndef test_check():\n    check(heap_queue_largest)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_4_heap_queue_largest.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef heap_queue_largest(nums: List[int], n: int) -> List[int]:\n    \"\"\"\n\tWrite a function to find the n largest integers from a given list of numbers, returned in descending order.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]\n    assert candidate([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75]\n    assert candidate([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35]\n\ndef test_check():\n    check(heap_queue_largest)\n\n"
+ }
+}

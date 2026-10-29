@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_56_checks",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_56_checks",
+ "entry_point": "checks",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef checks(n: int) -> bool:\n    \"\"\"\n\tWrite a python function to check if a given number is one less than twice its reverse.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(70) == False\n    assert candidate(23) == False\n    assert candidate(73) == True\n\ndef test_check():\n    check(checks)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_56_checks.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef checks(n: int) -> bool:\n    \"\"\"\n\tWrite a python function to check if a given number is one less than twice its reverse.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(70) == False\n    assert candidate(23) == False\n    assert candidate(73) == True\n\ndef test_check():\n    check(checks)\n\n"
+ }
+}

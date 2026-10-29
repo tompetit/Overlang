@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_64_subject_marks",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_64_subject_marks",
+ "entry_point": "subject_marks",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef subject_marks(subjectmarks: List[Tuple[str, int]]) -> List[Tuple[str, int]]:\n    \"\"\"\n\tWrite a function to sort a list of tuples using the second value of each tuple.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([('English', 88), ('Science', 90), ('Maths', 97), ('Social sciences', 82)]) == [('Social sciences', 82), ('English', 88), ('Science', 90), ('Maths', 97)]\n    assert candidate([('Telugu', 49), ('Hindhi', 54), ('Social', 33)]) == [('Social', 33), ('Telugu', 49), ('Hindhi', 54)]\n    assert candidate([('Physics', 96), ('Chemistry', 97), ('Biology', 45)]) == [('Biology', 45), ('Physics', 96), ('Chemistry', 97)]\n\ndef test_check():\n    check(subject_marks)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_64_subject_marks.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef subject_marks(subjectmarks: List[Tuple[str, int]]) -> List[Tuple[str, int]]:\n    \"\"\"\n\tWrite a function to sort a list of tuples using the second value of each tuple.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([('English', 88), ('Science', 90), ('Maths', 97), ('Social sciences', 82)]) == [('Social sciences', 82), ('English', 88), ('Science', 90), ('Maths', 97)]\n    assert candidate([('Telugu', 49), ('Hindhi', 54), ('Social', 33)]) == [('Social', 33), ('Telugu', 49), ('Hindhi', 54)]\n    assert candidate([('Physics', 96), ('Chemistry', 97), ('Biology', 45)]) == [('Biology', 45), ('Physics', 96), ('Chemistry', 97)]\n\ndef test_check():\n    check(subject_marks)\n\n"
+ }
+}

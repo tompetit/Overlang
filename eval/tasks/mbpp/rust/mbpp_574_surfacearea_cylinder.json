@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_574_surfacearea_cylinder",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_574_surfacearea_cylinder",
+ "entry_point": "surfacearea_cylinder",
+ "prompt": "/// Write a function to find the surface area of a cylinder.\nfn surfacearea_cylinder(r: isize, h: isize) -> f64 {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = surfacearea_cylinder;\n    assert_eq!(candidate(10, 5), 942.45);\n    assert_eq!(candidate(4, 5), 226.18800000000002);\n    assert_eq!(candidate(4, 10), 351.848);\n}\n",
+ "raw": {
+  "name": "mbpp_574_surfacearea_cylinder",
+  "language": "rs",
+  "prompt": "/// Write a function to find the surface area of a cylinder.\nfn surfacearea_cylinder(r: isize, h: isize) -> f64 {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_574_surfacearea_cylinder.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = surfacearea_cylinder;\n    assert_eq!(candidate(10, 5), 942.45);\n    assert_eq!(candidate(4, 5), 226.18800000000002);\n    assert_eq!(candidate(4, 10), 351.848);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_3_is_not_prime",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_3_is_not_prime",
+ "entry_point": "is_not_prime",
+ "prompt": "/// Write a rsthon function to identify non-prime numbers.\nfn is_not_prime(n: isize) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = is_not_prime;\n    assert_eq!(candidate(2), false);\n    assert_eq!(candidate(10), true);\n    assert_eq!(candidate(35), true);\n    assert_eq!(candidate(37), false);\n}\n",
+ "raw": {
+  "name": "mbpp_3_is_not_prime",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to identify non-prime numbers.\nfn is_not_prime(n: isize) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_3_is_not_prime.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = is_not_prime;\n    assert_eq!(candidate(2), false);\n    assert_eq!(candidate(10), true);\n    assert_eq!(candidate(35), true);\n    assert_eq!(candidate(37), false);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

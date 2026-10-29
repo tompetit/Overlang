@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_389_find_lucas",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_389_find_lucas",
+ "entry_point": "find_lucas",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef find_lucas(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the n'th lucas number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(9) == 76\n    assert candidate(4) == 7\n    assert candidate(3) == 4\n\ndef test_check():\n    check(find_lucas)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_389_find_lucas.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef find_lucas(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the n'th lucas number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(9) == 76\n    assert candidate(4) == 7\n    assert candidate(3) == 4\n\ndef test_check():\n    check(find_lucas)\n\n"
+ }
+}

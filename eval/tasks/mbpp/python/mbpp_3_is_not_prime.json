@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_3_is_not_prime",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_3_is_not_prime",
+ "entry_point": "is_not_prime",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef is_not_prime(n: int) -> bool:\n    \"\"\"\n\tWrite a python function to identify non-prime numbers.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(2) == False\n    assert candidate(10) == True\n    assert candidate(35) == True\n    assert candidate(37) == False\n\ndef test_check():\n    check(is_not_prime)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_3_is_not_prime.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef is_not_prime(n: int) -> bool:\n    \"\"\"\n\tWrite a python function to identify non-prime numbers.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(2) == False\n    assert candidate(10) == True\n    assert candidate(35) == True\n    assert candidate(37) == False\n\ndef test_check():\n    check(is_not_prime)\n\n"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_478_remove_lowercase",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_478_remove_lowercase",
+ "entry_point": "remove_lowercase",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef remove_lowercase(str1: str) -> str:\n    \"\"\"\n\tWrite a function to remove lowercase substrings from a given string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('PYTHon') == 'PYTH'\n    assert candidate('FInD') == 'FID'\n    assert candidate('STRinG') == 'STRG'\n\ndef test_check():\n    check(remove_lowercase)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_478_remove_lowercase.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef remove_lowercase(str1: str) -> str:\n    \"\"\"\n\tWrite a function to remove lowercase substrings from a given string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('PYTHon') == 'PYTH'\n    assert candidate('FInD') == 'FID'\n    assert candidate('STRinG') == 'STRG'\n\ndef test_check():\n    check(remove_lowercase)\n\n"
+ }
+}

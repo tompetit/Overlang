@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_400_extract_freq",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_400_extract_freq",
+ "entry_point": "extract_freq",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef extract_freq(test_list: List[Tuple[int, int]]) -> int:\n    \"\"\"\n\tWrite a function to extract the number of unique tuples in the given list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([(3, 4), (1, 2), (4, 3), (5, 6)]) == 3\n    assert candidate([(4, 15), (2, 3), (5, 4), (6, 7)]) == 4\n    assert candidate([(5, 16), (2, 3), (6, 5), (6, 9)]) == 4\n\ndef test_check():\n    check(extract_freq)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_400_extract_freq.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef extract_freq(test_list: List[Tuple[int, int]]) -> int:\n    \"\"\"\n\tWrite a function to extract the number of unique tuples in the given list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([(3, 4), (1, 2), (4, 3), (5, 6)]) == 3\n    assert candidate([(4, 15), (2, 3), (5, 4), (6, 7)]) == 4\n    assert candidate([(5, 16), (2, 3), (6, 5), (6, 9)]) == 4\n\ndef test_check():\n    check(extract_freq)\n\n"
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_269_ascii_value",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_269_ascii_value",
+ "entry_point": "ascii_value",
+ "prompt": "/// Write a function to find the ascii value of a character.\nfn ascii_value(k: String) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = ascii_value;\n    assert_eq!(candidate(String::from(\"A\")), 65);\n    assert_eq!(candidate(String::from(\"R\")), 82);\n    assert_eq!(candidate(String::from(\"S\")), 83);\n}\n",
+ "raw": {
+  "name": "mbpp_269_ascii_value",
+  "language": "rs",
+  "prompt": "/// Write a function to find the ascii value of a character.\nfn ascii_value(k: String) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_269_ascii_value.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = ascii_value;\n    assert_eq!(candidate(String::from(\"A\")), 65);\n    assert_eq!(candidate(String::from(\"R\")), 82);\n    assert_eq!(candidate(String::from(\"S\")), 83);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

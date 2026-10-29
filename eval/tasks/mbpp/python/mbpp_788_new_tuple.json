@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_788_new_tuple",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_788_new_tuple",
+ "entry_point": "new_tuple",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef new_tuple(test_list: List[str], test_str: str) -> Tuple[str, str, str]:\n    \"\"\"\n\tWrite a function to create a new tuple from the given string and list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(['WEB', 'is'], 'best') == ('WEB', 'is', 'best')\n    assert candidate(['We', 'are'], 'Developers') == ('We', 'are', 'Developers')\n    assert candidate(['Part', 'is'], 'Wrong') == ('Part', 'is', 'Wrong')\n\ndef test_check():\n    check(new_tuple)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_788_new_tuple.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef new_tuple(test_list: List[str], test_str: str) -> Tuple[str, str, str]:\n    \"\"\"\n\tWrite a function to create a new tuple from the given string and list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(['WEB', 'is'], 'best') == ('WEB', 'is', 'best')\n    assert candidate(['We', 'are'], 'Developers') == ('We', 'are', 'Developers')\n    assert candidate(['Part', 'is'], 'Wrong') == ('Part', 'is', 'Wrong')\n\ndef test_check():\n    check(new_tuple)\n\n"
+ }
+}

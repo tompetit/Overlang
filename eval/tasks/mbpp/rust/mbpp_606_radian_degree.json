@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_606_radian_degree",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_606_radian_degree",
+ "entry_point": "radian_degree",
+ "prompt": "/// Write a function to convert degrees to radians.\nfn radian_degree(degree: isize) -> f64 {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = radian_degree;\n    assert_eq!(candidate(90), 1.5707963267948966);\n    assert_eq!(candidate(60), 1.0471975511965976);\n    assert_eq!(candidate(120), 2.0943951023931953);\n}\n",
+ "raw": {
+  "name": "mbpp_606_radian_degree",
+  "language": "rs",
+  "prompt": "/// Write a function to convert degrees to radians.\nfn radian_degree(degree: isize) -> f64 {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_606_radian_degree.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = radian_degree;\n    assert_eq!(candidate(90), 1.5707963267948966);\n    assert_eq!(candidate(60), 1.0471975511965976);\n    assert_eq!(candidate(120), 2.0943951023931953);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

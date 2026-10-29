@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_731_lateralsurface_cone",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_731_lateralsurface_cone",
+ "entry_point": "lateralsurface_cone",
+ "prompt": "/// Write a function to find the lateral surface area of a cone given radius r and the height h.\nfn lateralsurface_cone(r: isize, h: isize) -> f64 {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = lateralsurface_cone;\n    assert_eq!(candidate(5, 12), 204.20352248333654);\n    assert_eq!(candidate(10, 15), 566.3586699569488);\n    assert_eq!(candidate(19, 17), 1521.8090132193388);\n}\n",
+ "raw": {
+  "name": "mbpp_731_lateralsurface_cone",
+  "language": "rs",
+  "prompt": "/// Write a function to find the lateral surface area of a cone given radius r and the height h.\nfn lateralsurface_cone(r: isize, h: isize) -> f64 {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_731_lateralsurface_cone.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = lateralsurface_cone;\n    assert_eq!(candidate(5, 12), 204.20352248333654);\n    assert_eq!(candidate(10, 15), 566.3586699569488);\n    assert_eq!(candidate(19, 17), 1521.8090132193388);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

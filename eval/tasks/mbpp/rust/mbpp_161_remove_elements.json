@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_161_remove_elements",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_161_remove_elements",
+ "entry_point": "remove_elements",
+ "prompt": "/// Write a function to remove all elements from a given vector present in another vector.\nfn remove_elements(list1: Vec<isize>, list2: Vec<isize>) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = remove_elements;\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10], vec![2, 4, 6, 8]), vec![1, 3, 5, 7, 9, 10]);\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10], vec![1, 3, 5, 7]), vec![2, 4, 6, 8, 9, 10]);\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10], vec![5, 7]), vec![1, 2, 3, 4, 6, 8, 9, 10]);\n}\n",
+ "raw": {
+  "name": "mbpp_161_remove_elements",
+  "language": "rs",
+  "prompt": "/// Write a function to remove all elements from a given vector present in another vector.\nfn remove_elements(list1: Vec<isize>, list2: Vec<isize>) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_161_remove_elements.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = remove_elements;\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10], vec![2, 4, 6, 8]), vec![1, 3, 5, 7, 9, 10]);\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10], vec![1, 3, 5, 7]), vec![2, 4, 6, 8, 9, 10]);\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10], vec![5, 7]), vec![1, 2, 3, 4, 6, 8, 9, 10]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

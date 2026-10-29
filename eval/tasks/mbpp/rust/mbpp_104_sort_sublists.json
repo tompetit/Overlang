@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_104_sort_sublists",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_104_sort_sublists",
+ "entry_point": "sort_sublists",
+ "prompt": "/// Write a function to sort each subvector of strings in a given vector of vectors.\nfn sort_sublists(input_list: Vec<Vec<String>>) -> Vec<Vec<String>> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = sort_sublists;\n    assert_eq!(candidate(vec![vec![String::from(\"green\"), String::from(\"orange\")], vec![String::from(\"black\"), String::from(\"white\")], vec![String::from(\"white\"), String::from(\"black\"), String::from(\"orange\")]]), vec![vec![String::from(\"green\"), String::from(\"orange\")], vec![String::from(\"black\"), String::from(\"white\")], vec![String::from(\"black\"), String::from(\"orange\"), String::from(\"white\")]]);\n    assert_eq!(candidate(vec![vec![String::from(\" red \"), String::from(\"green\")], vec![String::from(\"blue \"), String::from(\" black\")], vec![String::from(\" orange\"), String::from(\"brown\")]]), vec![vec![String::from(\" red \"), String::from(\"green\")], vec![String::from(\" black\"), String::from(\"blue \")], vec![String::from(\" orange\"), String::from(\"brown\")]]);\n    assert_eq!(candidate(vec![vec![String::from(\"zilver\"), String::from(\"gold\")], vec![String::from(\"magnesium\"), String::from(\"aluminium\")], vec![String::from(\"steel\"), String::from(\"bronze\")]]), vec![vec![String::from(\"gold\"), String::from(\"zilver\")], vec![String::from(\"aluminium\"), String::from(\"magnesium\")], vec![String::from(\"bronze\"), String::from(\"steel\")]]);\n}\n",
+ "raw": {
+  "name": "mbpp_104_sort_sublists",
+  "language": "rs",
+  "prompt": "/// Write a function to sort each subvector of strings in a given vector of vectors.\nfn sort_sublists(input_list: Vec<Vec<String>>) -> Vec<Vec<String>> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_104_sort_sublists.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = sort_sublists;\n    assert_eq!(candidate(vec![vec![String::from(\"green\"), String::from(\"orange\")], vec![String::from(\"black\"), String::from(\"white\")], vec![String::from(\"white\"), String::from(\"black\"), String::from(\"orange\")]]), vec![vec![String::from(\"green\"), String::from(\"orange\")], vec![String::from(\"black\"), String::from(\"white\")], vec![String::from(\"black\"), String::from(\"orange\"), String::from(\"white\")]]);\n    assert_eq!(candidate(vec![vec![String::from(\" red \"), String::from(\"green\")], vec![String::from(\"blue \"), String::from(\" black\")], vec![String::from(\" orange\"), String::from(\"brown\")]]), vec![vec![String::from(\" red \"), String::from(\"green\")], vec![String::from(\" black\"), String::from(\"blue \")], vec![String::from(\" orange\"), String::from(\"brown\")]]);\n    assert_eq!(candidate(vec![vec![String::from(\"zilver\"), String::from(\"gold\")], vec![String::from(\"magnesium\"), String::from(\"aluminium\")], vec![String::from(\"steel\"), String::from(\"bronze\")]]), vec![vec![String::from(\"gold\"), String::from(\"zilver\")], vec![String::from(\"aluminium\"), String::from(\"magnesium\")], vec![String::from(\"bronze\"), String::from(\"steel\")]]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

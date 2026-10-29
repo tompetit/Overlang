@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_399_bitwise_xor",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_399_bitwise_xor",
+ "entry_point": "bitwise_xor",
+ "prompt": "/// Write a function to perform the mathematical bitwise xor operation across the given tuples.\nfn bitwise_xor(test_tup1: (isize, isize, isize, isize), test_tup2: (isize, isize, isize, isize)) -> (isize, isize, isize, isize) {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = bitwise_xor;\n    assert_eq!(candidate((10, 4, 6, 9), (5, 2, 3, 3)), (15, 6, 5, 10));\n    assert_eq!(candidate((11, 5, 7, 10), (6, 3, 4, 4)), (13, 6, 3, 14));\n    assert_eq!(candidate((12, 6, 8, 11), (7, 4, 5, 6)), (11, 2, 13, 13));\n}\n",
+ "raw": {
+  "name": "mbpp_399_bitwise_xor",
+  "language": "rs",
+  "prompt": "/// Write a function to perform the mathematical bitwise xor operation across the given tuples.\nfn bitwise_xor(test_tup1: (isize, isize, isize, isize), test_tup2: (isize, isize, isize, isize)) -> (isize, isize, isize, isize) {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_399_bitwise_xor.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = bitwise_xor;\n    assert_eq!(candidate((10, 4, 6, 9), (5, 2, 3, 3)), (15, 6, 5, 10));\n    assert_eq!(candidate((11, 5, 7, 10), (6, 3, 4, 4)), (13, 6, 3, 14));\n    assert_eq!(candidate((12, 6, 8, 11), (7, 4, 5, 6)), (11, 2, 13, 13));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

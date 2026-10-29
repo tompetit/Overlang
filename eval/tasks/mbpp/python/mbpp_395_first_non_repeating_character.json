@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_395_first_non_repeating_character",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_395_first_non_repeating_character",
+ "entry_point": "first_non_repeating_character",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef first_non_repeating_character(str1: str) -> Optional[str]:\n    \"\"\"\n\tWrite a python function to find the first non-repeated character in a given string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('abcabc') == None\n    assert candidate('abc') == 'a'\n    assert candidate('ababc') == 'c'\n\ndef test_check():\n    check(first_non_repeating_character)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_395_first_non_repeating_character.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef first_non_repeating_character(str1: str) -> Optional[str]:\n    \"\"\"\n\tWrite a python function to find the first non-repeated character in a given string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('abcabc') == None\n    assert candidate('abc') == 'a'\n    assert candidate('ababc') == 'c'\n\ndef test_check():\n    check(first_non_repeating_character)\n\n"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "HumanEval_53_add",
+ "benchmark": "humaneval",
+ "lang": "python",
+ "name": "HumanEval_53_add",
+ "entry_point": "add",
+ "prompt": "\n\ndef add(x: int, y: int) -> int:\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\n",
+ "tests": "METADATA = {}\n\n\ndef check(candidate):\n    assert candidate(0, 1) == 1\n    assert candidate(1, 0) == 1\n    assert candidate(2, 3) == 5\n    assert candidate(5, 7) == 12\n    assert candidate(7, 5) == 12\n\n\ndef test_check():\n    check(add)\n",
+ "solution": "\n\ndef add(x: int, y: int) -> int:\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\n\n    return x + y\n\n",
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/originals-with-cleaned-doctests/HumanEval_53_add.py",
+  "text": "\n\ndef add(x: int, y: int) -> int:\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\n    ### Canonical solution below ###\n    return x + y\n\n### Unit tests below ###\n\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate(0, 1) == 1\n    assert candidate(1, 0) == 1\n    assert candidate(2, 3) == 5\n    assert candidate(5, 7) == 12\n    assert candidate(7, 5) == 12\n\n\ndef test_check():\n    check(add)\n"
+ }
+}

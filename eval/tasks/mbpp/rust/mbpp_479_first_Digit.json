@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_479_first_Digit",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_479_first_Digit",
+ "entry_point": "first_Digit",
+ "prompt": "/// Write a rsthon function to find the first digit of a given number.\nfn first_Digit(n: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = first_Digit;\n    assert_eq!(candidate(123), 1);\n    assert_eq!(candidate(456), 4);\n    assert_eq!(candidate(12), 1);\n}\n",
+ "raw": {
+  "name": "mbpp_479_first_Digit",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to find the first digit of a given number.\nfn first_Digit(n: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_479_first_Digit.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = first_Digit;\n    assert_eq!(candidate(123), 1);\n    assert_eq!(candidate(456), 4);\n    assert_eq!(candidate(12), 1);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

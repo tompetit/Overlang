@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_740_tuple_to_dict",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_740_tuple_to_dict",
+ "entry_point": "tuple_to_dict",
+ "prompt": "use std::collections::HashMap;\n\n/// Write a function to convert the given tuple to a key-value HashMap using adjacent elements. https://www.geeksforgeeks.org/rsthon-convert-tuple-to-adjacent-pair-HashMap/\nfn tuple_to_dict(test_tup: (isize, isize, isize, isize, isize, isize)) -> HashMap<isize, isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = tuple_to_dict;\n    assert_eq!(candidate((1, 5, 7, 10, 13, 5)), HashMap::from([(1, 5), (7, 10), (13, 5)]));\n    assert_eq!(candidate((1, 2, 3, 4, 5, 6)), HashMap::from([(1, 2), (3, 4), (5, 6)]));\n    assert_eq!(candidate((7, 8, 9, 10, 11, 12)), HashMap::from([(7, 8), (9, 10), (11, 12)]));\n}\n",
+ "raw": {
+  "name": "mbpp_740_tuple_to_dict",
+  "language": "rs",
+  "prompt": "use std::collections::HashMap;\n\n/// Write a function to convert the given tuple to a key-value HashMap using adjacent elements. https://www.geeksforgeeks.org/rsthon-convert-tuple-to-adjacent-pair-HashMap/\nfn tuple_to_dict(test_tup: (isize, isize, isize, isize, isize, isize)) -> HashMap<isize, isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_740_tuple_to_dict.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = tuple_to_dict;\n    assert_eq!(candidate((1, 5, 7, 10, 13, 5)), HashMap::from([(1, 5), (7, 10), (13, 5)]));\n    assert_eq!(candidate((1, 2, 3, 4, 5, 6)), HashMap::from([(1, 2), (3, 4), (5, 6)]));\n    assert_eq!(candidate((7, 8, 9, 10, 11, 12)), HashMap::from([(7, 8), (9, 10), (11, 12)]));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

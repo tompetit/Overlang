@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_412_remove_odd",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_412_remove_odd",
+ "entry_point": "remove_odd",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef remove_odd(l: List[int]) -> List[int]:\n    \"\"\"\n\tWrite a python function to remove odd numbers from a given list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3]) == [2]\n    assert candidate([2, 4, 6]) == [2, 4, 6]\n    assert candidate([10, 20, 3]) == [10, 20]\n\ndef test_check():\n    check(remove_odd)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_412_remove_odd.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef remove_odd(l: List[int]) -> List[int]:\n    \"\"\"\n\tWrite a python function to remove odd numbers from a given list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3]) == [2]\n    assert candidate([2, 4, 6]) == [2, 4, 6]\n    assert candidate([10, 20, 3]) == [10, 20]\n\ndef test_check():\n    check(remove_odd)\n\n"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_470_add_pairwise",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_470_add_pairwise",
+ "entry_point": "add_pairwise",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef add_pairwise(test_tup: Tuple[int, int, int, int, int]) -> Tuple[int, int, int, int]:\n    \"\"\"\n\tWrite a function to find the pairwise addition of the neighboring elements of the given tuple.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate((1, 5, 7, 8, 10)) == (6, 12, 15, 18)\n    assert candidate((2, 6, 8, 9, 11)) == (8, 14, 17, 20)\n    assert candidate((3, 7, 9, 10, 12)) == (10, 16, 19, 22)\n\ndef test_check():\n    check(add_pairwise)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_470_add_pairwise.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef add_pairwise(test_tup: Tuple[int, int, int, int, int]) -> Tuple[int, int, int, int]:\n    \"\"\"\n\tWrite a function to find the pairwise addition of the neighboring elements of the given tuple.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate((1, 5, 7, 8, 10)) == (6, 12, 15, 18)\n    assert candidate((2, 6, 8, 9, 11)) == (8, 14, 17, 20)\n    assert candidate((3, 7, 9, 10, 12)) == (10, 16, 19, 22)\n\ndef test_check():\n    check(add_pairwise)\n\n"
+ }
+}

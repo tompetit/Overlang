@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_135_hexagonal_num",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_135_hexagonal_num",
+ "entry_point": "hexagonal_num",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef hexagonal_num(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the nth hexagonal number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(10) == 190\n    assert candidate(5) == 45\n    assert candidate(7) == 91\n\ndef test_check():\n    check(hexagonal_num)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_135_hexagonal_num.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef hexagonal_num(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the nth hexagonal number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(10) == 190\n    assert candidate(5) == 45\n    assert candidate(7) == 91\n\ndef test_check():\n    check(hexagonal_num)\n\n"
+ }
+}

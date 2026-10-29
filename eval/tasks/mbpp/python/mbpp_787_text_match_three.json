@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_787_text_match_three",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_787_text_match_three",
+ "entry_point": "text_match_three",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef text_match_three(text: str) -> bool:\n    \"\"\"\n\tWrite a function that matches a string that has an a followed by three 'b'.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('ac') == False\n    assert candidate('dc') == False\n    assert candidate('abbbba') == True\n    assert candidate('caacabbbba') == True\n\ndef test_check():\n    check(text_match_three)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_787_text_match_three.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef text_match_three(text: str) -> bool:\n    \"\"\"\n\tWrite a function that matches a string that has an a followed by three 'b'.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('ac') == False\n    assert candidate('dc') == False\n    assert candidate('abbbba') == True\n    assert candidate('caacabbbba') == True\n\ndef test_check():\n    check(text_match_three)\n\n"
+ }
+}

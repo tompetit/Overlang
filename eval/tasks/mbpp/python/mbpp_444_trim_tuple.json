@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_444_trim_tuple",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_444_trim_tuple",
+ "entry_point": "trim_tuple",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef trim_tuple(test_list: List[List[int]], K: int) -> List[List[int]]:\n    \"\"\"\n\tWrite a function to trim each list by k in the given lists.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([[5, 3, 2, 1, 4], [3, 4, 9, 2, 1], [9, 1, 2, 3, 5], [4, 8, 2, 1, 7]], 2) == [[2], [9], [2], [2]]\n    assert candidate([[5, 3, 2, 1, 4], [3, 4, 9, 2, 1], [9, 1, 2, 3, 5], [4, 8, 2, 1, 7]], 1) == [[3, 2, 1], [4, 9, 2], [1, 2, 3], [8, 2, 1]]\n    assert candidate([[7, 8, 4, 9], [11, 8, 12, 4], [4, 1, 7, 8], [3, 6, 9, 7]], 1) == [[8, 4], [8, 12], [1, 7], [6, 9]]\n\ndef test_check():\n    check(trim_tuple)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_444_trim_tuple.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef trim_tuple(test_list: List[List[int]], K: int) -> List[List[int]]:\n    \"\"\"\n\tWrite a function to trim each list by k in the given lists.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([[5, 3, 2, 1, 4], [3, 4, 9, 2, 1], [9, 1, 2, 3, 5], [4, 8, 2, 1, 7]], 2) == [[2], [9], [2], [2]]\n    assert candidate([[5, 3, 2, 1, 4], [3, 4, 9, 2, 1], [9, 1, 2, 3, 5], [4, 8, 2, 1, 7]], 1) == [[3, 2, 1], [4, 9, 2], [1, 2, 3], [8, 2, 1]]\n    assert candidate([[7, 8, 4, 9], [11, 8, 12, 4], [4, 1, 7, 8], [3, 6, 9, 7]], 1) == [[8, 4], [8, 12], [1, 7], [6, 9]]\n\ndef test_check():\n    check(trim_tuple)\n\n"
+ }
+}

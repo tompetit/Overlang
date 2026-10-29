@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_633_pair_xor_Sum",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_633_pair_xor_Sum",
+ "entry_point": "pair_xor_Sum",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef pair_xor_Sum(arr: List[int], n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the sum of xor of all pairs of numbers in the given list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([5, 9, 7, 6], 4) == 47\n    assert candidate([7, 3, 5], 3) == 12\n    assert candidate([7, 3], 2) == 4\n\ndef test_check():\n    check(pair_xor_Sum)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_633_pair_xor_Sum.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef pair_xor_Sum(arr: List[int], n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the sum of xor of all pairs of numbers in the given list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([5, 9, 7, 6], 4) == 47\n    assert candidate([7, 3, 5], 3) == 12\n    assert candidate([7, 3], 2) == 4\n\ndef test_check():\n    check(pair_xor_Sum)\n\n"
+ }
+}

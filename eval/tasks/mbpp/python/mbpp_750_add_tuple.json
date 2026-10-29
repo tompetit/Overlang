@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_750_add_tuple",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_750_add_tuple",
+ "entry_point": "add_tuple",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef add_tuple(test_list: List[int], test_tup: Tuple[int, int]) -> List[int]:\n    \"\"\"\n\tWrite a function to add the given tuple to the given list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([5, 6, 7], (9, 10)) == [5, 6, 7, 9, 10]\n    assert candidate([6, 7, 8], (10, 11)) == [6, 7, 8, 10, 11]\n    assert candidate([7, 8, 9], (11, 12)) == [7, 8, 9, 11, 12]\n\ndef test_check():\n    check(add_tuple)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_750_add_tuple.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef add_tuple(test_list: List[int], test_tup: Tuple[int, int]) -> List[int]:\n    \"\"\"\n\tWrite a function to add the given tuple to the given list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([5, 6, 7], (9, 10)) == [5, 6, 7, 9, 10]\n    assert candidate([6, 7, 8], (10, 11)) == [6, 7, 8, 10, 11]\n    assert candidate([7, 8, 9], (11, 12)) == [7, 8, 9, 11, 12]\n\ndef test_check():\n    check(add_tuple)\n\n"
+ }
+}

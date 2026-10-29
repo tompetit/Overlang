@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_133_sum_negativenum",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_133_sum_negativenum",
+ "entry_point": "sum_negativenum",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef sum_negativenum(nums: List[int]) -> int:\n    \"\"\"\n\tWrite a function to calculate the sum of the negative numbers of a given list of numbers.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([2, 4, -6, -9, 11, -12, 14, -5, 17]) == -32\n    assert candidate([10, 15, -14, 13, -18, 12, -20]) == -52\n    assert candidate([19, -65, 57, 39, 152, -639, 121, 44, 90, -190]) == -894\n\ndef test_check():\n    check(sum_negativenum)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_133_sum_negativenum.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef sum_negativenum(nums: List[int]) -> int:\n    \"\"\"\n\tWrite a function to calculate the sum of the negative numbers of a given list of numbers.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([2, 4, -6, -9, 11, -12, 14, -5, 17]) == -32\n    assert candidate([10, 15, -14, 13, -18, 12, -20]) == -52\n    assert candidate([19, -65, 57, 39, 152, -639, 121, 44, 90, -190]) == -894\n\ndef test_check():\n    check(sum_negativenum)\n\n"
+ }
+}

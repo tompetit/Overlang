@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_598_armstrong_number",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_598_armstrong_number",
+ "entry_point": "armstrong_number",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef armstrong_number(number: int) -> bool:\n    \"\"\"\n\tWrite a function to check whether the given number is armstrong or not.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(153) == True\n    assert candidate(259) == False\n    assert candidate(4458) == False\n\ndef test_check():\n    check(armstrong_number)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_598_armstrong_number.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef armstrong_number(number: int) -> bool:\n    \"\"\"\n\tWrite a function to check whether the given number is armstrong or not.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(153) == True\n    assert candidate(259) == False\n    assert candidate(4458) == False\n\ndef test_check():\n    check(armstrong_number)\n\n"
+ }
+}

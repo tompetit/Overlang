@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_639_sample_nam",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_639_sample_nam",
+ "entry_point": "sample_nam",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef sample_nam(sample_names: List[str]) -> int:\n    \"\"\"\n\tWrite a function to sum the length of the names of a given list of names after removing the names that start with a lowercase letter.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(['sally', 'Dylan', 'rebecca', 'Diana', 'Joanne', 'keith']) == 16\n    assert candidate(['php', 'res', 'Python', 'abcd', 'Java', 'aaa']) == 10\n    assert candidate(['abcd', 'Python', 'abba', 'aba']) == 6\n\ndef test_check():\n    check(sample_nam)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_639_sample_nam.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef sample_nam(sample_names: List[str]) -> int:\n    \"\"\"\n\tWrite a function to sum the length of the names of a given list of names after removing the names that start with a lowercase letter.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(['sally', 'Dylan', 'rebecca', 'Diana', 'Joanne', 'keith']) == 16\n    assert candidate(['php', 'res', 'Python', 'abcd', 'Java', 'aaa']) == 10\n    assert candidate(['abcd', 'Python', 'abba', 'aba']) == 6\n\ndef test_check():\n    check(sample_nam)\n\n"
+ }
+}

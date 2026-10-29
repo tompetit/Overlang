@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_129_magic_square_test",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_129_magic_square_test",
+ "entry_point": "magic_square_test",
+ "prompt": "/// Write a function to calculate whether the matrix is a magic square.\nfn magic_square_test(my_matrix: Vec<Vec<isize>>) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = magic_square_test;\n    assert_eq!(candidate(vec![vec![7, 12, 1, 14], vec![2, 13, 8, 11], vec![16, 3, 10, 5], vec![9, 6, 15, 4]]), true);\n    assert_eq!(candidate(vec![vec![2, 7, 6], vec![9, 5, 1], vec![4, 3, 8]]), true);\n    assert_eq!(candidate(vec![vec![2, 7, 6], vec![9, 5, 1], vec![4, 3, 7]]), false);\n}\n",
+ "raw": {
+  "name": "mbpp_129_magic_square_test",
+  "language": "rs",
+  "prompt": "/// Write a function to calculate whether the matrix is a magic square.\nfn magic_square_test(my_matrix: Vec<Vec<isize>>) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_129_magic_square_test.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = magic_square_test;\n    assert_eq!(candidate(vec![vec![7, 12, 1, 14], vec![2, 13, 8, 11], vec![16, 3, 10, 5], vec![9, 6, 15, 4]]), true);\n    assert_eq!(candidate(vec![vec![2, 7, 6], vec![9, 5, 1], vec![4, 3, 8]]), true);\n    assert_eq!(candidate(vec![vec![2, 7, 6], vec![9, 5, 1], vec![4, 3, 7]]), false);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

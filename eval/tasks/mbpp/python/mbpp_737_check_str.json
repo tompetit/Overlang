@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_737_check_str",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_737_check_str",
+ "entry_point": "check_str",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef check_str(string: str) -> bool:\n    \"\"\"\n\tWrite a function to check whether the given string is starting with a vowel or not using regex.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('annie') == True\n    assert candidate('dawood') == False\n    assert candidate('Else') == True\n\ndef test_check():\n    check(check_str)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_737_check_str.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef check_str(string: str) -> bool:\n    \"\"\"\n\tWrite a function to check whether the given string is starting with a vowel or not using regex.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('annie') == True\n    assert candidate('dawood') == False\n    assert candidate('Else') == True\n\ndef test_check():\n    check(check_str)\n\n"
+ }
+}

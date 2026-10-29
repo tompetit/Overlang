@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_251_insert_element",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_251_insert_element",
+ "entry_point": "insert_element",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef insert_element(list: List[str], element: str) -> List[str]:\n    \"\"\"\n\tWrite a function that takes in a list and an element and inserts the element before each element in the list, and returns the resulting list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(['Red', 'Green', 'Black'], 'c') == ['c', 'Red', 'c', 'Green', 'c', 'Black']\n    assert candidate(['python', 'java'], 'program') == ['program', 'python', 'program', 'java']\n    assert candidate(['happy', 'sad'], 'laugh') == ['laugh', 'happy', 'laugh', 'sad']\n\ndef test_check():\n    check(insert_element)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_251_insert_element.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef insert_element(list: List[str], element: str) -> List[str]:\n    \"\"\"\n\tWrite a function that takes in a list and an element and inserts the element before each element in the list, and returns the resulting list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(['Red', 'Green', 'Black'], 'c') == ['c', 'Red', 'c', 'Green', 'c', 'Black']\n    assert candidate(['python', 'java'], 'program') == ['program', 'python', 'program', 'java']\n    assert candidate(['happy', 'sad'], 'laugh') == ['laugh', 'happy', 'laugh', 'sad']\n\ndef test_check():\n    check(insert_element)\n\n"
+ }
+}

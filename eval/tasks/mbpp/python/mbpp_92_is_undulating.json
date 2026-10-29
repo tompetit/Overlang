@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_92_is_undulating",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_92_is_undulating",
+ "entry_point": "is_undulating",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef is_undulating(n: int) -> bool:\n    \"\"\"\n\tWrite a function to check whether the given number is undulating or not.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(1212121) == True\n    assert candidate(1991) == False\n    assert candidate(121) == True\n\ndef test_check():\n    check(is_undulating)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_92_is_undulating.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef is_undulating(n: int) -> bool:\n    \"\"\"\n\tWrite a function to check whether the given number is undulating or not.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(1212121) == True\n    assert candidate(1991) == False\n    assert candidate(121) == True\n\ndef test_check():\n    check(is_undulating)\n\n"
+ }
+}

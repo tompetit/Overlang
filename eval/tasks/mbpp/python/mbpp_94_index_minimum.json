@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_94_index_minimum",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_94_index_minimum",
+ "entry_point": "index_minimum",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef index_minimum(test_list: List[Tuple[str, int]]) -> str:\n    \"\"\"\n\tGiven a list of tuples, write a function that returns the first value of the tuple with the smallest second value.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([('Rash', 143), ('Manjeet', 200), ('Varsha', 100)]) == 'Varsha'\n    assert candidate([('Yash', 185), ('Dawood', 125), ('Sanya', 175)]) == 'Dawood'\n    assert candidate([('Sai', 345), ('Salman', 145), ('Ayesha', 96)]) == 'Ayesha'\n\ndef test_check():\n    check(index_minimum)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_94_index_minimum.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef index_minimum(test_list: List[Tuple[str, int]]) -> str:\n    \"\"\"\n\tGiven a list of tuples, write a function that returns the first value of the tuple with the smallest second value.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([('Rash', 143), ('Manjeet', 200), ('Varsha', 100)]) == 'Varsha'\n    assert candidate([('Yash', 185), ('Dawood', 125), ('Sanya', 175)]) == 'Dawood'\n    assert candidate([('Sai', 345), ('Salman', 145), ('Ayesha', 96)]) == 'Ayesha'\n\ndef test_check():\n    check(index_minimum)\n\n"
+ }
+}

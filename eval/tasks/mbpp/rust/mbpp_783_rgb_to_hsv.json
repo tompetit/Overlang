@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_783_rgb_to_hsv",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_783_rgb_to_hsv",
+ "entry_point": "rgb_to_hsv",
+ "prompt": "/// Write a function to convert rgb color to hsv color. https://www.geeksforgeeks.org/program-change-rgb-color-model-hsv-color-model/\nfn rgb_to_hsv(r: isize, g: isize, b: isize) -> Vec<f64> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = rgb_to_hsv;\n    assert_eq!(candidate(255, 255, 255), vec![0.0, 0.0, 100.0]);\n    assert_eq!(candidate(0, 215, 0), vec![120.0, 100.0, 84.31372549019608]);\n    assert_eq!(candidate(10, 215, 110), vec![149.26829268292684, 95.34883720930233, 84.31372549019608]);\n}\n",
+ "raw": {
+  "name": "mbpp_783_rgb_to_hsv",
+  "language": "rs",
+  "prompt": "/// Write a function to convert rgb color to hsv color. https://www.geeksforgeeks.org/program-change-rgb-color-model-hsv-color-model/\nfn rgb_to_hsv(r: isize, g: isize, b: isize) -> Vec<f64> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_783_rgb_to_hsv.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = rgb_to_hsv;\n    assert_eq!(candidate(255, 255, 255), vec![0.0, 0.0, 100.0]);\n    assert_eq!(candidate(0, 215, 0), vec![120.0, 100.0, 84.31372549019608]);\n    assert_eq!(candidate(10, 215, 110), vec![149.26829268292684, 95.34883720930233, 84.31372549019608]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

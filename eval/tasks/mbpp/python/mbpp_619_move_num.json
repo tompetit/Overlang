@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_619_move_num",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_619_move_num",
+ "entry_point": "move_num",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef move_num(test_str: str) -> str:\n    \"\"\"\n\tWrite a function to move all the numbers to the end of the given string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('I1love143you55three3000thousand') == 'Iloveyouthreethousand1143553000'\n    assert candidate('Avengers124Assemble') == 'AvengersAssemble124'\n    assert candidate('Its11our12path13to14see15things16do17things') == 'Itsourpathtoseethingsdothings11121314151617'\n\ndef test_check():\n    check(move_num)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_619_move_num.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef move_num(test_str: str) -> str:\n    \"\"\"\n\tWrite a function to move all the numbers to the end of the given string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('I1love143you55three3000thousand') == 'Iloveyouthreethousand1143553000'\n    assert candidate('Avengers124Assemble') == 'AvengersAssemble124'\n    assert candidate('Its11our12path13to14see15things16do17things') == 'Itsourpathtoseethingsdothings11121314151617'\n\ndef test_check():\n    check(move_num)\n\n"
+ }
+}

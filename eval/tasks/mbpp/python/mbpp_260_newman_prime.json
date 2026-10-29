@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_260_newman_prime",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_260_newman_prime",
+ "entry_point": "newman_prime",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef newman_prime(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the nth newman\u2013shanks\u2013williams prime number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(3) == 7\n    assert candidate(4) == 17\n    assert candidate(5) == 41\n\ndef test_check():\n    check(newman_prime)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_260_newman_prime.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef newman_prime(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the nth newman\u2013shanks\u2013williams prime number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(3) == 7\n    assert candidate(4) == 17\n    assert candidate(5) == 41\n\ndef test_check():\n    check(newman_prime)\n\n"
+ }
+}

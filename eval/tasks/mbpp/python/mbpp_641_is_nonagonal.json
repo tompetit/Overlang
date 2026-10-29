@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_641_is_nonagonal",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_641_is_nonagonal",
+ "entry_point": "is_nonagonal",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef is_nonagonal(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the nth nonagonal number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(10) == 325\n    assert candidate(15) == 750\n    assert candidate(18) == 1089\n\ndef test_check():\n    check(is_nonagonal)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_641_is_nonagonal.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef is_nonagonal(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the nth nonagonal number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(10) == 325\n    assert candidate(15) == 750\n    assert candidate(18) == 1089\n\ndef test_check():\n    check(is_nonagonal)\n\n"
+ }
+}

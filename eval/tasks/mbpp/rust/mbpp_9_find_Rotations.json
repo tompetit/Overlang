@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_9_find_Rotations",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_9_find_Rotations",
+ "entry_point": "find_Rotations",
+ "prompt": "/// Write a rsthon function to find the minimum number of rotations (greater than 0) required to get the same string.\nfn find_Rotations(str: String) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = find_Rotations;\n    assert_eq!(candidate(String::from(\"aaaa\")), 1);\n    assert_eq!(candidate(String::from(\"ab\")), 2);\n    assert_eq!(candidate(String::from(\"abc\")), 3);\n}\n",
+ "raw": {
+  "name": "mbpp_9_find_Rotations",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to find the minimum number of rotations (greater than 0) required to get the same string.\nfn find_Rotations(str: String) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_9_find_Rotations.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = find_Rotations;\n    assert_eq!(candidate(String::from(\"aaaa\")), 1);\n    assert_eq!(candidate(String::from(\"ab\")), 2);\n    assert_eq!(candidate(String::from(\"abc\")), 3);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

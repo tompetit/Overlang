@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_748_capital_words_spaces",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_748_capital_words_spaces",
+ "entry_point": "capital_words_spaces",
+ "prompt": "/// Write a function to put spaces between words starting with capital letters in a given string.\nfn capital_words_spaces(str1: String) -> String {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = capital_words_spaces;\n    assert_eq!(candidate(String::from(\"Python\")), String::from(\"Python\"));\n    assert_eq!(candidate(String::from(\"PythonProgrammingExamples\")), String::from(\"Python Programming Examples\"));\n    assert_eq!(candidate(String::from(\"GetReadyToBeCodingFreak\")), String::from(\"Get Ready To Be Coding Freak\"));\n}\n",
+ "raw": {
+  "name": "mbpp_748_capital_words_spaces",
+  "language": "rs",
+  "prompt": "/// Write a function to put spaces between words starting with capital letters in a given string.\nfn capital_words_spaces(str1: String) -> String {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_748_capital_words_spaces.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = capital_words_spaces;\n    assert_eq!(candidate(String::from(\"Python\")), String::from(\"Python\"));\n    assert_eq!(candidate(String::from(\"PythonProgrammingExamples\")), String::from(\"Python Programming Examples\"));\n    assert_eq!(candidate(String::from(\"GetReadyToBeCodingFreak\")), String::from(\"Get Ready To Be Coding Freak\"));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

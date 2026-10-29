@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_808_check_K",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_808_check_K",
+ "entry_point": "check_K",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef check_K(test_tup: List[int], K: int) -> bool:\n    \"\"\"\n\tWrite a function to check if the given tuples contain the k or not.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([10, 4, 5, 6, 8], 6) == True\n    assert candidate([1, 2, 3, 4, 5, 6], 7) == False\n    assert candidate([7, 8, 9, 44, 11, 12], 11) == True\n\ndef test_check():\n    check(check_K)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_808_check_K.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef check_K(test_tup: List[int], K: int) -> bool:\n    \"\"\"\n\tWrite a function to check if the given tuples contain the k or not.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([10, 4, 5, 6, 8], 6) == True\n    assert candidate([1, 2, 3, 4, 5, 6], 7) == False\n    assert candidate([7, 8, 9, 44, 11, 12], 11) == True\n\ndef test_check():\n    check(check_K)\n\n"
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_599_sum_average",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_599_sum_average",
+ "entry_point": "sum_average",
+ "prompt": "/// Write a function to find sum and average of first n natural numbers.\nfn sum_average(number: isize) -> (isize, f64) {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = sum_average;\n    assert_eq!(candidate(10), (55, 5.5));\n    assert_eq!(candidate(15), (120, 8.0));\n    assert_eq!(candidate(20), (210, 10.5));\n}\n",
+ "raw": {
+  "name": "mbpp_599_sum_average",
+  "language": "rs",
+  "prompt": "/// Write a function to find sum and average of first n natural numbers.\nfn sum_average(number: isize) -> (isize, f64) {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_599_sum_average.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = sum_average;\n    assert_eq!(candidate(10), (55, 5.5));\n    assert_eq!(candidate(15), (120, 8.0));\n    assert_eq!(candidate(20), (210, 10.5));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

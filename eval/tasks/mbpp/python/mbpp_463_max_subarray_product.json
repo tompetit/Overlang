@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_463_max_subarray_product",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_463_max_subarray_product",
+ "entry_point": "max_subarray_product",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef max_subarray_product(arr: List[int]) -> int:\n    \"\"\"\n\tWrite a function to find the maximum product subarray of the given array.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, -2, -3, 0, 7, -8, -2]) == 112\n    assert candidate([6, -3, -10, 0, 2]) == 180\n    assert candidate([-2, -40, 0, -2, -3]) == 80\n\ndef test_check():\n    check(max_subarray_product)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_463_max_subarray_product.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef max_subarray_product(arr: List[int]) -> int:\n    \"\"\"\n\tWrite a function to find the maximum product subarray of the given array.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, -2, -3, 0, 7, -8, -2]) == 112\n    assert candidate([6, -3, -10, 0, 2]) == 180\n    assert candidate([-2, -40, 0, -2, -3]) == 80\n\ndef test_check():\n    check(max_subarray_product)\n\n"
+ }
+}

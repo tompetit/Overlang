@@ -1,0 +1,14 @@
+{
+ "id": "HumanEval_35_max_element",
+ "benchmark": "humaneval",
+ "lang": "python",
+ "name": "HumanEval_35_max_element",
+ "entry_point": "max_element",
+ "prompt": "from typing import List\n\ndef max_element(l: List[int]) -> int:\n    \"\"\"Return maximum element in the list.\n    >>> max_element([1, 2, 3])\n    3\n    >>> max_element([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])\n    123\n    \"\"\"\n",
+ "tests": "METADATA = {}\n\n\ndef check(candidate):\n    assert candidate([1, 2, 3]) == 3\n    assert candidate([5, 3, -5, 2, -3, 3, 9, 0, 124, 1, -10]) == 124\ndef test_check():\n    check(max_element)\n",
+ "solution": "from typing import List\n\ndef max_element(l: List[int]) -> int:\n    \"\"\"Return maximum element in the list.\n    >>> max_element([1, 2, 3])\n    3\n    >>> max_element([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])\n    123\n    \"\"\"\n\n    m = l[0]\n    for e in l:\n        if e > m:\n            m = e\n    return m\n\n",
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/originals-with-cleaned-doctests/HumanEval_35_max_element.py",
+  "text": "from typing import List\n\ndef max_element(l: List[int]) -> int:\n    \"\"\"Return maximum element in the list.\n    >>> max_element([1, 2, 3])\n    3\n    >>> max_element([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])\n    123\n    \"\"\"\n    ### Canonical solution below ###\n    m = l[0]\n    for e in l:\n        if e > m:\n            m = e\n    return m\n\n### Unit tests below ###\n\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate([1, 2, 3]) == 3\n    assert candidate([5, 3, -5, 2, -3, 3, 9, 0, 124, 1, -10]) == 124\ndef test_check():\n    check(max_element)\n"
+ }
+}

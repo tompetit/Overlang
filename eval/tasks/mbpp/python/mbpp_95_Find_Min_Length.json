@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_95_Find_Min_Length",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_95_Find_Min_Length",
+ "entry_point": "Find_Min_Length",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef Find_Min_Length(lst: List[List[int]]) -> int:\n    \"\"\"\n\tWrite a python function to find the length of the smallest list in a list of lists.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([[1], [1, 2]]) == 1\n    assert candidate([[1, 2], [1, 2, 3], [1, 2, 3, 4]]) == 2\n    assert candidate([[3, 3, 3], [4, 4, 4, 4]]) == 3\n\ndef test_check():\n    check(Find_Min_Length)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_95_Find_Min_Length.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef Find_Min_Length(lst: List[List[int]]) -> int:\n    \"\"\"\n\tWrite a python function to find the length of the smallest list in a list of lists.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([[1], [1, 2]]) == 1\n    assert candidate([[1, 2], [1, 2, 3], [1, 2, 3, 4]]) == 2\n    assert candidate([[3, 3, 3], [4, 4, 4, 4]]) == 3\n\ndef test_check():\n    check(Find_Min_Length)\n\n"
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_640_remove_parenthesis",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_640_remove_parenthesis",
+ "entry_point": "remove_parenthesis",
+ "prompt": "/// Write a function to remove the parenthesis and what is inbetween them from a string.\nfn remove_parenthesis(items: Vec<String>) -> String {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = remove_parenthesis;\n    assert_eq!(candidate(vec![String::from(\"python (chrome)\")]), String::from(\"python\"));\n    assert_eq!(candidate(vec![String::from(\"string(.abc)\")]), String::from(\"string\"));\n    assert_eq!(candidate(vec![String::from(\"alpha(num)\")]), String::from(\"alpha\"));\n}\n",
+ "raw": {
+  "name": "mbpp_640_remove_parenthesis",
+  "language": "rs",
+  "prompt": "/// Write a function to remove the parenthesis and what is inbetween them from a string.\nfn remove_parenthesis(items: Vec<String>) -> String {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_640_remove_parenthesis.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = remove_parenthesis;\n    assert_eq!(candidate(vec![String::from(\"python (chrome)\")]), String::from(\"python\"));\n    assert_eq!(candidate(vec![String::from(\"string(.abc)\")]), String::from(\"string\"));\n    assert_eq!(candidate(vec![String::from(\"alpha(num)\")]), String::from(\"alpha\"));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

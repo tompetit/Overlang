@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_600_is_Even",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_600_is_Even",
+ "entry_point": "is_Even",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef is_Even(n: int) -> bool:\n    \"\"\"\n\tWrite a python function to check whether the given number is even or not.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(1) == False\n    assert candidate(2) == True\n    assert candidate(3) == False\n\ndef test_check():\n    check(is_Even)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_600_is_Even.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef is_Even(n: int) -> bool:\n    \"\"\"\n\tWrite a python function to check whether the given number is even or not.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(1) == False\n    assert candidate(2) == True\n    assert candidate(3) == False\n\ndef test_check():\n    check(is_Even)\n\n"
+ }
+}

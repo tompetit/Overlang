@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_273_substract_elements",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_273_substract_elements",
+ "entry_point": "substract_elements",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef substract_elements(test_tup1: Tuple[int, int, int], test_tup2: Tuple[int, int, int]) -> Tuple[int, int, int]:\n    \"\"\"\n\tWrite a function that takes in two tuples and subtracts the elements of the first tuple by the elements of the second tuple with the same index.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate((10, 4, 5), (2, 5, 18)) == (8, -1, -13)\n    assert candidate((11, 2, 3), (24, 45, 16)) == (-13, -43, -13)\n    assert candidate((7, 18, 9), (10, 11, 12)) == (-3, 7, -3)\n\ndef test_check():\n    check(substract_elements)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_273_substract_elements.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef substract_elements(test_tup1: Tuple[int, int, int], test_tup2: Tuple[int, int, int]) -> Tuple[int, int, int]:\n    \"\"\"\n\tWrite a function that takes in two tuples and subtracts the elements of the first tuple by the elements of the second tuple with the same index.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate((10, 4, 5), (2, 5, 18)) == (8, -1, -13)\n    assert candidate((11, 2, 3), (24, 45, 16)) == (-13, -43, -13)\n    assert candidate((7, 18, 9), (10, 11, 12)) == (-3, 7, -3)\n\ndef test_check():\n    check(substract_elements)\n\n"
+ }
+}

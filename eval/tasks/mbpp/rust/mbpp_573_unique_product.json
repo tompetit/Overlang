@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_573_unique_product",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_573_unique_product",
+ "entry_point": "unique_product",
+ "prompt": "/// Write a rsthon function to calculate the product of the unique numbers in a given vector.\nfn unique_product(list_data: Vec<isize>) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = unique_product;\n    assert_eq!(candidate(vec![10, 20, 30, 40, 20, 50, 60, 40]), 720000000);\n    assert_eq!(candidate(vec![1, 2, 3, 1]), 6);\n    assert_eq!(candidate(vec![7, 8, 9, 0, 1, 1]), 0);\n}\n",
+ "raw": {
+  "name": "mbpp_573_unique_product",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to calculate the product of the unique numbers in a given vector.\nfn unique_product(list_data: Vec<isize>) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_573_unique_product.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = unique_product;\n    assert_eq!(candidate(vec![10, 20, 30, 40, 20, 50, 60, 40]), 720000000);\n    assert_eq!(candidate(vec![1, 2, 3, 1]), 6);\n    assert_eq!(candidate(vec![7, 8, 9, 0, 1, 1]), 0);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

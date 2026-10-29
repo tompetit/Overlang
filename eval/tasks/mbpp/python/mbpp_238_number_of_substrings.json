@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_238_number_of_substrings",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_238_number_of_substrings",
+ "entry_point": "number_of_substrings",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef number_of_substrings(str: str) -> int:\n    \"\"\"\n\tWrite a python function to count the number of non-empty substrings of a given string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('abc') == 6\n    assert candidate('abcd') == 10\n    assert candidate('abcde') == 15\n\ndef test_check():\n    check(number_of_substrings)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_238_number_of_substrings.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef number_of_substrings(str: str) -> int:\n    \"\"\"\n\tWrite a python function to count the number of non-empty substrings of a given string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('abc') == 6\n    assert candidate('abcd') == 10\n    assert candidate('abcde') == 15\n\ndef test_check():\n    check(number_of_substrings)\n\n"
+ }
+}

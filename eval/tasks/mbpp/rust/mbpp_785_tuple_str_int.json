@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_785_tuple_str_int",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_785_tuple_str_int",
+ "entry_point": "tuple_str_int",
+ "prompt": "/// Write a function to convert tuple string to integer tuple.\nfn tuple_str_int(test_str: String) -> (isize, isize, isize) {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = tuple_str_int;\n    assert_eq!(candidate(String::from(\"(7, 8, 9)\")), (7, 8, 9));\n    assert_eq!(candidate(String::from(\"(1, 2, 3)\")), (1, 2, 3));\n    assert_eq!(candidate(String::from(\"(4, 5, 6)\")), (4, 5, 6));\n    assert_eq!(candidate(String::from(\"(7, 81, 19)\")), (7, 81, 19));\n}\n",
+ "raw": {
+  "name": "mbpp_785_tuple_str_int",
+  "language": "rs",
+  "prompt": "/// Write a function to convert tuple string to integer tuple.\nfn tuple_str_int(test_str: String) -> (isize, isize, isize) {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_785_tuple_str_int.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = tuple_str_int;\n    assert_eq!(candidate(String::from(\"(7, 8, 9)\")), (7, 8, 9));\n    assert_eq!(candidate(String::from(\"(1, 2, 3)\")), (1, 2, 3));\n    assert_eq!(candidate(String::from(\"(4, 5, 6)\")), (4, 5, 6));\n    assert_eq!(candidate(String::from(\"(7, 81, 19)\")), (7, 81, 19));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

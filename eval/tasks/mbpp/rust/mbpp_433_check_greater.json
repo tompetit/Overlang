@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_433_check_greater",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_433_check_greater",
+ "entry_point": "check_greater",
+ "prompt": "/// Write a function to check whether the entered number is greater than the elements of the given vector.\nfn check_greater(arr: Vec<isize>, number: isize) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = check_greater;\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5], 4), false);\n    assert_eq!(candidate(vec![2, 3, 4, 5, 6], 8), true);\n    assert_eq!(candidate(vec![9, 7, 4, 8, 6, 1], 11), true);\n}\n",
+ "raw": {
+  "name": "mbpp_433_check_greater",
+  "language": "rs",
+  "prompt": "/// Write a function to check whether the entered number is greater than the elements of the given vector.\nfn check_greater(arr: Vec<isize>, number: isize) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_433_check_greater.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = check_greater;\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5], 4), false);\n    assert_eq!(candidate(vec![2, 3, 4, 5, 6], 8), true);\n    assert_eq!(candidate(vec![9, 7, 4, 8, 6, 1], 11), true);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

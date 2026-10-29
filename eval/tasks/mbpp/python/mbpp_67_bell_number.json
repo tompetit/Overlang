@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_67_bell_number",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_67_bell_number",
+ "entry_point": "bell_number",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef bell_number(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the number of ways to partition a set of Bell numbers.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(2) == 2\n    assert candidate(10) == 115975\n    assert candidate(56) == 6775685320645824322581483068371419745979053216268760300\n\ndef test_check():\n    check(bell_number)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_67_bell_number.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef bell_number(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the number of ways to partition a set of Bell numbers.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(2) == 2\n    assert candidate(10) == 115975\n    assert candidate(56) == 6775685320645824322581483068371419745979053216268760300\n\ndef test_check():\n    check(bell_number)\n\n"
+ }
+}

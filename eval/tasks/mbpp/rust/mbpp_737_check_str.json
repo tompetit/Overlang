@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_737_check_str",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_737_check_str",
+ "entry_point": "check_str",
+ "prompt": "/// Write a function to check whether the given string is starting with a vowel or not using regex.\nfn check_str(string: String) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = check_str;\n    assert_eq!(candidate(String::from(\"annie\")), true);\n    assert_eq!(candidate(String::from(\"dawood\")), false);\n    assert_eq!(candidate(String::from(\"Else\")), true);\n}\n",
+ "raw": {
+  "name": "mbpp_737_check_str",
+  "language": "rs",
+  "prompt": "/// Write a function to check whether the given string is starting with a vowel or not using regex.\nfn check_str(string: String) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_737_check_str.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = check_str;\n    assert_eq!(candidate(String::from(\"annie\")), true);\n    assert_eq!(candidate(String::from(\"dawood\")), false);\n    assert_eq!(candidate(String::from(\"Else\")), true);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_87_merge_dictionaries_three",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_87_merge_dictionaries_three",
+ "entry_point": "merge_dictionaries_three",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef merge_dictionaries_three(dict1: Dict[str, str], dict2: Dict[str, str], dict3: Dict[str, str]) -> Dict[str, str]:\n    \"\"\"\n\tWrite a function to merge three dictionaries into a single dictionary.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate({'R': 'Red', 'B': 'Black', 'P': 'Pink'}, {'G': 'Green', 'W': 'White'}, {'O': 'Orange', 'W': 'White', 'B': 'Black'}) == {'B': 'Black', 'R': 'Red', 'P': 'Pink', 'G': 'Green', 'W': 'White', 'O': 'Orange'}\n    assert candidate({'R': 'Red', 'B': 'Black', 'P': 'Pink'}, {'G': 'Green', 'W': 'White'}, {'L': 'lavender', 'B': 'Blue'}) == {'W': 'White', 'P': 'Pink', 'B': 'Black', 'R': 'Red', 'G': 'Green', 'L': 'lavender'}\n    assert candidate({'R': 'Red', 'B': 'Black', 'P': 'Pink'}, {'L': 'lavender', 'B': 'Blue'}, {'G': 'Green', 'W': 'White'}) == {'B': 'Black', 'P': 'Pink', 'R': 'Red', 'G': 'Green', 'L': 'lavender', 'W': 'White'}\n\ndef test_check():\n    check(merge_dictionaries_three)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_87_merge_dictionaries_three.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef merge_dictionaries_three(dict1: Dict[str, str], dict2: Dict[str, str], dict3: Dict[str, str]) -> Dict[str, str]:\n    \"\"\"\n\tWrite a function to merge three dictionaries into a single dictionary.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate({'R': 'Red', 'B': 'Black', 'P': 'Pink'}, {'G': 'Green', 'W': 'White'}, {'O': 'Orange', 'W': 'White', 'B': 'Black'}) == {'B': 'Black', 'R': 'Red', 'P': 'Pink', 'G': 'Green', 'W': 'White', 'O': 'Orange'}\n    assert candidate({'R': 'Red', 'B': 'Black', 'P': 'Pink'}, {'G': 'Green', 'W': 'White'}, {'L': 'lavender', 'B': 'Blue'}) == {'W': 'White', 'P': 'Pink', 'B': 'Black', 'R': 'Red', 'G': 'Green', 'L': 'lavender'}\n    assert candidate({'R': 'Red', 'B': 'Black', 'P': 'Pink'}, {'L': 'lavender', 'B': 'Blue'}, {'G': 'Green', 'W': 'White'}) == {'B': 'Black', 'P': 'Pink', 'R': 'Red', 'G': 'Green', 'L': 'lavender', 'W': 'White'}\n\ndef test_check():\n    check(merge_dictionaries_three)\n\n"
+ }
+}

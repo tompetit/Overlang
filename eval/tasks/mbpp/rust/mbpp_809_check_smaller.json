@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_809_check_smaller",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_809_check_smaller",
+ "entry_point": "check_smaller",
+ "prompt": "/// Write a function to check if each element of second tuple is smaller than its corresponding element in the first tuple.\nfn check_smaller(test_tup1: (isize, isize, isize), test_tup2: (isize, isize, isize)) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = check_smaller;\n    assert_eq!(candidate((1, 2, 3), (2, 3, 4)), false);\n    assert_eq!(candidate((4, 5, 6), (3, 4, 5)), true);\n    assert_eq!(candidate((11, 12, 13), (10, 11, 12)), true);\n}\n",
+ "raw": {
+  "name": "mbpp_809_check_smaller",
+  "language": "rs",
+  "prompt": "/// Write a function to check if each element of second tuple is smaller than its corresponding element in the first tuple.\nfn check_smaller(test_tup1: (isize, isize, isize), test_tup2: (isize, isize, isize)) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_809_check_smaller.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = check_smaller;\n    assert_eq!(candidate((1, 2, 3), (2, 3, 4)), false);\n    assert_eq!(candidate((4, 5, 6), (3, 4, 5)), true);\n    assert_eq!(candidate((11, 12, 13), (10, 11, 12)), true);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

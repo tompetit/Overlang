@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_804_is_product_even",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_804_is_product_even",
+ "entry_point": "is_product_even",
+ "prompt": "/// Write a function to check whether the product of numbers in a vector is even or not.\nfn is_product_even(arr: Vec<isize>) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = is_product_even;\n    assert_eq!(candidate(vec![1, 2, 3]), true);\n    assert_eq!(candidate(vec![1, 2, 1, 4]), true);\n    assert_eq!(candidate(vec![1, 1]), false);\n}\n",
+ "raw": {
+  "name": "mbpp_804_is_product_even",
+  "language": "rs",
+  "prompt": "/// Write a function to check whether the product of numbers in a vector is even or not.\nfn is_product_even(arr: Vec<isize>) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_804_is_product_even.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = is_product_even;\n    assert_eq!(candidate(vec![1, 2, 3]), true);\n    assert_eq!(candidate(vec![1, 2, 1, 4]), true);\n    assert_eq!(candidate(vec![1, 1]), false);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

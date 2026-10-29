@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_388_highest_Power_of_2",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_388_highest_Power_of_2",
+ "entry_point": "highest_Power_of_2",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef highest_Power_of_2(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the highest power of 2 that is less than or equal to n.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(10) == 8\n    assert candidate(19) == 16\n    assert candidate(32) == 32\n\ndef test_check():\n    check(highest_Power_of_2)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_388_highest_Power_of_2.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef highest_Power_of_2(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the highest power of 2 that is less than or equal to n.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(10) == 8\n    assert candidate(19) == 16\n    assert candidate(32) == 32\n\ndef test_check():\n    check(highest_Power_of_2)\n\n"
+ }
+}

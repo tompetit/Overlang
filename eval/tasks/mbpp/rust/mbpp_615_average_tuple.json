@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_615_average_tuple",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_615_average_tuple",
+ "entry_point": "average_tuple",
+ "prompt": "/// Write a function which takes a vectors of vectors and returns the average value for each subvector as a vector.\nfn average_tuple(nums: Vec<Vec<isize>>) -> Vec<f64> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = average_tuple;\n    assert_eq!(candidate(vec![vec![10, 10, 10, 12], vec![30, 45, 56, 45], vec![81, 80, 39, 32], vec![1, 2, 3, 4]]), vec![30.5, 34.25, 27.0, 23.25]);\n    assert_eq!(candidate(vec![vec![1, 1, -5], vec![30, -15, 56], vec![81, -60, -39], vec![-10, 2, 3]]), vec![25.5, -18.0, 3.75]);\n    assert_eq!(candidate(vec![vec![100, 100, 100, 120], vec![300, 450, 560, 450], vec![810, 800, 390, 320], vec![10, 20, 30, 40]]), vec![305.0, 342.5, 270.0, 232.5]);\n}\n",
+ "raw": {
+  "name": "mbpp_615_average_tuple",
+  "language": "rs",
+  "prompt": "/// Write a function which takes a vectors of vectors and returns the average value for each subvector as a vector.\nfn average_tuple(nums: Vec<Vec<isize>>) -> Vec<f64> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_615_average_tuple.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = average_tuple;\n    assert_eq!(candidate(vec![vec![10, 10, 10, 12], vec![30, 45, 56, 45], vec![81, 80, 39, 32], vec![1, 2, 3, 4]]), vec![30.5, 34.25, 27.0, 23.25]);\n    assert_eq!(candidate(vec![vec![1, 1, -5], vec![30, -15, 56], vec![81, -60, -39], vec![-10, 2, 3]]), vec![25.5, -18.0, 3.75]);\n    assert_eq!(candidate(vec![vec![100, 100, 100, 120], vec![300, 450, 560, 450], vec![810, 800, 390, 320], vec![10, 20, 30, 40]]), vec![305.0, 342.5, 270.0, 232.5]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

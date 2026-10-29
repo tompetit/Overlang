@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_126_sum",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_126_sum",
+ "entry_point": "sum",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef sum(a: int, b: int) -> int:\n    \"\"\"\n\tWrite a python function to find the sum of common divisors of two given numbers.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(10, 15) == 6\n    assert candidate(100, 150) == 93\n    assert candidate(4, 6) == 3\n\ndef test_check():\n    check(sum)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_126_sum.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef sum(a: int, b: int) -> int:\n    \"\"\"\n\tWrite a python function to find the sum of common divisors of two given numbers.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(10, 15) == 6\n    assert candidate(100, 150) == 93\n    assert candidate(4, 6) == 3\n\ndef test_check():\n    check(sum)\n\n"
+ }
+}

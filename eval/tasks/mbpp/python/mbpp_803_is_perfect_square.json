@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_803_is_perfect_square",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_803_is_perfect_square",
+ "entry_point": "is_perfect_square",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef is_perfect_square(n: int) -> bool:\n    \"\"\"\n\tWrite a function to check whether the given number is a perfect square or not. https://www.geeksforgeeks.org/check-if-given-number-is-perfect-square-in-cpp/\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(10) == False\n    assert candidate(36) == True\n    assert candidate(14) == False\n    assert candidate(196) == True\n    assert candidate(125) == False\n    assert candidate(15625) == True\n\ndef test_check():\n    check(is_perfect_square)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_803_is_perfect_square.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef is_perfect_square(n: int) -> bool:\n    \"\"\"\n\tWrite a function to check whether the given number is a perfect square or not. https://www.geeksforgeeks.org/check-if-given-number-is-perfect-square-in-cpp/\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(10) == False\n    assert candidate(36) == True\n    assert candidate(14) == False\n    assert candidate(196) == True\n    assert candidate(125) == False\n    assert candidate(15625) == True\n\ndef test_check():\n    check(is_perfect_square)\n\n"
+ }
+}

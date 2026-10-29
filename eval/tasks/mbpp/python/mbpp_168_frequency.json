@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_168_frequency",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_168_frequency",
+ "entry_point": "frequency",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef frequency(a: List[int], x: int) -> int:\n    \"\"\"\n\tWrite a function to count the number of occurrences of a number in a given list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3], 4) == 0\n    assert candidate([1, 2, 2, 3, 3, 3, 4], 3) == 3\n    assert candidate([0, 1, 2, 3, 1, 2], 1) == 2\n\ndef test_check():\n    check(frequency)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_168_frequency.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef frequency(a: List[int], x: int) -> int:\n    \"\"\"\n\tWrite a function to count the number of occurrences of a number in a given list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3], 4) == 0\n    assert candidate([1, 2, 2, 3, 3, 3, 4], 3) == 3\n    assert candidate([0, 1, 2, 3, 1, 2], 1) == 2\n\ndef test_check():\n    check(frequency)\n\n"
+ }
+}

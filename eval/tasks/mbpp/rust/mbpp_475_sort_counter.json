@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_475_sort_counter",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_475_sort_counter",
+ "entry_point": "sort_counter",
+ "prompt": "use std::collections::HashMap;\n\n/// Write a function to sort a HashMap by value.\nfn sort_counter(dict1: HashMap<String, isize>) -> Vec<(String, isize)> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = sort_counter;\n    assert_eq!(candidate(HashMap::from([(String::from(\"Math\"), 81), (String::from(\"Physics\"), 83), (String::from(\"Chemistry\"), 87)])), vec![(String::from(\"Chemistry\"), 87), (String::from(\"Physics\"), 83), (String::from(\"Math\"), 81)]);\n    assert_eq!(candidate(HashMap::from([(String::from(\"Math\"), 400), (String::from(\"Physics\"), 300), (String::from(\"Chemistry\"), 250)])), vec![(String::from(\"Math\"), 400), (String::from(\"Physics\"), 300), (String::from(\"Chemistry\"), 250)]);\n    assert_eq!(candidate(HashMap::from([(String::from(\"Math\"), 900), (String::from(\"Physics\"), 1000), (String::from(\"Chemistry\"), 1250)])), vec![(String::from(\"Chemistry\"), 1250), (String::from(\"Physics\"), 1000), (String::from(\"Math\"), 900)]);\n}\n",
+ "raw": {
+  "name": "mbpp_475_sort_counter",
+  "language": "rs",
+  "prompt": "use std::collections::HashMap;\n\n/// Write a function to sort a HashMap by value.\nfn sort_counter(dict1: HashMap<String, isize>) -> Vec<(String, isize)> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_475_sort_counter.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = sort_counter;\n    assert_eq!(candidate(HashMap::from([(String::from(\"Math\"), 81), (String::from(\"Physics\"), 83), (String::from(\"Chemistry\"), 87)])), vec![(String::from(\"Chemistry\"), 87), (String::from(\"Physics\"), 83), (String::from(\"Math\"), 81)]);\n    assert_eq!(candidate(HashMap::from([(String::from(\"Math\"), 400), (String::from(\"Physics\"), 300), (String::from(\"Chemistry\"), 250)])), vec![(String::from(\"Math\"), 400), (String::from(\"Physics\"), 300), (String::from(\"Chemistry\"), 250)]);\n    assert_eq!(candidate(HashMap::from([(String::from(\"Math\"), 900), (String::from(\"Physics\"), 1000), (String::from(\"Chemistry\"), 1250)])), vec![(String::from(\"Chemistry\"), 1250), (String::from(\"Physics\"), 1000), (String::from(\"Math\"), 900)]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

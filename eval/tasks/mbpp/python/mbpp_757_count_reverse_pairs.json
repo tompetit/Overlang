@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_757_count_reverse_pairs",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_757_count_reverse_pairs",
+ "entry_point": "count_reverse_pairs",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef count_reverse_pairs(test_list: List[str]) -> int:\n    \"\"\"\n\tWrite a function to count the pairs of reverse strings in the given string list. https://www.geeksforgeeks.org/python-program-to-count-the-pairs-of-reverse-strings/\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(['julia', 'best', 'tseb', 'for', 'ailuj']) == 2\n    assert candidate(['geeks', 'best', 'for', 'skeeg']) == 1\n    assert candidate(['makes', 'best', 'sekam', 'for', 'rof']) == 2\n\ndef test_check():\n    check(count_reverse_pairs)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_757_count_reverse_pairs.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef count_reverse_pairs(test_list: List[str]) -> int:\n    \"\"\"\n\tWrite a function to count the pairs of reverse strings in the given string list. https://www.geeksforgeeks.org/python-program-to-count-the-pairs-of-reverse-strings/\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(['julia', 'best', 'tseb', 'for', 'ailuj']) == 2\n    assert candidate(['geeks', 'best', 'for', 'skeeg']) == 1\n    assert candidate(['makes', 'best', 'sekam', 'for', 'rof']) == 2\n\ndef test_check():\n    check(count_reverse_pairs)\n\n"
+ }
+}

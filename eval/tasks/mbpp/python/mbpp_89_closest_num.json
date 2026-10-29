@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_89_closest_num",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_89_closest_num",
+ "entry_point": "closest_num",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef closest_num(N: int) -> int:\n    \"\"\"\n\tWrite a function to find the closest smaller number than n.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(11) == 10\n    assert candidate(7) == 6\n    assert candidate(12) == 11\n\ndef test_check():\n    check(closest_num)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_89_closest_num.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef closest_num(N: int) -> int:\n    \"\"\"\n\tWrite a function to find the closest smaller number than n.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(11) == 10\n    assert candidate(7) == 6\n    assert candidate(12) == 11\n\ndef test_check():\n    check(closest_num)\n\n"
+ }
+}

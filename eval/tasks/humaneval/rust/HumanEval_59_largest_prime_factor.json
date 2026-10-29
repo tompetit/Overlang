@@ -1,0 +1,21 @@
+{
+ "id": "HumanEval_59_largest_prime_factor",
+ "benchmark": "humaneval",
+ "lang": "rust",
+ "name": "HumanEval_59_largest_prime_factor",
+ "entry_point": "largest_prime_factor",
+ "prompt": "/// Return the largest prime factor of n. Assume n > 1 and is not a prime.\n/// >>> largest_prime_factor(13195)\n/// 29\n/// >>> largest_prime_factor(2048)\n/// 2\nfn largest_prime_factor(n: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = largest_prime_factor;\n    assert_eq!(candidate(15), 5);\n    assert_eq!(candidate(27), 3);\n    assert_eq!(candidate(63), 7);\n    assert_eq!(candidate(330), 11);\n    assert_eq!(candidate(13195), 29);\n}\n",
+ "raw": {
+  "name": "HumanEval_59_largest_prime_factor",
+  "language": "rs",
+  "prompt": "/// Return the largest prime factor of n. Assume n > 1 and is not a prime.\n/// >>> largest_prime_factor(13195)\n/// 29\n/// >>> largest_prime_factor(2048)\n/// 2\nfn largest_prime_factor(n: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/work/arjunguha-research-group/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_59_largest_prime_factor.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = largest_prime_factor;\n    assert_eq!(candidate(15), 5);\n    assert_eq!(candidate(27), 3);\n    assert_eq!(candidate(63), 7);\n    assert_eq!(candidate(330), 11);\n    assert_eq!(candidate(13195), 29);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

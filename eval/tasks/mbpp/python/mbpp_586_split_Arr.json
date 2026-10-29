@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_586_split_Arr",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_586_split_Arr",
+ "entry_point": "split_Arr",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef split_Arr(l: List[int], n: int) -> List[int]:\n    \"\"\"\n\tWrite a python function to split a list at the nth eelment and add the first part to the end.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([12, 10, 5, 6, 52, 36], 2) == [5, 6, 52, 36, 12, 10]\n    assert candidate([1, 2, 3, 4], 1) == [2, 3, 4, 1]\n    assert candidate([0, 1, 2, 3, 4, 5, 6, 7], 3) == [3, 4, 5, 6, 7, 0, 1, 2]\n\ndef test_check():\n    check(split_Arr)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_586_split_Arr.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef split_Arr(l: List[int], n: int) -> List[int]:\n    \"\"\"\n\tWrite a python function to split a list at the nth eelment and add the first part to the end.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([12, 10, 5, 6, 52, 36], 2) == [5, 6, 52, 36, 12, 10]\n    assert candidate([1, 2, 3, 4], 1) == [2, 3, 4, 1]\n    assert candidate([0, 1, 2, 3, 4, 5, 6, 7], 3) == [3, 4, 5, 6, 7, 0, 1, 2]\n\ndef test_check():\n    check(split_Arr)\n\n"
+ }
+}

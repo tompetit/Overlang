@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_261_division_elements",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_261_division_elements",
+ "entry_point": "division_elements",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef division_elements(test_tup1: Tuple[int, int, int, int], test_tup2: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:\n    \"\"\"\n\tWrite a function that takes in two tuples and performs mathematical division operation element-wise across the given tuples.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate((10, 4, 6, 9), (5, 2, 3, 3)) == (2, 2, 2, 3)\n    assert candidate((12, 6, 8, 16), (6, 3, 4, 4)) == (2, 2, 2, 4)\n    assert candidate((20, 14, 36, 18), (5, 7, 6, 9)) == (4, 2, 6, 2)\n\ndef test_check():\n    check(division_elements)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_261_division_elements.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef division_elements(test_tup1: Tuple[int, int, int, int], test_tup2: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:\n    \"\"\"\n\tWrite a function that takes in two tuples and performs mathematical division operation element-wise across the given tuples.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate((10, 4, 6, 9), (5, 2, 3, 3)) == (2, 2, 2, 3)\n    assert candidate((12, 6, 8, 16), (6, 3, 4, 4)) == (2, 2, 2, 4)\n    assert candidate((20, 14, 36, 18), (5, 7, 6, 9)) == (4, 2, 6, 2)\n\ndef test_check():\n    check(division_elements)\n\n"
+ }
+}

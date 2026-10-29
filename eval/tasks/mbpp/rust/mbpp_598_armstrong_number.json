@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_598_armstrong_number",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_598_armstrong_number",
+ "entry_point": "armstrong_number",
+ "prompt": "/// Write a function to check whether the given number is armstrong or not.\nfn armstrong_number(number: isize) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = armstrong_number;\n    assert_eq!(candidate(153), true);\n    assert_eq!(candidate(259), false);\n    assert_eq!(candidate(4458), false);\n}\n",
+ "raw": {
+  "name": "mbpp_598_armstrong_number",
+  "language": "rs",
+  "prompt": "/// Write a function to check whether the given number is armstrong or not.\nfn armstrong_number(number: isize) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_598_armstrong_number.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = armstrong_number;\n    assert_eq!(candidate(153), true);\n    assert_eq!(candidate(259), false);\n    assert_eq!(candidate(4458), false);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

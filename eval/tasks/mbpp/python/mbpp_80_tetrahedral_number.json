@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_80_tetrahedral_number",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_80_tetrahedral_number",
+ "entry_point": "tetrahedral_number",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef tetrahedral_number(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the nth tetrahedral number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(5) == 35\n    assert candidate(6) == 56\n    assert candidate(7) == 84\n\ndef test_check():\n    check(tetrahedral_number)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_80_tetrahedral_number.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef tetrahedral_number(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the nth tetrahedral number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(5) == 35\n    assert candidate(6) == 56\n    assert candidate(7) == 84\n\ndef test_check():\n    check(tetrahedral_number)\n\n"
+ }
+}

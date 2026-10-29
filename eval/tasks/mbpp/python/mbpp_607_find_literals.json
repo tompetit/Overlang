@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_607_find_literals",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_607_find_literals",
+ "entry_point": "find_literals",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef find_literals(text: str, pattern: str) -> Tuple[str, int, int]:\n    \"\"\"\n\tWrite a function to search a string for a regex pattern. The function should return the matching subtring, a start index and an end index.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('The quick brown fox jumps over the lazy dog.', 'fox') == ('fox', 16, 19)\n    assert candidate('Its been a very crazy procedure right', 'crazy') == ('crazy', 16, 21)\n    assert candidate('Hardest choices required strongest will', 'will') == ('will', 35, 39)\n\ndef test_check():\n    check(find_literals)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_607_find_literals.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef find_literals(text: str, pattern: str) -> Tuple[str, int, int]:\n    \"\"\"\n\tWrite a function to search a string for a regex pattern. The function should return the matching subtring, a start index and an end index.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('The quick brown fox jumps over the lazy dog.', 'fox') == ('fox', 16, 19)\n    assert candidate('Its been a very crazy procedure right', 'crazy') == ('crazy', 16, 21)\n    assert candidate('Hardest choices required strongest will', 'will') == ('will', 35, 39)\n\ndef test_check():\n    check(find_literals)\n\n"
+ }
+}

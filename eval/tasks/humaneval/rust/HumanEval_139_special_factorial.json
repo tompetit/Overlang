@@ -1,0 +1,21 @@
+{
+ "id": "HumanEval_139_special_factorial",
+ "benchmark": "humaneval",
+ "lang": "rust",
+ "name": "HumanEval_139_special_factorial",
+ "entry_point": "special_factorial",
+ "prompt": "/// The Brazilian factorial is defined as:\n/// brazilian_factorial(n) = n! * (n-1)! * (n-2)! * ... * 1!\n/// where n > 0\n/// For example:\n/// >>> special_factorial(4)\n/// 288\n/// The function will receive an integer as input and should return the special\n/// factorial of this integer.\nfn special_factorial(n: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = special_factorial;\n    assert_eq!(candidate(4), 288);\n    assert_eq!(candidate(5), 34560);\n    assert_eq!(candidate(7), 125411328000);\n    assert_eq!(candidate(1), 1);\n}\n",
+ "raw": {
+  "name": "HumanEval_139_special_factorial",
+  "language": "rs",
+  "prompt": "/// The Brazilian factorial is defined as:\n/// brazilian_factorial(n) = n! * (n-1)! * (n-2)! * ... * 1!\n/// where n > 0\n/// For example:\n/// >>> special_factorial(4)\n/// 288\n/// The function will receive an integer as input and should return the special\n/// factorial of this integer.\nfn special_factorial(n: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/work/arjunguha-research-group/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_139_special_factorial.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = special_factorial;\n    assert_eq!(candidate(4), 288);\n    assert_eq!(candidate(5), 34560);\n    assert_eq!(candidate(7), 125411328000);\n    assert_eq!(candidate(1), 1);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

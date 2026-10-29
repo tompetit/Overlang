@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_430_parabola_directrix",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_430_parabola_directrix",
+ "entry_point": "parabola_directrix",
+ "prompt": "/// Write a function to find the directrix of a parabola.\nfn parabola_directrix(a: isize, b: isize, c: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = parabola_directrix;\n    assert_eq!(candidate(5, 3, 2), -198);\n    assert_eq!(candidate(9, 8, 4), -2336);\n    assert_eq!(candidate(2, 4, 6), -130);\n}\n",
+ "raw": {
+  "name": "mbpp_430_parabola_directrix",
+  "language": "rs",
+  "prompt": "/// Write a function to find the directrix of a parabola.\nfn parabola_directrix(a: isize, b: isize, c: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_430_parabola_directrix.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = parabola_directrix;\n    assert_eq!(candidate(5, 3, 2), -198);\n    assert_eq!(candidate(9, 8, 4), -2336);\n    assert_eq!(candidate(2, 4, 6), -130);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

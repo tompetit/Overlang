@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_624_is_upper",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_624_is_upper",
+ "entry_point": "is_upper",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef is_upper(string: str) -> str:\n    \"\"\"\n\tWrite a python function to convert a given string to uppercase.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('person') == 'PERSON'\n    assert candidate('final') == 'FINAL'\n    assert candidate('Valid') == 'VALID'\n\ndef test_check():\n    check(is_upper)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_624_is_upper.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef is_upper(string: str) -> str:\n    \"\"\"\n\tWrite a python function to convert a given string to uppercase.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('person') == 'PERSON'\n    assert candidate('final') == 'FINAL'\n    assert candidate('Valid') == 'VALID'\n\ndef test_check():\n    check(is_upper)\n\n"
+ }
+}

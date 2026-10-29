@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_93_power",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_93_power",
+ "entry_point": "power",
+ "prompt": "/// Write a function to calculate the value of 'a' to the power 'b'.\nfn power(a: isize, b: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = power;\n    assert_eq!(candidate(3, 4), 81);\n    assert_eq!(candidate(2, 3), 8);\n    assert_eq!(candidate(5, 5), 3125);\n}\n",
+ "raw": {
+  "name": "mbpp_93_power",
+  "language": "rs",
+  "prompt": "/// Write a function to calculate the value of 'a' to the power 'b'.\nfn power(a: isize, b: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_93_power.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = power;\n    assert_eq!(candidate(3, 4), 81);\n    assert_eq!(candidate(2, 3), 8);\n    assert_eq!(candidate(5, 5), 3125);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

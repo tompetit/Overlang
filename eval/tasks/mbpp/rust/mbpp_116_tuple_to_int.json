@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_116_tuple_to_int",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_116_tuple_to_int",
+ "entry_point": "tuple_to_int",
+ "prompt": "/// Write a function to convert a given tuple of positive integers into a single integer.\nfn tuple_to_int(nums: (isize, isize, isize)) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = tuple_to_int;\n    assert_eq!(candidate((1, 2, 3)), 123);\n    assert_eq!(candidate((4, 5, 6)), 456);\n    assert_eq!(candidate((5, 6, 7)), 567);\n}\n",
+ "raw": {
+  "name": "mbpp_116_tuple_to_int",
+  "language": "rs",
+  "prompt": "/// Write a function to convert a given tuple of positive integers into a single integer.\nfn tuple_to_int(nums: (isize, isize, isize)) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_116_tuple_to_int.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = tuple_to_int;\n    assert_eq!(candidate((1, 2, 3)), 123);\n    assert_eq!(candidate((4, 5, 6)), 456);\n    assert_eq!(candidate((5, 6, 7)), 567);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

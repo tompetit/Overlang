@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_637_noprofit_noloss",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_637_noprofit_noloss",
+ "entry_point": "noprofit_noloss",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef noprofit_noloss(actual_cost: int, sale_amount: int) -> bool:\n    \"\"\"\n\tWrite a function to check whether the given amount has no profit and no loss\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(1500, 1200) == False\n    assert candidate(100, 100) == True\n    assert candidate(2000, 5000) == False\n\ndef test_check():\n    check(noprofit_noloss)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_637_noprofit_noloss.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef noprofit_noloss(actual_cost: int, sale_amount: int) -> bool:\n    \"\"\"\n\tWrite a function to check whether the given amount has no profit and no loss\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(1500, 1200) == False\n    assert candidate(100, 100) == True\n    assert candidate(2000, 5000) == False\n\ndef test_check():\n    check(noprofit_noloss)\n\n"
+ }
+}

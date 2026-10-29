@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_630_get_coordinates",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_630_get_coordinates",
+ "entry_point": "get_coordinates",
+ "prompt": "/// Write a function to extract all the adjacent coordinates of the given coordinate tuple.\nfn get_coordinates(test_tup: (isize, isize)) -> Vec<Vec<isize>> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = get_coordinates;\n    assert_eq!(candidate((3, 4)), vec![vec![2, 3], vec![2, 4], vec![2, 5], vec![3, 3], vec![3, 4], vec![3, 5], vec![4, 3], vec![4, 4], vec![4, 5]]);\n    assert_eq!(candidate((4, 5)), vec![vec![3, 4], vec![3, 5], vec![3, 6], vec![4, 4], vec![4, 5], vec![4, 6], vec![5, 4], vec![5, 5], vec![5, 6]]);\n    assert_eq!(candidate((5, 6)), vec![vec![4, 5], vec![4, 6], vec![4, 7], vec![5, 5], vec![5, 6], vec![5, 7], vec![6, 5], vec![6, 6], vec![6, 7]]);\n}\n",
+ "raw": {
+  "name": "mbpp_630_get_coordinates",
+  "language": "rs",
+  "prompt": "/// Write a function to extract all the adjacent coordinates of the given coordinate tuple.\nfn get_coordinates(test_tup: (isize, isize)) -> Vec<Vec<isize>> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_630_get_coordinates.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = get_coordinates;\n    assert_eq!(candidate((3, 4)), vec![vec![2, 3], vec![2, 4], vec![2, 5], vec![3, 3], vec![3, 4], vec![3, 5], vec![4, 3], vec![4, 4], vec![4, 5]]);\n    assert_eq!(candidate((4, 5)), vec![vec![3, 4], vec![3, 5], vec![3, 6], vec![4, 4], vec![4, 5], vec![4, 6], vec![5, 4], vec![5, 5], vec![5, 6]]);\n    assert_eq!(candidate((5, 6)), vec![vec![4, 5], vec![4, 6], vec![4, 7], vec![5, 5], vec![5, 6], vec![5, 7], vec![6, 5], vec![6, 6], vec![6, 7]]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

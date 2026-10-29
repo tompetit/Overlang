@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_593_removezero_ip",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_593_removezero_ip",
+ "entry_point": "removezero_ip",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef removezero_ip(ip: str) -> str:\n    \"\"\"\n\tWrite a function to remove leading zeroes from an ip address.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('216.08.094.196') == '216.8.94.196'\n    assert candidate('12.01.024') == '12.1.24'\n    assert candidate('216.08.094.0196') == '216.8.94.196'\n\ndef test_check():\n    check(removezero_ip)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_593_removezero_ip.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef removezero_ip(ip: str) -> str:\n    \"\"\"\n\tWrite a function to remove leading zeroes from an ip address.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('216.08.094.196') == '216.8.94.196'\n    assert candidate('12.01.024') == '12.1.24'\n    assert candidate('216.08.094.0196') == '216.8.94.196'\n\ndef test_check():\n    check(removezero_ip)\n\n"
+ }
+}

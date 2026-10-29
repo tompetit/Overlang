@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_310_string_to_tuple",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_310_string_to_tuple",
+ "entry_point": "string_to_tuple",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef string_to_tuple(str1: str) -> List[str]:\n    \"\"\"\n\tWrite a function to convert a given string to a list of characters.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('python 3.0') == ['p', 'y', 't', 'h', 'o', 'n', '3', '.', '0']\n    assert candidate('item1') == ['i', 't', 'e', 'm', '1']\n    assert candidate('15.10') == ['1', '5', '.', '1', '0']\n\ndef test_check():\n    check(string_to_tuple)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_310_string_to_tuple.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef string_to_tuple(str1: str) -> List[str]:\n    \"\"\"\n\tWrite a function to convert a given string to a list of characters.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('python 3.0') == ['p', 'y', 't', 'h', 'o', 'n', '3', '.', '0']\n    assert candidate('item1') == ['i', 't', 'e', 'm', '1']\n    assert candidate('15.10') == ['1', '5', '.', '1', '0']\n\ndef test_check():\n    check(string_to_tuple)\n\n"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_724_power_base_sum",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_724_power_base_sum",
+ "entry_point": "power_base_sum",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef power_base_sum(base: int, power: int) -> int:\n    \"\"\"\n\tWrite a function that takes base and power as arguments and calculate the sum of all digits of the base to the specified power.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(2, 100) == 115\n    assert candidate(8, 10) == 37\n    assert candidate(8, 15) == 62\n    assert candidate(3, 3) == 9\n\ndef test_check():\n    check(power_base_sum)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_724_power_base_sum.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef power_base_sum(base: int, power: int) -> int:\n    \"\"\"\n\tWrite a function that takes base and power as arguments and calculate the sum of all digits of the base to the specified power.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(2, 100) == 115\n    assert candidate(8, 10) == 37\n    assert candidate(8, 15) == 62\n    assert candidate(3, 3) == 9\n\ndef test_check():\n    check(power_base_sum)\n\n"
+ }
+}

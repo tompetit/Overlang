@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_223_is_majority",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_223_is_majority",
+ "entry_point": "is_majority",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef is_majority(arr: List[int], n: int, x: int) -> bool:\n    \"\"\"\n\tWrite a function that takes in a sorted array, its length (n), and an element and returns whether the element is the majority element in the given sorted array. (The majority element is the element that occurs more than n/2 times.)\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3, 3, 3, 3, 10], 7, 3) == True\n    assert candidate([1, 1, 2, 4, 4, 4, 6, 6], 8, 4) == False\n    assert candidate([1, 1, 1, 2, 2], 5, 1) == True\n    assert candidate([1, 1, 2, 2], 5, 1) == False\n\ndef test_check():\n    check(is_majority)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_223_is_majority.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef is_majority(arr: List[int], n: int, x: int) -> bool:\n    \"\"\"\n\tWrite a function that takes in a sorted array, its length (n), and an element and returns whether the element is the majority element in the given sorted array. (The majority element is the element that occurs more than n/2 times.)\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3, 3, 3, 3, 10], 7, 3) == True\n    assert candidate([1, 1, 2, 4, 4, 4, 6, 6], 8, 4) == False\n    assert candidate([1, 1, 1, 2, 2], 5, 1) == True\n    assert candidate([1, 1, 2, 2], 5, 1) == False\n\ndef test_check():\n    check(is_majority)\n\n"
+ }
+}

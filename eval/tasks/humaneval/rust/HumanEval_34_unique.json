@@ -1,0 +1,21 @@
+{
+ "id": "HumanEval_34_unique",
+ "benchmark": "humaneval",
+ "lang": "rust",
+ "name": "HumanEval_34_unique",
+ "entry_point": "unique",
+ "prompt": "/// Return sorted unique elements in a vector\n/// >>> unique(vec![5, 3, 5, 2, 3, 3, 9, 0, 123])\n/// vec![0, 2, 3, 5, 9, 123]\nfn unique(l: Vec<isize>) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = unique;\n    assert_eq!(candidate(vec![5, 3, 5, 2, 3, 3, 9, 0, 123]), vec![0, 2, 3, 5, 9, 123]);\n}\n",
+ "raw": {
+  "name": "HumanEval_34_unique",
+  "language": "rs",
+  "prompt": "/// Return sorted unique elements in a vector\n/// >>> unique(vec![5, 3, 5, 2, 3, 3, 9, 0, 123])\n/// vec![0, 2, 3, 5, 9, 123]\nfn unique(l: Vec<isize>) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/work/arjunguha-research-group/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_34_unique.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = unique;\n    assert_eq!(candidate(vec![5, 3, 5, 2, 3, 3, 9, 0, 123]), vec![0, 2, 3, 5, 9, 123]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

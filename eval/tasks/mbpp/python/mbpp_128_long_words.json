@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_128_long_words",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_128_long_words",
+ "entry_point": "long_words",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef long_words(n: int, str: str) -> List[str]:\n    \"\"\"\n\tWrite a function to find words that are longer than n characters from a given list of words.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(3, 'python is a programming language') == ['python', 'programming', 'language']\n    assert candidate(2, 'writing a program') == ['writing', 'program']\n    assert candidate(5, 'sorting list') == ['sorting']\n\ndef test_check():\n    check(long_words)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_128_long_words.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef long_words(n: int, str: str) -> List[str]:\n    \"\"\"\n\tWrite a function to find words that are longer than n characters from a given list of words.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(3, 'python is a programming language') == ['python', 'programming', 'language']\n    assert candidate(2, 'writing a program') == ['writing', 'program']\n    assert candidate(5, 'sorting list') == ['sorting']\n\ndef test_check():\n    check(long_words)\n\n"
+ }
+}

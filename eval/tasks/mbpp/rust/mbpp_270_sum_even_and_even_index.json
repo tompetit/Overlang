@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_270_sum_even_and_even_index",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_270_sum_even_and_even_index",
+ "entry_point": "sum_even_and_even_index",
+ "prompt": "/// Write a rsthon function to find the sum of even numbers at even positions of a vector.\nfn sum_even_and_even_index(arr: Vec<isize>) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = sum_even_and_even_index;\n    assert_eq!(candidate(vec![5, 6, 12, 1, 18, 8]), 30);\n    assert_eq!(candidate(vec![3, 20, 17, 9, 2, 10, 18, 13, 6, 18]), 26);\n    assert_eq!(candidate(vec![5, 6, 12, 1]), 12);\n}\n",
+ "raw": {
+  "name": "mbpp_270_sum_even_and_even_index",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to find the sum of even numbers at even positions of a vector.\nfn sum_even_and_even_index(arr: Vec<isize>) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_270_sum_even_and_even_index.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = sum_even_and_even_index;\n    assert_eq!(candidate(vec![5, 6, 12, 1, 18, 8]), 30);\n    assert_eq!(candidate(vec![3, 20, 17, 9, 2, 10, 18, 13, 6, 18]), 26);\n    assert_eq!(candidate(vec![5, 6, 12, 1]), 12);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_459_remove_uppercase",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_459_remove_uppercase",
+ "entry_point": "remove_uppercase",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef remove_uppercase(str1: str) -> str:\n    \"\"\"\n\tWrite a function to remove uppercase substrings from a given string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('cAstyoUrFavoRitETVshoWs') == 'cstyoravoitshos'\n    assert candidate('wAtchTheinTernEtrAdIo') == 'wtchheinerntrdo'\n    assert candidate('VoicESeaRchAndreComMendaTionS') == 'oiceachndreomendaion'\n\ndef test_check():\n    check(remove_uppercase)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_459_remove_uppercase.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef remove_uppercase(str1: str) -> str:\n    \"\"\"\n\tWrite a function to remove uppercase substrings from a given string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('cAstyoUrFavoRitETVshoWs') == 'cstyoravoitshos'\n    assert candidate('wAtchTheinTernEtrAdIo') == 'wtchheinerntrdo'\n    assert candidate('VoicESeaRchAndreComMendaTionS') == 'oiceachndreomendaion'\n\ndef test_check():\n    check(remove_uppercase)\n\n"
+ }
+}

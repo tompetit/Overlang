@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_468_max_product",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_468_max_product",
+ "entry_point": "max_product",
+ "prompt": "/// Write a function to find the maximum product formed by multiplying numbers of an increasing subsequence of that vector.\nfn max_product(arr: Vec<isize>) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = max_product;\n    assert_eq!(candidate(vec![3, 100, 4, 5, 150, 6]), 3000);\n    assert_eq!(candidate(vec![4, 42, 55, 68, 80]), 50265600);\n    assert_eq!(candidate(vec![10, 22, 9, 33, 21, 50, 41, 60]), 2460);\n}\n",
+ "raw": {
+  "name": "mbpp_468_max_product",
+  "language": "rs",
+  "prompt": "/// Write a function to find the maximum product formed by multiplying numbers of an increasing subsequence of that vector.\nfn max_product(arr: Vec<isize>) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_468_max_product.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = max_product;\n    assert_eq!(candidate(vec![3, 100, 4, 5, 150, 6]), 3000);\n    assert_eq!(candidate(vec![4, 42, 55, 68, 80]), 50265600);\n    assert_eq!(candidate(vec![10, 22, 9, 33, 21, 50, 41, 60]), 2460);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

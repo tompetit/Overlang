@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_776_count_vowels",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_776_count_vowels",
+ "entry_point": "count_vowels",
+ "prompt": "/// Write a function to count those characters which have vowels as their neighbors in the given string.\nfn count_vowels(test_str: String) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = count_vowels;\n    assert_eq!(candidate(String::from(\"bestinstareels\")), 7);\n    assert_eq!(candidate(String::from(\"partofthejourneyistheend\")), 12);\n    assert_eq!(candidate(String::from(\"amazonprime\")), 5);\n}\n",
+ "raw": {
+  "name": "mbpp_776_count_vowels",
+  "language": "rs",
+  "prompt": "/// Write a function to count those characters which have vowels as their neighbors in the given string.\nfn count_vowels(test_str: String) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_776_count_vowels.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = count_vowels;\n    assert_eq!(candidate(String::from(\"bestinstareels\")), 7);\n    assert_eq!(candidate(String::from(\"partofthejourneyistheend\")), 12);\n    assert_eq!(candidate(String::from(\"amazonprime\")), 5);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

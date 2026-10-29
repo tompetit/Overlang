@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_627_find_First_Missing",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_627_find_First_Missing",
+ "entry_point": "find_First_Missing",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef find_First_Missing(array: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find the smallest missing number from a sorted list of natural numbers.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([0, 1, 2, 3]) == 4\n    assert candidate([0, 1, 2, 6, 9]) == 3\n    assert candidate([2, 3, 5, 8, 9]) == 0\n\ndef test_check():\n    check(find_First_Missing)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_627_find_First_Missing.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef find_First_Missing(array: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find the smallest missing number from a sorted list of natural numbers.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([0, 1, 2, 3]) == 4\n    assert candidate([0, 1, 2, 6, 9]) == 3\n    assert candidate([2, 3, 5, 8, 9]) == 0\n\ndef test_check():\n    check(find_First_Missing)\n\n"
+ }
+}

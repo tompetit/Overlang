@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_773_occurance_substring",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_773_occurance_substring",
+ "entry_point": "occurance_substring",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef occurance_substring(text: str, pattern: str) -> Optional[Tuple[str, int, int]]:\n    \"\"\"\n\tWrite a function to find the occurrence and position of the substrings within a string. Return None if there is no match.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('python programming, python language', 'python') == ('python', 0, 6)\n    assert candidate('python programming,programming language', 'programming') == ('programming', 7, 18)\n    assert candidate('python programming,programming language', 'language') == ('language', 31, 39)\n    assert candidate('c++ programming, c++ language', 'python') == None\n\ndef test_check():\n    check(occurance_substring)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_773_occurance_substring.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef occurance_substring(text: str, pattern: str) -> Optional[Tuple[str, int, int]]:\n    \"\"\"\n\tWrite a function to find the occurrence and position of the substrings within a string. Return None if there is no match.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('python programming, python language', 'python') == ('python', 0, 6)\n    assert candidate('python programming,programming language', 'programming') == ('programming', 7, 18)\n    assert candidate('python programming,programming language', 'language') == ('language', 31, 39)\n    assert candidate('c++ programming, c++ language', 'python') == None\n\ndef test_check():\n    check(occurance_substring)\n\n"
+ }
+}

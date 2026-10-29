@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_70_get_equal",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_70_get_equal",
+ "entry_point": "get_equal",
+ "prompt": "/// Write a function to find whether all the given vectors have equal length or not.\nfn get_equal(Input: Vec<Vec<isize>>) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = get_equal;\n    assert_eq!(candidate(vec![vec![11, 22, 33], vec![44, 55, 66]]), true);\n    assert_eq!(candidate(vec![vec![1, 2, 3], vec![4, 5, 6, 7]]), false);\n    assert_eq!(candidate(vec![vec![1, 2], vec![3, 4]]), true);\n}\n",
+ "raw": {
+  "name": "mbpp_70_get_equal",
+  "language": "rs",
+  "prompt": "/// Write a function to find whether all the given vectors have equal length or not.\nfn get_equal(Input: Vec<Vec<isize>>) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_70_get_equal.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = get_equal;\n    assert_eq!(candidate(vec![vec![11, 22, 33], vec![44, 55, 66]]), true);\n    assert_eq!(candidate(vec![vec![1, 2, 3], vec![4, 5, 6, 7]]), false);\n    assert_eq!(candidate(vec![vec![1, 2], vec![3, 4]]), true);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

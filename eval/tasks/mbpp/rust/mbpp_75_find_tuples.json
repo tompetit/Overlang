@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_75_find_tuples",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_75_find_tuples",
+ "entry_point": "find_tuples",
+ "prompt": "/// Write a function to find tuples which have all elements divisible by k from the given vector of tuples.\nfn find_tuples(test_list: Vec<(isize, isize, isize)>, K: isize) -> Vec<(isize, isize, isize)> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = find_tuples;\n    assert_eq!(candidate(vec![(6, 24, 12), (7, 9, 6), (12, 18, 21)], 6), vec![(6, 24, 12)]);\n    assert_eq!(candidate(vec![(5, 25, 30), (4, 2, 3), (7, 8, 9)], 5), vec![(5, 25, 30)]);\n    assert_eq!(candidate(vec![(7, 9, 16), (8, 16, 4), (19, 17, 18)], 4), vec![(8, 16, 4)]);\n}\n",
+ "raw": {
+  "name": "mbpp_75_find_tuples",
+  "language": "rs",
+  "prompt": "/// Write a function to find tuples which have all elements divisible by k from the given vector of tuples.\nfn find_tuples(test_list: Vec<(isize, isize, isize)>, K: isize) -> Vec<(isize, isize, isize)> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_75_find_tuples.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = find_tuples;\n    assert_eq!(candidate(vec![(6, 24, 12), (7, 9, 6), (12, 18, 21)], 6), vec![(6, 24, 12)]);\n    assert_eq!(candidate(vec![(5, 25, 30), (4, 2, 3), (7, 8, 9)], 5), vec![(5, 25, 30)]);\n    assert_eq!(candidate(vec![(7, 9, 16), (8, 16, 4), (19, 17, 18)], 4), vec![(8, 16, 4)]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

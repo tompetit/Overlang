@@ -1,0 +1,14 @@
+{
+ "id": "HumanEval_45_triangle_area",
+ "benchmark": "humaneval",
+ "lang": "python",
+ "name": "HumanEval_45_triangle_area",
+ "entry_point": "triangle_area",
+ "prompt": "\n\ndef triangle_area(a: int, h: int) -> float:\n    \"\"\"Given length of a side and high return area for a triangle.\n    >>> triangle_area(5, 3)\n    7.5\n    \"\"\"\n",
+ "tests": "METADATA = {}\n\n\ndef check(candidate):\n    assert candidate(5, 3) == 7.5\n    assert candidate(2, 2) == 2.0\n    assert candidate(10, 8) == 40.0\n\ndef test_check():\n    check(triangle_area)\n",
+ "solution": "\n\ndef triangle_area(a: int, h: int) -> float:\n    \"\"\"Given length of a side and high return area for a triangle.\n    >>> triangle_area(5, 3)\n    7.5\n    \"\"\"\n\n    return a * h / 2.0\n\n",
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/originals-with-cleaned-doctests/HumanEval_45_triangle_area.py",
+  "text": "\n\ndef triangle_area(a: int, h: int) -> float:\n    \"\"\"Given length of a side and high return area for a triangle.\n    >>> triangle_area(5, 3)\n    7.5\n    \"\"\"\n    ### Canonical solution below ###\n    return a * h / 2.0\n\n### Unit tests below ###\n\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate(5, 3) == 7.5\n    assert candidate(2, 2) == 2.0\n    assert candidate(10, 8) == 40.0\n\ndef test_check():\n    check(triangle_area)\n"
+ }
+}

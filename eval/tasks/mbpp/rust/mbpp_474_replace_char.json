@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_474_replace_char",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_474_replace_char",
+ "entry_point": "replace_char",
+ "prompt": "/// Write a function to replace characters in a string.\nfn replace_char(str1: String, ch: String, newch: String) -> String {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = replace_char;\n    assert_eq!(candidate(String::from(\"polygon\"), String::from(\"y\"), String::from(\"l\")), String::from(\"pollgon\"));\n    assert_eq!(candidate(String::from(\"character\"), String::from(\"c\"), String::from(\"a\")), String::from(\"aharaater\"));\n    assert_eq!(candidate(String::from(\"python\"), String::from(\"l\"), String::from(\"a\")), String::from(\"python\"));\n}\n",
+ "raw": {
+  "name": "mbpp_474_replace_char",
+  "language": "rs",
+  "prompt": "/// Write a function to replace characters in a string.\nfn replace_char(str1: String, ch: String, newch: String) -> String {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_474_replace_char.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = replace_char;\n    assert_eq!(candidate(String::from(\"polygon\"), String::from(\"y\"), String::from(\"l\")), String::from(\"pollgon\"));\n    assert_eq!(candidate(String::from(\"character\"), String::from(\"c\"), String::from(\"a\")), String::from(\"aharaater\"));\n    assert_eq!(candidate(String::from(\"python\"), String::from(\"l\"), String::from(\"a\")), String::from(\"python\"));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

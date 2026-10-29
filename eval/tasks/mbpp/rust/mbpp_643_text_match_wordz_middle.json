@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_643_text_match_wordz_middle",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_643_text_match_wordz_middle",
+ "entry_point": "text_match_wordz_middle",
+ "prompt": "/// Write a function that checks if a strings contains 'z', except at the start and end of the word.\nfn text_match_wordz_middle(text: String) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = text_match_wordz_middle;\n    assert_eq!(candidate(String::from(\"pythonzabc.\")), true);\n    assert_eq!(candidate(String::from(\"zxyabc.\")), false);\n    assert_eq!(candidate(String::from(\"  lang  .\")), false);\n}\n",
+ "raw": {
+  "name": "mbpp_643_text_match_wordz_middle",
+  "language": "rs",
+  "prompt": "/// Write a function that checks if a strings contains 'z', except at the start and end of the word.\nfn text_match_wordz_middle(text: String) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_643_text_match_wordz_middle.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = text_match_wordz_middle;\n    assert_eq!(candidate(String::from(\"pythonzabc.\")), true);\n    assert_eq!(candidate(String::from(\"zxyabc.\")), false);\n    assert_eq!(candidate(String::from(\"  lang  .\")), false);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

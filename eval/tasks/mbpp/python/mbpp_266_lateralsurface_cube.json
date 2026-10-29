@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_266_lateralsurface_cube",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_266_lateralsurface_cube",
+ "entry_point": "lateralsurface_cube",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef lateralsurface_cube(l: int) -> int:\n    \"\"\"\n\tWrite a function to find the lateral surface area of a cube given its side length.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(5) == 100\n    assert candidate(9) == 324\n    assert candidate(10) == 400\n\ndef test_check():\n    check(lateralsurface_cube)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_266_lateralsurface_cube.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef lateralsurface_cube(l: int) -> int:\n    \"\"\"\n\tWrite a function to find the lateral surface area of a cube given its side length.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(5) == 100\n    assert candidate(9) == 324\n    assert candidate(10) == 400\n\ndef test_check():\n    check(lateralsurface_cube)\n\n"
+ }
+}

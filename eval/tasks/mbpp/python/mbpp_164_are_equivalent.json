@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_164_are_equivalent",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_164_are_equivalent",
+ "entry_point": "are_equivalent",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef are_equivalent(num1: int, num2: int) -> bool:\n    \"\"\"\n\tWrite a function to determine if the sum of the divisors of two integers are the same.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(36, 57) == False\n    assert candidate(2, 4) == False\n    assert candidate(23, 47) == True\n\ndef test_check():\n    check(are_equivalent)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_164_are_equivalent.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef are_equivalent(num1: int, num2: int) -> bool:\n    \"\"\"\n\tWrite a function to determine if the sum of the divisors of two integers are the same.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(36, 57) == False\n    assert candidate(2, 4) == False\n    assert candidate(23, 47) == True\n\ndef test_check():\n    check(are_equivalent)\n\n"
+ }
+}

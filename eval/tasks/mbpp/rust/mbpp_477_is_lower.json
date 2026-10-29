@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_477_is_lower",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_477_is_lower",
+ "entry_point": "is_lower",
+ "prompt": "/// Write a rsthon function to convert the given string to lower case.\nfn is_lower(string: String) -> String {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = is_lower;\n    assert_eq!(candidate(String::from(\"InValid\")), String::from(\"invalid\"));\n    assert_eq!(candidate(String::from(\"TruE\")), String::from(\"true\"));\n    assert_eq!(candidate(String::from(\"SenTenCE\")), String::from(\"sentence\"));\n}\n",
+ "raw": {
+  "name": "mbpp_477_is_lower",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to convert the given string to lower case.\nfn is_lower(string: String) -> String {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_477_is_lower.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = is_lower;\n    assert_eq!(candidate(String::from(\"InValid\")), String::from(\"invalid\"));\n    assert_eq!(candidate(String::from(\"TruE\")), String::from(\"true\"));\n    assert_eq!(candidate(String::from(\"SenTenCE\")), String::from(\"sentence\"));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

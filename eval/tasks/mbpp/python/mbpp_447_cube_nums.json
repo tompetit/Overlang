@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_447_cube_nums",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_447_cube_nums",
+ "entry_point": "cube_nums",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef cube_nums(nums: List[int]) -> List[int]:\n    \"\"\"\n\tWrite a function to find cubes of individual elements in a list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == [1, 8, 27, 64, 125, 216, 343, 512, 729, 1000]\n    assert candidate([10, 20, 30]) == [1000, 8000, 27000]\n    assert candidate([12, 15]) == [1728, 3375]\n\ndef test_check():\n    check(cube_nums)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_447_cube_nums.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef cube_nums(nums: List[int]) -> List[int]:\n    \"\"\"\n\tWrite a function to find cubes of individual elements in a list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == [1, 8, 27, 64, 125, 216, 343, 512, 729, 1000]\n    assert candidate([10, 20, 30]) == [1000, 8000, 27000]\n    assert candidate([12, 15]) == [1728, 3375]\n\ndef test_check():\n    check(cube_nums)\n\n"
+ }
+}

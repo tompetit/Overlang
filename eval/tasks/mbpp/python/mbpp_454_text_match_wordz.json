@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_454_text_match_wordz",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_454_text_match_wordz",
+ "entry_point": "text_match_wordz",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef text_match_wordz(text: str) -> bool:\n    \"\"\"\n\tWrite a function that matches a word containing 'z'.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('pythonz.') == True\n    assert candidate('xyz.') == True\n    assert candidate('  lang  .') == False\n\ndef test_check():\n    check(text_match_wordz)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_454_text_match_wordz.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef text_match_wordz(text: str) -> bool:\n    \"\"\"\n\tWrite a function that matches a word containing 'z'.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('pythonz.') == True\n    assert candidate('xyz.') == True\n    assert candidate('  lang  .') == False\n\ndef test_check():\n    check(text_match_wordz)\n\n"
+ }
+}

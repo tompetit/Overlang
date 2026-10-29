@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_118_string_to_list",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_118_string_to_list",
+ "entry_point": "string_to_list",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef string_to_list(string: str) -> List[str]:\n    \"\"\"\n\tWrite a function to convert a string to a list of strings split on the space character.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('python programming') == ['python', 'programming']\n    assert candidate('lists tuples strings') == ['lists', 'tuples', 'strings']\n    assert candidate('write a program') == ['write', 'a', 'program']\n\ndef test_check():\n    check(string_to_list)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_118_string_to_list.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef string_to_list(string: str) -> List[str]:\n    \"\"\"\n\tWrite a function to convert a string to a list of strings split on the space character.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('python programming') == ['python', 'programming']\n    assert candidate('lists tuples strings') == ['lists', 'tuples', 'strings']\n    assert candidate('write a program') == ['write', 'a', 'program']\n\ndef test_check():\n    check(string_to_list)\n\n"
+ }
+}

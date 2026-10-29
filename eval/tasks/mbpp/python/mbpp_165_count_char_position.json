@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_165_count_char_position",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_165_count_char_position",
+ "entry_point": "count_char_position",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef count_char_position(str1: str) -> int:\n    \"\"\"\n\tWrite a function to count the number of characters in a string that occur at the same position in the string as in the English alphabet (case insensitive).\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('xbcefg') == 2\n    assert candidate('ABcED') == 3\n    assert candidate('AbgdeF') == 5\n\ndef test_check():\n    check(count_char_position)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_165_count_char_position.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef count_char_position(str1: str) -> int:\n    \"\"\"\n\tWrite a function to count the number of characters in a string that occur at the same position in the string as in the English alphabet (case insensitive).\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('xbcefg') == 2\n    assert candidate('ABcED') == 3\n    assert candidate('AbgdeF') == 5\n\ndef test_check():\n    check(count_char_position)\n\n"
+ }
+}

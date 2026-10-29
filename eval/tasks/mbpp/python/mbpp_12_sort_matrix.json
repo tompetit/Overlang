@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_12_sort_matrix",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_12_sort_matrix",
+ "entry_point": "sort_matrix",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef sort_matrix(M: List[List[int]]) -> List[List[int]]:\n    \"\"\"\n\tWrite a function to sort a given matrix in ascending order according to the sum of its rows.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([[1, 2, 3], [2, 4, 5], [1, 1, 1]]) == [[1, 1, 1], [1, 2, 3], [2, 4, 5]]\n    assert candidate([[1, 2, 3], [-2, 4, -5], [1, -1, 1]]) == [[-2, 4, -5], [1, -1, 1], [1, 2, 3]]\n    assert candidate([[5, 8, 9], [6, 4, 3], [2, 1, 4]]) == [[2, 1, 4], [6, 4, 3], [5, 8, 9]]\n\ndef test_check():\n    check(sort_matrix)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_12_sort_matrix.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef sort_matrix(M: List[List[int]]) -> List[List[int]]:\n    \"\"\"\n\tWrite a function to sort a given matrix in ascending order according to the sum of its rows.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([[1, 2, 3], [2, 4, 5], [1, 1, 1]]) == [[1, 1, 1], [1, 2, 3], [2, 4, 5]]\n    assert candidate([[1, 2, 3], [-2, 4, -5], [1, -1, 1]]) == [[-2, 4, -5], [1, -1, 1], [1, 2, 3]]\n    assert candidate([[5, 8, 9], [6, 4, 3], [2, 1, 4]]) == [[2, 1, 4], [6, 4, 3], [5, 8, 9]]\n\ndef test_check():\n    check(sort_matrix)\n\n"
+ }
+}

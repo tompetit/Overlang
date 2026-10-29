@@ -1,0 +1,21 @@
+{
+ "id": "HumanEval_27_flip_case",
+ "benchmark": "humaneval",
+ "lang": "rust",
+ "name": "HumanEval_27_flip_case",
+ "entry_point": "flip_case",
+ "prompt": "/// For a given string, flip lowercase characters to uppercase and uppercase to lowercase.\n/// >>> flip_case(String::from(\"Hello\"))\n/// String::from(\"hELLO\")\nfn flip_case(string: String) -> String {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = flip_case;\n    assert_eq!(candidate(String::from(\"\")), String::from(\"\"));\n    assert_eq!(candidate(String::from(\"Hello!\")), String::from(\"hELLO!\"));\n    assert_eq!(candidate(String::from(\"These violent delights have violent ends\")), String::from(\"tHESE VIOLENT DELIGHTS HAVE VIOLENT ENDS\"));\n}\n",
+ "raw": {
+  "name": "HumanEval_27_flip_case",
+  "language": "rs",
+  "prompt": "/// For a given string, flip lowercase characters to uppercase and uppercase to lowercase.\n/// >>> flip_case(String::from(\"Hello\"))\n/// String::from(\"hELLO\")\nfn flip_case(string: String) -> String {\n",
+  "doctests": "transform",
+  "original": "/work/arjunguha-research-group/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_27_flip_case.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = flip_case;\n    assert_eq!(candidate(String::from(\"\")), String::from(\"\"));\n    assert_eq!(candidate(String::from(\"Hello!\")), String::from(\"hELLO!\"));\n    assert_eq!(candidate(String::from(\"These violent delights have violent ends\")), String::from(\"tHESE VIOLENT DELIGHTS HAVE VIOLENT ENDS\"));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

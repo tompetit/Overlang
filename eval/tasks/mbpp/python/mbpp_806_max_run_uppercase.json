@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_806_max_run_uppercase",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_806_max_run_uppercase",
+ "entry_point": "max_run_uppercase",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef max_run_uppercase(test_str: str) -> int:\n    \"\"\"\n\tWrite a function to find maximum run of uppercase characters in the given string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('GeMKSForGERksISBESt') == 5\n    assert candidate('PrECIOusMOVemENTSYT') == 6\n    assert candidate('GooGLEFluTTER') == 4\n\ndef test_check():\n    check(max_run_uppercase)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_806_max_run_uppercase.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef max_run_uppercase(test_str: str) -> int:\n    \"\"\"\n\tWrite a function to find maximum run of uppercase characters in the given string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('GeMKSForGERksISBESt') == 5\n    assert candidate('PrECIOusMOVemENTSYT') == 6\n    assert candidate('GooGLEFluTTER') == 4\n\ndef test_check():\n    check(max_run_uppercase)\n\n"
+ }
+}

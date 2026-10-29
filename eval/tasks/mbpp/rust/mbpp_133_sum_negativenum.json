@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_133_sum_negativenum",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_133_sum_negativenum",
+ "entry_point": "sum_negativenum",
+ "prompt": "/// Write a function to calculate the sum of the negative numbers of a given vector of numbers.\nfn sum_negativenum(nums: Vec<isize>) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = sum_negativenum;\n    assert_eq!(candidate(vec![2, 4, -6, -9, 11, -12, 14, -5, 17]), -32);\n    assert_eq!(candidate(vec![10, 15, -14, 13, -18, 12, -20]), -52);\n    assert_eq!(candidate(vec![19, -65, 57, 39, 152, -639, 121, 44, 90, -190]), -894);\n}\n",
+ "raw": {
+  "name": "mbpp_133_sum_negativenum",
+  "language": "rs",
+  "prompt": "/// Write a function to calculate the sum of the negative numbers of a given vector of numbers.\nfn sum_negativenum(nums: Vec<isize>) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_133_sum_negativenum.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = sum_negativenum;\n    assert_eq!(candidate(vec![2, 4, -6, -9, 11, -12, 14, -5, 17]), -32);\n    assert_eq!(candidate(vec![10, 15, -14, 13, -18, 12, -20]), -52);\n    assert_eq!(candidate(vec![19, -65, 57, 39, 152, -639, 121, 44, 90, -190]), -894);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

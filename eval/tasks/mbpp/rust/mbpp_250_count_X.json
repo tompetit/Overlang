@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_250_count_X",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_250_count_X",
+ "entry_point": "count_X",
+ "prompt": "/// Write a rsthon function that takes in a tuple and an element and counts the occcurences of the element in the vector.\nfn count_X(tup: Vec<isize>, x: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = count_X;\n    assert_eq!(candidate(vec![10, 8, 5, 2, 10, 15, 10, 8, 5, 8, 8, 2], 4), 0);\n    assert_eq!(candidate(vec![10, 8, 5, 2, 10, 15, 10, 8, 5, 8, 8, 2], 10), 3);\n    assert_eq!(candidate(vec![10, 8, 5, 2, 10, 15, 10, 8, 5, 8, 8, 2], 8), 4);\n}\n",
+ "raw": {
+  "name": "mbpp_250_count_X",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function that takes in a tuple and an element and counts the occcurences of the element in the vector.\nfn count_X(tup: Vec<isize>, x: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_250_count_X.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = count_X;\n    assert_eq!(candidate(vec![10, 8, 5, 2, 10, 15, 10, 8, 5, 8, 8, 2], 4), 0);\n    assert_eq!(candidate(vec![10, 8, 5, 2, 10, 15, 10, 8, 5, 8, 8, 2], 10), 3);\n    assert_eq!(candidate(vec![10, 8, 5, 2, 10, 15, 10, 8, 5, 8, 8, 2], 8), 4);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

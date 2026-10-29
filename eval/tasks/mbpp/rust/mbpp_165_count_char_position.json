@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_165_count_char_position",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_165_count_char_position",
+ "entry_point": "count_char_position",
+ "prompt": "/// Write a function to count the number of characters in a string that occur at the same position in the string as in the English alphabet (case insensitive).\nfn count_char_position(str1: String) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = count_char_position;\n    assert_eq!(candidate(String::from(\"xbcefg\")), 2);\n    assert_eq!(candidate(String::from(\"ABcED\")), 3);\n    assert_eq!(candidate(String::from(\"AbgdeF\")), 5);\n}\n",
+ "raw": {
+  "name": "mbpp_165_count_char_position",
+  "language": "rs",
+  "prompt": "/// Write a function to count the number of characters in a string that occur at the same position in the string as in the English alphabet (case insensitive).\nfn count_char_position(str1: String) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_165_count_char_position.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = count_char_position;\n    assert_eq!(candidate(String::from(\"xbcefg\")), 2);\n    assert_eq!(candidate(String::from(\"ABcED\")), 3);\n    assert_eq!(candidate(String::from(\"AbgdeF\")), 5);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

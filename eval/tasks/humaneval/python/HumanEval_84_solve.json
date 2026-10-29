@@ -1,0 +1,14 @@
+{
+ "id": "HumanEval_84_solve",
+ "benchmark": "humaneval",
+ "lang": "python",
+ "name": "HumanEval_84_solve",
+ "entry_point": "solve",
+ "prompt": "\ndef solve(N: int) -> str:\n    \"\"\"Given a positive integer N, return the total sum of its digits in binary.\n    \n    Example\n    >>> solve(1000)\n    \"1\"\n    >>> solve(150)\n    \"110\"\n    >>> solve(147)\n    \"1100\"\n    \n    Variables:\n        @N integer\n             Constraints: 0 \u2264 N \u2264 10000.\n    Output:\n         a string of binary number\n    \"\"\"\n",
+ "tests": "def check(candidate):\n\n    # Check some simple cases\n    \n    assert candidate(1000) == \"1\", \"Error\"\n    assert candidate(150) == \"110\", \"Error\"\n    assert candidate(147) == \"1100\", \"Error\"\n\n    # Check some edge cases that are easy to work out by hand.\n    \n    assert candidate(333) == \"1001\", \"Error\"\n    assert candidate(963) == \"10010\", \"Error\"\n\ndef test_check():\n    check(solve)\n",
+ "solution": "\ndef solve(N: int) -> str:\n    \"\"\"Given a positive integer N, return the total sum of its digits in binary.\n    \n    Example\n    >>> solve(1000)\n    \"1\"\n    >>> solve(150)\n    \"110\"\n    >>> solve(147)\n    \"1100\"\n    \n    Variables:\n        @N integer\n             Constraints: 0 \u2264 N \u2264 10000.\n    Output:\n         a string of binary number\n    \"\"\"\n\n    return bin(sum(int(i) for i in str(N)))[2:]\n\n",
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/originals-with-cleaned-doctests/HumanEval_84_solve.py",
+  "text": "\ndef solve(N: int) -> str:\n    \"\"\"Given a positive integer N, return the total sum of its digits in binary.\n    \n    Example\n    >>> solve(1000)\n    \"1\"\n    >>> solve(150)\n    \"110\"\n    >>> solve(147)\n    \"1100\"\n    \n    Variables:\n        @N integer\n             Constraints: 0 \u2264 N \u2264 10000.\n    Output:\n         a string of binary number\n    \"\"\"\n    ### Canonical solution below ###\n    return bin(sum(int(i) for i in str(N)))[2:]\n\n### Unit tests below ###\ndef check(candidate):\n\n    # Check some simple cases\n    \n    assert candidate(1000) == \"1\", \"Error\"\n    assert candidate(150) == \"110\", \"Error\"\n    assert candidate(147) == \"1100\", \"Error\"\n\n    # Check some edge cases that are easy to work out by hand.\n    \n    assert candidate(333) == \"1001\", \"Error\"\n    assert candidate(963) == \"10010\", \"Error\"\n\ndef test_check():\n    check(solve)\n"
+ }
+}

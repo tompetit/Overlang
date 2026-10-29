@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_71_comb_sort",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_71_comb_sort",
+ "entry_point": "comb_sort",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef comb_sort(nums: List[int]) -> List[int]:\n    \"\"\"\n\tWrite a function to sort a list of elements.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([5, 15, 37, 25, 79]) == [5, 15, 25, 37, 79]\n    assert candidate([41, 32, 15, 19, 22]) == [15, 19, 22, 32, 41]\n    assert candidate([99, 15, 13, 47]) == [13, 15, 47, 99]\n\ndef test_check():\n    check(comb_sort)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_71_comb_sort.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef comb_sort(nums: List[int]) -> List[int]:\n    \"\"\"\n\tWrite a function to sort a list of elements.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([5, 15, 37, 25, 79]) == [5, 15, 25, 37, 79]\n    assert candidate([41, 32, 15, 19, 22]) == [15, 19, 22, 32, 41]\n    assert candidate([99, 15, 13, 47]) == [13, 15, 47, 99]\n\ndef test_check():\n    check(comb_sort)\n\n"
+ }
+}

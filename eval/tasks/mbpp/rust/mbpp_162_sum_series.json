@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_162_sum_series",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_162_sum_series",
+ "entry_point": "sum_series",
+ "prompt": "/// Write a function to calculate the sum (n - 2*i) from i=0 to n // 2, for instance n + (n-2) + (n-4)... (until n-x =< 0).\nfn sum_series(n: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = sum_series;\n    assert_eq!(candidate(6), 12);\n    assert_eq!(candidate(10), 30);\n    assert_eq!(candidate(9), 25);\n}\n",
+ "raw": {
+  "name": "mbpp_162_sum_series",
+  "language": "rs",
+  "prompt": "/// Write a function to calculate the sum (n - 2*i) from i=0 to n // 2, for instance n + (n-2) + (n-4)... (until n-x =< 0).\nfn sum_series(n: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_162_sum_series.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = sum_series;\n    assert_eq!(candidate(6), 12);\n    assert_eq!(candidate(10), 30);\n    assert_eq!(candidate(9), 25);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

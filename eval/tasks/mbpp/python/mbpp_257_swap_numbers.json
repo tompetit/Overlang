@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_257_swap_numbers",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_257_swap_numbers",
+ "entry_point": "swap_numbers",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef swap_numbers(a: int, b: int) -> List[int]:\n    \"\"\"\n\tWrite a function that takes in two numbers and returns a list with the second number and then the first number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(10, 20) == [20, 10]\n    assert candidate(15, 17) == [17, 15]\n    assert candidate(100, 200) == [200, 100]\n\ndef test_check():\n    check(swap_numbers)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_257_swap_numbers.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef swap_numbers(a: int, b: int) -> List[int]:\n    \"\"\"\n\tWrite a function that takes in two numbers and returns a list with the second number and then the first number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(10, 20) == [20, 10]\n    assert candidate(15, 17) == [17, 15]\n    assert candidate(100, 200) == [200, 100]\n\ndef test_check():\n    check(swap_numbers)\n\n"
+ }
+}

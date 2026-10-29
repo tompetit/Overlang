@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_607_find_literals",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_607_find_literals",
+ "entry_point": "find_literals",
+ "prompt": "/// Write a function to search a string for a regex pattern. The function should return the matching subtring, a start index and an end index.\nfn find_literals(text: String, pattern: String) -> (String, isize, isize) {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = find_literals;\n    assert_eq!(candidate(String::from(\"The quick brown fox jumps over the lazy dog.\"), String::from(\"fox\")), (String::from(\"fox\"), 16, 19));\n    assert_eq!(candidate(String::from(\"Its been a very crazy procedure right\"), String::from(\"crazy\")), (String::from(\"crazy\"), 16, 21));\n    assert_eq!(candidate(String::from(\"Hardest choices required strongest will\"), String::from(\"will\")), (String::from(\"will\"), 35, 39));\n}\n",
+ "raw": {
+  "name": "mbpp_607_find_literals",
+  "language": "rs",
+  "prompt": "/// Write a function to search a string for a regex pattern. The function should return the matching subtring, a start index and an end index.\nfn find_literals(text: String, pattern: String) -> (String, isize, isize) {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_607_find_literals.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = find_literals;\n    assert_eq!(candidate(String::from(\"The quick brown fox jumps over the lazy dog.\"), String::from(\"fox\")), (String::from(\"fox\"), 16, 19));\n    assert_eq!(candidate(String::from(\"Its been a very crazy procedure right\"), String::from(\"crazy\")), (String::from(\"crazy\"), 16, 21));\n    assert_eq!(candidate(String::from(\"Hardest choices required strongest will\"), String::from(\"will\")), (String::from(\"will\"), 35, 39));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

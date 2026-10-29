@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_586_split_Arr",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_586_split_Arr",
+ "entry_point": "split_Arr",
+ "prompt": "/// Write a rsthon function to split a vector at the nth eelment and add the first part to the end.\nfn split_Arr(l: Vec<isize>, n: isize) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = split_Arr;\n    assert_eq!(candidate(vec![12, 10, 5, 6, 52, 36], 2), vec![5, 6, 52, 36, 12, 10]);\n    assert_eq!(candidate(vec![1, 2, 3, 4], 1), vec![2, 3, 4, 1]);\n    assert_eq!(candidate(vec![0, 1, 2, 3, 4, 5, 6, 7], 3), vec![3, 4, 5, 6, 7, 0, 1, 2]);\n}\n",
+ "raw": {
+  "name": "mbpp_586_split_Arr",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to split a vector at the nth eelment and add the first part to the end.\nfn split_Arr(l: Vec<isize>, n: isize) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_586_split_Arr.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = split_Arr;\n    assert_eq!(candidate(vec![12, 10, 5, 6, 52, 36], 2), vec![5, 6, 52, 36, 12, 10]);\n    assert_eq!(candidate(vec![1, 2, 3, 4], 1), vec![2, 3, 4, 1]);\n    assert_eq!(candidate(vec![0, 1, 2, 3, 4, 5, 6, 7], 3), vec![3, 4, 5, 6, 7, 0, 1, 2]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_103_eulerian_num",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_103_eulerian_num",
+ "entry_point": "eulerian_num",
+ "prompt": "/// Write a function to find the Eulerian number a(n, m).\nfn eulerian_num(n: isize, m: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = eulerian_num;\n    assert_eq!(candidate(3, 1), 4);\n    assert_eq!(candidate(4, 1), 11);\n    assert_eq!(candidate(5, 3), 26);\n}\n",
+ "raw": {
+  "name": "mbpp_103_eulerian_num",
+  "language": "rs",
+  "prompt": "/// Write a function to find the Eulerian number a(n, m).\nfn eulerian_num(n: isize, m: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_103_eulerian_num.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = eulerian_num;\n    assert_eq!(candidate(3, 1), 4);\n    assert_eq!(candidate(4, 1), 11);\n    assert_eq!(candidate(5, 3), 26);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

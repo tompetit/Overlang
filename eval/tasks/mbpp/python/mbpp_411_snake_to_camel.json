@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_411_snake_to_camel",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_411_snake_to_camel",
+ "entry_point": "snake_to_camel",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef snake_to_camel(word: str) -> str:\n    \"\"\"\n\tWrite a function to convert the given snake case string to camel case string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('android_tv') == 'AndroidTv'\n    assert candidate('google_pixel') == 'GooglePixel'\n    assert candidate('apple_watch') == 'AppleWatch'\n\ndef test_check():\n    check(snake_to_camel)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_411_snake_to_camel.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef snake_to_camel(word: str) -> str:\n    \"\"\"\n\tWrite a function to convert the given snake case string to camel case string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('android_tv') == 'AndroidTv'\n    assert candidate('google_pixel') == 'GooglePixel'\n    assert candidate('apple_watch') == 'AppleWatch'\n\ndef test_check():\n    check(snake_to_camel)\n\n"
+ }
+}

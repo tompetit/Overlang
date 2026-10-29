@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_764_number_ctr",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_764_number_ctr",
+ "entry_point": "number_ctr",
+ "prompt": "/// Write a rsthon function to count number of digits in a given string.\nfn number_ctr(str: String) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = number_ctr;\n    assert_eq!(candidate(String::from(\"program2bedone\")), 1);\n    assert_eq!(candidate(String::from(\"3wonders\")), 1);\n    assert_eq!(candidate(String::from(\"123\")), 3);\n    assert_eq!(candidate(String::from(\"3wond-1ers2\")), 3);\n}\n",
+ "raw": {
+  "name": "mbpp_764_number_ctr",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to count number of digits in a given string.\nfn number_ctr(str: String) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_764_number_ctr.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = number_ctr;\n    assert_eq!(candidate(String::from(\"program2bedone\")), 1);\n    assert_eq!(candidate(String::from(\"3wonders\")), 1);\n    assert_eq!(candidate(String::from(\"123\")), 3);\n    assert_eq!(candidate(String::from(\"3wond-1ers2\")), 3);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

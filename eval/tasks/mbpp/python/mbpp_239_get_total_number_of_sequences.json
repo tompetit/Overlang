@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_239_get_total_number_of_sequences",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_239_get_total_number_of_sequences",
+ "entry_point": "get_total_number_of_sequences",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef get_total_number_of_sequences(m: int, n: int) -> int:\n    \"\"\"\n\tWrite a function that takes in positive integers m and n and finds the number of possible sequences of length n, such that each element is a positive integer and is greater than or equal to twice the previous element but less than or equal to m.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(10, 4) == 4\n    assert candidate(5, 2) == 6\n    assert candidate(16, 3) == 84\n\ndef test_check():\n    check(get_total_number_of_sequences)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_239_get_total_number_of_sequences.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef get_total_number_of_sequences(m: int, n: int) -> int:\n    \"\"\"\n\tWrite a function that takes in positive integers m and n and finds the number of possible sequences of length n, such that each element is a positive integer and is greater than or equal to twice the previous element but less than or equal to m.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(10, 4) == 4\n    assert candidate(5, 2) == 6\n    assert candidate(16, 3) == 84\n\ndef test_check():\n    check(get_total_number_of_sequences)\n\n"
+ }
+}

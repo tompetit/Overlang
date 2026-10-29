@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_627_find_First_Missing",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_627_find_First_Missing",
+ "entry_point": "find_First_Missing",
+ "prompt": "/// Write a rsthon function to find the smallest missing number from a sorted vector of natural numbers.\nfn find_First_Missing(array: Vec<isize>) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = find_First_Missing;\n    assert_eq!(candidate(vec![0, 1, 2, 3]), 4);\n    assert_eq!(candidate(vec![0, 1, 2, 6, 9]), 3);\n    assert_eq!(candidate(vec![2, 3, 5, 8, 9]), 0);\n}\n",
+ "raw": {
+  "name": "mbpp_627_find_First_Missing",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to find the smallest missing number from a sorted vector of natural numbers.\nfn find_First_Missing(array: Vec<isize>) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_627_find_First_Missing.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = find_First_Missing;\n    assert_eq!(candidate(vec![0, 1, 2, 3]), 4);\n    assert_eq!(candidate(vec![0, 1, 2, 6, 9]), 3);\n    assert_eq!(candidate(vec![2, 3, 5, 8, 9]), 0);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

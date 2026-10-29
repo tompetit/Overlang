@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_131_reverse_vowels",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_131_reverse_vowels",
+ "entry_point": "reverse_vowels",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef reverse_vowels(str1: str) -> str:\n    \"\"\"\n\tWrite a python function to reverse only the vowels of a given string (where y is not a vowel).\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('Python') == 'Python'\n    assert candidate('USA') == 'ASU'\n    assert candidate('ab') == 'ab'\n\ndef test_check():\n    check(reverse_vowels)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_131_reverse_vowels.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef reverse_vowels(str1: str) -> str:\n    \"\"\"\n\tWrite a python function to reverse only the vowels of a given string (where y is not a vowel).\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('Python') == 'Python'\n    assert candidate('USA') == 'ASU'\n    assert candidate('ab') == 'ab'\n\ndef test_check():\n    check(reverse_vowels)\n\n"
+ }
+}

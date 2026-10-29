@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_247_lps",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_247_lps",
+ "entry_point": "lps",
+ "prompt": "/// Write a function to find the length of the longest palindromic subsequence in the given string.\nfn lps(str: String) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = lps;\n    assert_eq!(candidate(String::from(\"TENS FOR TENS\")), 5);\n    assert_eq!(candidate(String::from(\"CARDIO FOR CARDS\")), 7);\n    assert_eq!(candidate(String::from(\"PART OF THE JOURNEY IS PART\")), 9);\n}\n",
+ "raw": {
+  "name": "mbpp_247_lps",
+  "language": "rs",
+  "prompt": "/// Write a function to find the length of the longest palindromic subsequence in the given string.\nfn lps(str: String) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_247_lps.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = lps;\n    assert_eq!(candidate(String::from(\"TENS FOR TENS\")), 5);\n    assert_eq!(candidate(String::from(\"CARDIO FOR CARDS\")), 7);\n    assert_eq!(candidate(String::from(\"PART OF THE JOURNEY IS PART\")), 9);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

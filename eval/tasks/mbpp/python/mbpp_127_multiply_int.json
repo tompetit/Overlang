@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_127_multiply_int",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_127_multiply_int",
+ "entry_point": "multiply_int",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef multiply_int(x: int, y: int) -> int:\n    \"\"\"\n\tWrite a function to multiply two integers.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(10, 20) == 200\n    assert candidate(5, 10) == 50\n    assert candidate(4, 8) == 32\n\ndef test_check():\n    check(multiply_int)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_127_multiply_int.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef multiply_int(x: int, y: int) -> int:\n    \"\"\"\n\tWrite a function to multiply two integers.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(10, 20) == 200\n    assert candidate(5, 10) == 50\n    assert candidate(4, 8) == 32\n\ndef test_check():\n    check(multiply_int)\n\n"
+ }
+}

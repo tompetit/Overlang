@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_141_pancake_sort",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_141_pancake_sort",
+ "entry_point": "pancake_sort",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef pancake_sort(nums: List[int]) -> List[int]:\n    \"\"\"\n\tWrite a function to sort a list of elements.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([15, 79, 25, 38, 69]) == [15, 25, 38, 69, 79]\n    assert candidate([98, 12, 54, 36, 85]) == [12, 36, 54, 85, 98]\n    assert candidate([41, 42, 32, 12, 23]) == [12, 23, 32, 41, 42]\n\ndef test_check():\n    check(pancake_sort)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_141_pancake_sort.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef pancake_sort(nums: List[int]) -> List[int]:\n    \"\"\"\n\tWrite a function to sort a list of elements.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([15, 79, 25, 38, 69]) == [15, 25, 38, 69, 79]\n    assert candidate([98, 12, 54, 36, 85]) == [12, 36, 54, 85, 98]\n    assert candidate([41, 42, 32, 12, 23]) == [12, 23, 32, 41, 42]\n\ndef test_check():\n    check(pancake_sort)\n\n"
+ }
+}

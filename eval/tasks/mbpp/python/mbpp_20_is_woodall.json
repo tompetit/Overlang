@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_20_is_woodall",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_20_is_woodall",
+ "entry_point": "is_woodall",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef is_woodall(x: int) -> bool:\n    \"\"\"\n\tWrite a function to check if the given number is woodball or not.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(383) == True\n    assert candidate(254) == False\n    assert candidate(200) == False\n\ndef test_check():\n    check(is_woodall)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_20_is_woodall.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef is_woodall(x: int) -> bool:\n    \"\"\"\n\tWrite a function to check if the given number is woodball or not.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(383) == True\n    assert candidate(254) == False\n    assert candidate(200) == False\n\ndef test_check():\n    check(is_woodall)\n\n"
+ }
+}

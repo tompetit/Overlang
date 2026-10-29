@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_125_find_length",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_125_find_length",
+ "entry_point": "find_length",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef find_length(string: str) -> int:\n    \"\"\"\n\tWrite a function to find the maximum difference between the number of 0s and number of 1s in any sub-string of the given binary string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('11000010001') == 6\n    assert candidate('10111') == 1\n    assert candidate('11011101100101') == 2\n\ndef test_check():\n    check(find_length)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_125_find_length.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef find_length(string: str) -> int:\n    \"\"\"\n\tWrite a function to find the maximum difference between the number of 0s and number of 1s in any sub-string of the given binary string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('11000010001') == 6\n    assert candidate('10111') == 1\n    assert candidate('11011101100101') == 2\n\ndef test_check():\n    check(find_length)\n\n"
+ }
+}

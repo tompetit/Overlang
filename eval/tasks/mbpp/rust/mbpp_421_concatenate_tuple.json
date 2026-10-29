@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_421_concatenate_tuple",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_421_concatenate_tuple",
+ "entry_point": "concatenate_tuple",
+ "prompt": "/// Write a function to concatenate each element of tuple by the delimiter.\nfn concatenate_tuple(test_tup: (String, String, isize, String)) -> String {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = concatenate_tuple;\n    assert_eq!(candidate((String::from(\"ID\"), String::from(\"is\"), 4, String::from(\"UTS\"))), String::from(\"ID-is-4-UTS\"));\n    assert_eq!(candidate((String::from(\"QWE\"), String::from(\"is\"), 4, String::from(\"RTY\"))), String::from(\"QWE-is-4-RTY\"));\n    assert_eq!(candidate((String::from(\"ZEN\"), String::from(\"is\"), 4, String::from(\"OP\"))), String::from(\"ZEN-is-4-OP\"));\n}\n",
+ "raw": {
+  "name": "mbpp_421_concatenate_tuple",
+  "language": "rs",
+  "prompt": "/// Write a function to concatenate each element of tuple by the delimiter.\nfn concatenate_tuple(test_tup: (String, String, isize, String)) -> String {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_421_concatenate_tuple.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = concatenate_tuple;\n    assert_eq!(candidate((String::from(\"ID\"), String::from(\"is\"), 4, String::from(\"UTS\"))), String::from(\"ID-is-4-UTS\"));\n    assert_eq!(candidate((String::from(\"QWE\"), String::from(\"is\"), 4, String::from(\"RTY\"))), String::from(\"QWE-is-4-RTY\"));\n    assert_eq!(candidate((String::from(\"ZEN\"), String::from(\"is\"), 4, String::from(\"OP\"))), String::from(\"ZEN-is-4-OP\"));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

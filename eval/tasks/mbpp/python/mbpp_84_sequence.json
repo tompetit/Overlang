@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_84_sequence",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_84_sequence",
+ "entry_point": "sequence",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef sequence(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the nth number in the newman conway sequence.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(10) == 6\n    assert candidate(2) == 1\n    assert candidate(3) == 2\n\ndef test_check():\n    check(sequence)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_84_sequence.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef sequence(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the nth number in the newman conway sequence.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(10) == 6\n    assert candidate(2) == 1\n    assert candidate(3) == 2\n\ndef test_check():\n    check(sequence)\n\n"
+ }
+}

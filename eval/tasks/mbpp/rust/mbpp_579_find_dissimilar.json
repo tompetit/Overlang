@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_579_find_dissimilar",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_579_find_dissimilar",
+ "entry_point": "find_dissimilar",
+ "prompt": "/// Write a function to find the dissimilar elements in the given two tuples.\nfn find_dissimilar(test_tup1: (isize, isize, isize, isize), test_tup2: (isize, isize, isize, isize)) -> (isize, isize, isize, isize) {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = find_dissimilar;\n    assert_eq!(candidate((3, 4, 5, 6), (5, 7, 4, 10)), (3, 6, 7, 10));\n    assert_eq!(candidate((1, 2, 3, 4), (7, 2, 3, 9)), (1, 4, 7, 9));\n    assert_eq!(candidate((21, 11, 25, 26), (26, 34, 21, 36)), (34, 36, 11, 25));\n}\n",
+ "raw": {
+  "name": "mbpp_579_find_dissimilar",
+  "language": "rs",
+  "prompt": "/// Write a function to find the dissimilar elements in the given two tuples.\nfn find_dissimilar(test_tup1: (isize, isize, isize, isize), test_tup2: (isize, isize, isize, isize)) -> (isize, isize, isize, isize) {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_579_find_dissimilar.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = find_dissimilar;\n    assert_eq!(candidate((3, 4, 5, 6), (5, 7, 4, 10)), (3, 6, 7, 10));\n    assert_eq!(candidate((1, 2, 3, 4), (7, 2, 3, 9)), (1, 4, 7, 9));\n    assert_eq!(candidate((21, 11, 25, 26), (26, 34, 21, 36)), (34, 36, 11, 25));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

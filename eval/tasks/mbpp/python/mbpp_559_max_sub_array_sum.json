@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_559_max_sub_array_sum",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_559_max_sub_array_sum",
+ "entry_point": "max_sub_array_sum",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef max_sub_array_sum(a: List[int], size: int) -> int:\n    \"\"\"\n\tWrite a function to find the sum of the largest contiguous sublist in the given list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([-2, -3, 4, -1, -2, 1, 5, -3], 8) == 7\n    assert candidate([-3, -4, 5, -2, -3, 2, 6, -4], 8) == 8\n    assert candidate([-4, -5, 6, -3, -4, 3, 7, -5], 8) == 10\n\ndef test_check():\n    check(max_sub_array_sum)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_559_max_sub_array_sum.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef max_sub_array_sum(a: List[int], size: int) -> int:\n    \"\"\"\n\tWrite a function to find the sum of the largest contiguous sublist in the given list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([-2, -3, 4, -1, -2, 1, 5, -3], 8) == 7\n    assert candidate([-3, -4, 5, -2, -3, 2, 6, -4], 8) == 8\n    assert candidate([-4, -5, 6, -3, -4, 3, 7, -5], 8) == 10\n\ndef test_check():\n    check(max_sub_array_sum)\n\n"
+ }
+}

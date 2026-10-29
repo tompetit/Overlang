@@ -1,0 +1,21 @@
+{
+ "id": "HumanEval_23_strlen",
+ "benchmark": "humaneval",
+ "lang": "rust",
+ "name": "HumanEval_23_strlen",
+ "entry_point": "strlen",
+ "prompt": "/// Return length of given string\n/// >>> strlen(String::from(\"\"))\n/// 0\n/// >>> strlen(String::from(\"abc\"))\n/// 3\nfn strlen(string: String) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = strlen;\n    assert_eq!(candidate(String::from(\"\")), 0);\n    assert_eq!(candidate(String::from(\"x\")), 1);\n    assert_eq!(candidate(String::from(\"asdasnakj\")), 9);\n}\n",
+ "raw": {
+  "name": "HumanEval_23_strlen",
+  "language": "rs",
+  "prompt": "/// Return length of given string\n/// >>> strlen(String::from(\"\"))\n/// 0\n/// >>> strlen(String::from(\"abc\"))\n/// 3\nfn strlen(string: String) -> isize {\n",
+  "doctests": "transform",
+  "original": "/work/arjunguha-research-group/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_23_strlen.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = strlen;\n    assert_eq!(candidate(String::from(\"\")), 0);\n    assert_eq!(candidate(String::from(\"x\")), 1);\n    assert_eq!(candidate(String::from(\"asdasnakj\")), 9);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

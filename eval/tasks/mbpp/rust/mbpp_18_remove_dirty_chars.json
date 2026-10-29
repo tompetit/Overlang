@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_18_remove_dirty_chars",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_18_remove_dirty_chars",
+ "entry_point": "remove_dirty_chars",
+ "prompt": "/// Write a function to remove characters from the first string which are present in the second string.\nfn remove_dirty_chars(string: String, second_string: String) -> String {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = remove_dirty_chars;\n    assert_eq!(candidate(String::from(\"probasscurve\"), String::from(\"pros\")), String::from(\"bacuve\"));\n    assert_eq!(candidate(String::from(\"digitalindia\"), String::from(\"talent\")), String::from(\"digiidi\"));\n    assert_eq!(candidate(String::from(\"exoticmiles\"), String::from(\"toxic\")), String::from(\"emles\"));\n}\n",
+ "raw": {
+  "name": "mbpp_18_remove_dirty_chars",
+  "language": "rs",
+  "prompt": "/// Write a function to remove characters from the first string which are present in the second string.\nfn remove_dirty_chars(string: String, second_string: String) -> String {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_18_remove_dirty_chars.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = remove_dirty_chars;\n    assert_eq!(candidate(String::from(\"probasscurve\"), String::from(\"pros\")), String::from(\"bacuve\"));\n    assert_eq!(candidate(String::from(\"digitalindia\"), String::from(\"talent\")), String::from(\"digiidi\"));\n    assert_eq!(candidate(String::from(\"exoticmiles\"), String::from(\"toxic\")), String::from(\"emles\"));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

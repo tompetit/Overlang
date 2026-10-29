@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_264_dog_age",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_264_dog_age",
+ "entry_point": "dog_age",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef dog_age(h_age: int) -> int:\n    \"\"\"\n\tWrite a function to calculate a dog's age in dog's years.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(12) == 61\n    assert candidate(15) == 73\n    assert candidate(24) == 109\n\ndef test_check():\n    check(dog_age)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_264_dog_age.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef dog_age(h_age: int) -> int:\n    \"\"\"\n\tWrite a function to calculate a dog's age in dog's years.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(12) == 61\n    assert candidate(15) == 73\n    assert candidate(24) == 109\n\ndef test_check():\n    check(dog_age)\n\n"
+ }
+}

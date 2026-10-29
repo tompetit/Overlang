@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_242_count_charac",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_242_count_charac",
+ "entry_point": "count_charac",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef count_charac(str1: str) -> int:\n    \"\"\"\n\tWrite a function to count the total number of characters in a string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('python programming') == 18\n    assert candidate('language') == 8\n    assert candidate('words') == 5\n\ndef test_check():\n    check(count_charac)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_242_count_charac.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef count_charac(str1: str) -> int:\n    \"\"\"\n\tWrite a function to count the total number of characters in a string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('python programming') == 18\n    assert candidate('language') == 8\n    assert candidate('words') == 5\n\ndef test_check():\n    check(count_charac)\n\n"
+ }
+}

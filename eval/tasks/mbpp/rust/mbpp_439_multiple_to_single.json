@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_439_multiple_to_single",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_439_multiple_to_single",
+ "entry_point": "multiple_to_single",
+ "prompt": "/// Write a function to join a vector of multiple integers into a single integer.\nfn multiple_to_single(L: Vec<isize>) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = multiple_to_single;\n    assert_eq!(candidate(vec![11, 33, 50]), 113350);\n    assert_eq!(candidate(vec![-1, 2, 3, 4, 5, 6]), -123456);\n    assert_eq!(candidate(vec![10, 15, 20, 25]), 10152025);\n}\n",
+ "raw": {
+  "name": "mbpp_439_multiple_to_single",
+  "language": "rs",
+  "prompt": "/// Write a function to join a vector of multiple integers into a single integer.\nfn multiple_to_single(L: Vec<isize>) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_439_multiple_to_single.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = multiple_to_single;\n    assert_eq!(candidate(vec![11, 33, 50]), 113350);\n    assert_eq!(candidate(vec![-1, 2, 3, 4, 5, 6]), -123456);\n    assert_eq!(candidate(vec![10, 15, 20, 25]), 10152025);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

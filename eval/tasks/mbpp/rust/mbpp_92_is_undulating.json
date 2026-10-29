@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_92_is_undulating",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_92_is_undulating",
+ "entry_point": "is_undulating",
+ "prompt": "/// Write a function to check whether the given number is undulating or not.\nfn is_undulating(n: isize) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = is_undulating;\n    assert_eq!(candidate(1212121), true);\n    assert_eq!(candidate(1991), false);\n    assert_eq!(candidate(121), true);\n}\n",
+ "raw": {
+  "name": "mbpp_92_is_undulating",
+  "language": "rs",
+  "prompt": "/// Write a function to check whether the given number is undulating or not.\nfn is_undulating(n: isize) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_92_is_undulating.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = is_undulating;\n    assert_eq!(candidate(1212121), true);\n    assert_eq!(candidate(1991), false);\n    assert_eq!(candidate(121), true);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

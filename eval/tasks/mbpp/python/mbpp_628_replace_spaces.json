@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_628_replace_spaces",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_628_replace_spaces",
+ "entry_point": "replace_spaces",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef replace_spaces(string: str) -> str:\n    \"\"\"\n\tWrite a function to replace all spaces in the given string with '%20'.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('My Name is Dawood') == 'My%20Name%20is%20Dawood'\n    assert candidate('I am a Programmer') == 'I%20am%20a%20Programmer'\n    assert candidate('I love Coding') == 'I%20love%20Coding'\n\ndef test_check():\n    check(replace_spaces)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_628_replace_spaces.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef replace_spaces(string: str) -> str:\n    \"\"\"\n\tWrite a function to replace all spaces in the given string with '%20'.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('My Name is Dawood') == 'My%20Name%20is%20Dawood'\n    assert candidate('I am a Programmer') == 'I%20am%20a%20Programmer'\n    assert candidate('I love Coding') == 'I%20love%20Coding'\n\ndef test_check():\n    check(replace_spaces)\n\n"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_759_is_decimal",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_759_is_decimal",
+ "entry_point": "is_decimal",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef is_decimal(num: str) -> bool:\n    \"\"\"\n\tWrite a function to check whether a given string is a decimal number with a precision of 2.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('123.11') == True\n    assert candidate('e666.86') == False\n    assert candidate('3.124587') == False\n    assert candidate('1.11') == True\n    assert candidate('1.1.11') == False\n\ndef test_check():\n    check(is_decimal)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_759_is_decimal.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef is_decimal(num: str) -> bool:\n    \"\"\"\n\tWrite a function to check whether a given string is a decimal number with a precision of 2.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('123.11') == True\n    assert candidate('e666.86') == False\n    assert candidate('3.124587') == False\n    assert candidate('1.11') == True\n    assert candidate('1.1.11') == False\n\ndef test_check():\n    check(is_decimal)\n\n"
+ }
+}

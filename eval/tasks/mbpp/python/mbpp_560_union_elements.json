@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_560_union_elements",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_560_union_elements",
+ "entry_point": "union_elements",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef union_elements(test_tup1: List[int], test_tup2: List[int]) -> List[int]:\n    \"\"\"\n\tWrite a function to find the union of the elements of two given lists and output them in sorted order.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([3, 4, 5, 6], [5, 7, 4, 10]) == [3, 4, 5, 6, 7, 10]\n    assert candidate([1, 2, 3, 4], [3, 4, 5, 6]) == [1, 2, 3, 4, 5, 6]\n    assert candidate([11, 12, 13, 14], [13, 15, 16, 17]) == [11, 12, 13, 14, 15, 16, 17]\n\ndef test_check():\n    check(union_elements)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_560_union_elements.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef union_elements(test_tup1: List[int], test_tup2: List[int]) -> List[int]:\n    \"\"\"\n\tWrite a function to find the union of the elements of two given lists and output them in sorted order.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([3, 4, 5, 6], [5, 7, 4, 10]) == [3, 4, 5, 6, 7, 10]\n    assert candidate([1, 2, 3, 4], [3, 4, 5, 6]) == [1, 2, 3, 4, 5, 6]\n    assert candidate([11, 12, 13, 14], [13, 15, 16, 17]) == [11, 12, 13, 14, 15, 16, 17]\n\ndef test_check():\n    check(union_elements)\n\n"
+ }
+}

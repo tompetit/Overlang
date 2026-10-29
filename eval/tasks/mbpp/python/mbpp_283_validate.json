@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_283_validate",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_283_validate",
+ "entry_point": "validate",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef validate(n: int) -> bool:\n    \"\"\"\n\tWrite a python function takes in an integer and check whether the frequency of each digit in the integer is less than or equal to the digit itself.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(1234) == True\n    assert candidate(51241) == False\n    assert candidate(321) == True\n\ndef test_check():\n    check(validate)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_283_validate.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef validate(n: int) -> bool:\n    \"\"\"\n\tWrite a python function takes in an integer and check whether the frequency of each digit in the integer is less than or equal to the digit itself.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(1234) == True\n    assert candidate(51241) == False\n    assert candidate(321) == True\n\ndef test_check():\n    check(validate)\n\n"
+ }
+}

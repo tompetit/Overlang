@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_739_find_Index",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_739_find_Index",
+ "entry_point": "find_Index",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef find_Index(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the index of smallest triangular number with n digits. https://www.geeksforgeeks.org/index-of-smallest-triangular-number-with-n-digits/\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(2) == 4\n    assert candidate(3) == 14\n    assert candidate(4) == 45\n\ndef test_check():\n    check(find_Index)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_739_find_Index.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef find_Index(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the index of smallest triangular number with n digits. https://www.geeksforgeeks.org/index-of-smallest-triangular-number-with-n-digits/\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(2) == 4\n    assert candidate(3) == 14\n    assert candidate(4) == 45\n\ndef test_check():\n    check(find_Index)\n\n"
+ }
+}

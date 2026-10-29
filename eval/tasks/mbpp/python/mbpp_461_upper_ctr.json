@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_461_upper_ctr",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_461_upper_ctr",
+ "entry_point": "upper_ctr",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef upper_ctr(str: str) -> int:\n    \"\"\"\n\tWrite a python function to count the upper case characters in a given string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('PYthon') == 1\n    assert candidate('BigData') == 1\n    assert candidate('program') == 0\n\ndef test_check():\n    check(upper_ctr)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_461_upper_ctr.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef upper_ctr(str: str) -> int:\n    \"\"\"\n\tWrite a python function to count the upper case characters in a given string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('PYthon') == 1\n    assert candidate('BigData') == 1\n    assert candidate('program') == 0\n\ndef test_check():\n    check(upper_ctr)\n\n"
+ }
+}

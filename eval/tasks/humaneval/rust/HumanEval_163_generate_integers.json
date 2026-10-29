@@ -1,0 +1,21 @@
+{
+ "id": "HumanEval_163_generate_integers",
+ "benchmark": "humaneval",
+ "lang": "rust",
+ "name": "HumanEval_163_generate_integers",
+ "entry_point": "generate_integers",
+ "prompt": "/// Given two positive integers a and b, return the even digits between a\n/// and b, in ascending order.\n/// For example:\n/// >>> generate_integers(2, 8)\n/// vec![2, 4, 6, 8]\n/// >>> generate_integers(8, 2)\n/// vec![2, 4, 6, 8]\n/// >>> generate_integers(10, 14)\n/// Vec::<isize>::new()\nfn generate_integers(a: isize, b: isize) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = generate_integers;\n    assert_eq!(candidate(2, 10), vec![2, 4, 6, 8]);\n    assert_eq!(candidate(10, 2), vec![2, 4, 6, 8]);\n    assert_eq!(candidate(132, 2), vec![2, 4, 6, 8]);\n    assert_eq!(candidate(17, 89), Vec::<isize>::new());\n}\n",
+ "raw": {
+  "name": "HumanEval_163_generate_integers",
+  "language": "rs",
+  "prompt": "/// Given two positive integers a and b, return the even digits between a\n/// and b, in ascending order.\n/// For example:\n/// >>> generate_integers(2, 8)\n/// vec![2, 4, 6, 8]\n/// >>> generate_integers(8, 2)\n/// vec![2, 4, 6, 8]\n/// >>> generate_integers(10, 14)\n/// Vec::<isize>::new()\nfn generate_integers(a: isize, b: isize) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/work/arjunguha-research-group/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_163_generate_integers.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = generate_integers;\n    assert_eq!(candidate(2, 10), vec![2, 4, 6, 8]);\n    assert_eq!(candidate(10, 2), vec![2, 4, 6, 8]);\n    assert_eq!(candidate(132, 2), vec![2, 4, 6, 8]);\n    assert_eq!(candidate(17, 89), Vec::<isize>::new());\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

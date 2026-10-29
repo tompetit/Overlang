@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_464_check_value",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_464_check_value",
+ "entry_point": "check_value",
+ "prompt": "use std::collections::HashMap;\n\n/// Write a function to check if all values are same in a HashMap.\nfn check_value(dict: HashMap<String, isize>, n: isize) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = check_value;\n    assert_eq!(candidate(HashMap::from([(String::from(\"Cierra Vega\"), 12), (String::from(\"Alden Cantrell\"), 12), (String::from(\"Kierra Gentry\"), 12), (String::from(\"Pierre Cox\"), 12)]), 10), false);\n    assert_eq!(candidate(HashMap::from([(String::from(\"Cierra Vega\"), 12), (String::from(\"Alden Cantrell\"), 12), (String::from(\"Kierra Gentry\"), 12), (String::from(\"Pierre Cox\"), 12)]), 12), true);\n    assert_eq!(candidate(HashMap::from([(String::from(\"Cierra Vega\"), 12), (String::from(\"Alden Cantrell\"), 12), (String::from(\"Kierra Gentry\"), 12), (String::from(\"Pierre Cox\"), 12)]), 5), false);\n}\n",
+ "raw": {
+  "name": "mbpp_464_check_value",
+  "language": "rs",
+  "prompt": "use std::collections::HashMap;\n\n/// Write a function to check if all values are same in a HashMap.\nfn check_value(dict: HashMap<String, isize>, n: isize) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_464_check_value.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = check_value;\n    assert_eq!(candidate(HashMap::from([(String::from(\"Cierra Vega\"), 12), (String::from(\"Alden Cantrell\"), 12), (String::from(\"Kierra Gentry\"), 12), (String::from(\"Pierre Cox\"), 12)]), 10), false);\n    assert_eq!(candidate(HashMap::from([(String::from(\"Cierra Vega\"), 12), (String::from(\"Alden Cantrell\"), 12), (String::from(\"Kierra Gentry\"), 12), (String::from(\"Pierre Cox\"), 12)]), 12), true);\n    assert_eq!(candidate(HashMap::from([(String::from(\"Cierra Vega\"), 12), (String::from(\"Alden Cantrell\"), 12), (String::from(\"Kierra Gentry\"), 12), (String::from(\"Pierre Cox\"), 12)]), 5), false);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

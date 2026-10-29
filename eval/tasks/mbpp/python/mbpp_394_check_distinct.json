@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_394_check_distinct",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_394_check_distinct",
+ "entry_point": "check_distinct",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef check_distinct(test_tup: List[int]) -> bool:\n    \"\"\"\n\tWrite a function to check if given list contains no duplicates.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 4, 5, 6, 1, 4]) == False\n    assert candidate([1, 4, 5, 6]) == True\n    assert candidate([2, 3, 4, 5, 6]) == True\n\ndef test_check():\n    check(check_distinct)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_394_check_distinct.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef check_distinct(test_tup: List[int]) -> bool:\n    \"\"\"\n\tWrite a function to check if given list contains no duplicates.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 4, 5, 6, 1, 4]) == False\n    assert candidate([1, 4, 5, 6]) == True\n    assert candidate([2, 3, 4, 5, 6]) == True\n\ndef test_check():\n    check(check_distinct)\n\n"
+ }
+}

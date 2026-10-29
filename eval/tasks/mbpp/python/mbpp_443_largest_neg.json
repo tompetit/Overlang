@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_443_largest_neg",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_443_largest_neg",
+ "entry_point": "largest_neg",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef largest_neg(list1: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find the largest negative number from the given list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3, -4, -6]) == -6\n    assert candidate([1, 2, 3, -8, -9]) == -9\n    assert candidate([1, 2, 3, 4, -1]) == -1\n\ndef test_check():\n    check(largest_neg)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_443_largest_neg.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef largest_neg(list1: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find the largest negative number from the given list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3, -4, -6]) == -6\n    assert candidate([1, 2, 3, -8, -9]) == -9\n    assert candidate([1, 2, 3, 4, -1]) == -1\n\ndef test_check():\n    check(largest_neg)\n\n"
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_637_noprofit_noloss",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_637_noprofit_noloss",
+ "entry_point": "noprofit_noloss",
+ "prompt": "/// Write a function to check whether the given amount has no profit and no loss\nfn noprofit_noloss(actual_cost: isize, sale_amount: isize) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = noprofit_noloss;\n    assert_eq!(candidate(1500, 1200), false);\n    assert_eq!(candidate(100, 100), true);\n    assert_eq!(candidate(2000, 5000), false);\n}\n",
+ "raw": {
+  "name": "mbpp_637_noprofit_noloss",
+  "language": "rs",
+  "prompt": "/// Write a function to check whether the given amount has no profit and no loss\nfn noprofit_noloss(actual_cost: isize, sale_amount: isize) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_637_noprofit_noloss.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = noprofit_noloss;\n    assert_eq!(candidate(1500, 1200), false);\n    assert_eq!(candidate(100, 100), true);\n    assert_eq!(candidate(2000, 5000), false);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

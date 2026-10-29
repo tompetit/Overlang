@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_224_count_Set_Bits",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_224_count_Set_Bits",
+ "entry_point": "count_Set_Bits",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef count_Set_Bits(n: int) -> int:\n    \"\"\"\n\tWrite a python function to count the number of set bits (binary digits with value 1) in a given number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(2) == 1\n    assert candidate(4) == 1\n    assert candidate(6) == 2\n\ndef test_check():\n    check(count_Set_Bits)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_224_count_Set_Bits.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef count_Set_Bits(n: int) -> int:\n    \"\"\"\n\tWrite a python function to count the number of set bits (binary digits with value 1) in a given number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(2) == 1\n    assert candidate(4) == 1\n    assert candidate(6) == 2\n\ndef test_check():\n    check(count_Set_Bits)\n\n"
+ }
+}

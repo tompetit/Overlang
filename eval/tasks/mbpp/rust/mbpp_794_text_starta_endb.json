@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_794_text_starta_endb",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_794_text_starta_endb",
+ "entry_point": "text_starta_endb",
+ "prompt": "/// Write a function that matches a string that has an 'a' followed by anything, ending in 'b'.\nfn text_starta_endb(text: String) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = text_starta_endb;\n    assert_eq!(candidate(String::from(\"aabbbb\")), true);\n    assert_eq!(candidate(String::from(\"aabAbbbc\")), false);\n    assert_eq!(candidate(String::from(\"accddbbjjj\")), false);\n}\n",
+ "raw": {
+  "name": "mbpp_794_text_starta_endb",
+  "language": "rs",
+  "prompt": "/// Write a function that matches a string that has an 'a' followed by anything, ending in 'b'.\nfn text_starta_endb(text: String) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_794_text_starta_endb.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = text_starta_endb;\n    assert_eq!(candidate(String::from(\"aabbbb\")), true);\n    assert_eq!(candidate(String::from(\"aabAbbbc\")), false);\n    assert_eq!(candidate(String::from(\"accddbbjjj\")), false);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

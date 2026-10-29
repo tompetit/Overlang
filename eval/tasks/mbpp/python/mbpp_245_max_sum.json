@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_245_max_sum",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_245_max_sum",
+ "entry_point": "max_sum",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef max_sum(arr: List[int]) -> int:\n    \"\"\"\n\tWrite a function that takes an array and finds the maximum sum of a bitonic subsequence for the given array, where a sequence is bitonic if it is first increasing and then decreasing.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 15, 51, 45, 33, 100, 12, 18, 9]) == 194\n    assert candidate([80, 60, 30, 40, 20, 10]) == 210\n    assert candidate([2, 3, 14, 16, 21, 23, 29, 30]) == 138\n\ndef test_check():\n    check(max_sum)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_245_max_sum.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef max_sum(arr: List[int]) -> int:\n    \"\"\"\n\tWrite a function that takes an array and finds the maximum sum of a bitonic subsequence for the given array, where a sequence is bitonic if it is first increasing and then decreasing.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 15, 51, 45, 33, 100, 12, 18, 9]) == 194\n    assert candidate([80, 60, 30, 40, 20, 10]) == 210\n    assert candidate([2, 3, 14, 16, 21, 23, 29, 30]) == 138\n\ndef test_check():\n    check(max_sum)\n\n"
+ }
+}
