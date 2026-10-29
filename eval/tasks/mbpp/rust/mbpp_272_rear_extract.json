@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_272_rear_extract",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_272_rear_extract",
+ "entry_point": "rear_extract",
+ "prompt": "/// Write a function that takes in a vector of tuples and returns a vector containing the rear element of each tuple.\nfn rear_extract(test_list: Vec<(isize, String, isize)>) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = rear_extract;\n    assert_eq!(candidate(vec![(1, String::from(\"Rash\"), 21), (2, String::from(\"Varsha\"), 20), (3, String::from(\"Kil\"), 19)]), vec![21, 20, 19]);\n    assert_eq!(candidate(vec![(1, String::from(\"Sai\"), 36), (2, String::from(\"Ayesha\"), 25), (3, String::from(\"Salman\"), 45)]), vec![36, 25, 45]);\n    assert_eq!(candidate(vec![(1, String::from(\"Sudeep\"), 14), (2, String::from(\"Vandana\"), 36), (3, String::from(\"Dawood\"), 56)]), vec![14, 36, 56]);\n}\n",
+ "raw": {
+  "name": "mbpp_272_rear_extract",
+  "language": "rs",
+  "prompt": "/// Write a function that takes in a vector of tuples and returns a vector containing the rear element of each tuple.\nfn rear_extract(test_list: Vec<(isize, String, isize)>) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_272_rear_extract.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = rear_extract;\n    assert_eq!(candidate(vec![(1, String::from(\"Rash\"), 21), (2, String::from(\"Varsha\"), 20), (3, String::from(\"Kil\"), 19)]), vec![21, 20, 19]);\n    assert_eq!(candidate(vec![(1, String::from(\"Sai\"), 36), (2, String::from(\"Ayesha\"), 25), (3, String::from(\"Salman\"), 45)]), vec![36, 25, 45]);\n    assert_eq!(candidate(vec![(1, String::from(\"Sudeep\"), 14), (2, String::from(\"Vandana\"), 36), (3, String::from(\"Dawood\"), 56)]), vec![14, 36, 56]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

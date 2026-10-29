@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_58_opposite_Signs",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_58_opposite_Signs",
+ "entry_point": "opposite_Signs",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef opposite_Signs(x: int, y: int) -> bool:\n    \"\"\"\n\tWrite a python function to check whether the given two integers have opposite sign or not.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(1, -2) == True\n    assert candidate(3, 2) == False\n    assert candidate(-10, -10) == False\n    assert candidate(-2, 2) == True\n\ndef test_check():\n    check(opposite_Signs)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_58_opposite_Signs.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef opposite_Signs(x: int, y: int) -> bool:\n    \"\"\"\n\tWrite a python function to check whether the given two integers have opposite sign or not.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(1, -2) == True\n    assert candidate(3, 2) == False\n    assert candidate(-10, -10) == False\n    assert candidate(-2, 2) == True\n\ndef test_check():\n    check(opposite_Signs)\n\n"
+ }
+}

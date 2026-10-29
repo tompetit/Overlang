@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_611_max_of_nth",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_611_max_of_nth",
+ "entry_point": "max_of_nth",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef max_of_nth(test_list: List[List[int]], N: int) -> int:\n    \"\"\"\n\tWrite a function which given a matrix represented as a list of lists returns the max of the n'th column.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([[5, 6, 7], [1, 3, 5], [8, 9, 19]], 2) == 19\n    assert candidate([[6, 7, 8], [2, 4, 6], [9, 10, 20]], 1) == 10\n    assert candidate([[7, 8, 9], [3, 5, 7], [10, 11, 21]], 1) == 11\n\ndef test_check():\n    check(max_of_nth)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_611_max_of_nth.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef max_of_nth(test_list: List[List[int]], N: int) -> int:\n    \"\"\"\n\tWrite a function which given a matrix represented as a list of lists returns the max of the n'th column.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([[5, 6, 7], [1, 3, 5], [8, 9, 19]], 2) == 19\n    assert candidate([[6, 7, 8], [2, 4, 6], [9, 10, 20]], 1) == 10\n    assert candidate([[7, 8, 9], [3, 5, 7], [10, 11, 21]], 1) == 11\n\ndef test_check():\n    check(max_of_nth)\n\n"
+ }
+}

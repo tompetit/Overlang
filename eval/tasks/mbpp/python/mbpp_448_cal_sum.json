@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_448_cal_sum",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_448_cal_sum",
+ "entry_point": "cal_sum",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef cal_sum(n: int) -> int:\n    \"\"\"\n\tWrite a function to calculate the sum of perrin numbers.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(9) == 49\n    assert candidate(10) == 66\n    assert candidate(11) == 88\n\ndef test_check():\n    check(cal_sum)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_448_cal_sum.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef cal_sum(n: int) -> int:\n    \"\"\"\n\tWrite a function to calculate the sum of perrin numbers.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(9) == 49\n    assert candidate(10) == 66\n    assert candidate(11) == 88\n\ndef test_check():\n    check(cal_sum)\n\n"
+ }
+}

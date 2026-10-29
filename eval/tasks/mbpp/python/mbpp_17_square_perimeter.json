@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_17_square_perimeter",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_17_square_perimeter",
+ "entry_point": "square_perimeter",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef square_perimeter(a: int) -> int:\n    \"\"\"\n\tWrite a function that returns the perimeter of a square given its side length as input.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(10) == 40\n    assert candidate(5) == 20\n    assert candidate(4) == 16\n\ndef test_check():\n    check(square_perimeter)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_17_square_perimeter.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef square_perimeter(a: int) -> int:\n    \"\"\"\n\tWrite a function that returns the perimeter of a square given its side length as input.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(10) == 40\n    assert candidate(5) == 20\n    assert candidate(4) == 16\n\ndef test_check():\n    check(square_perimeter)\n\n"
+ }
+}

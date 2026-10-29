@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_437_remove_odd",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_437_remove_odd",
+ "entry_point": "remove_odd",
+ "prompt": "/// Write a function to remove odd characters in a string.\nfn remove_odd(str1: String) -> String {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = remove_odd;\n    assert_eq!(candidate(String::from(\"python\")), String::from(\"yhn\"));\n    assert_eq!(candidate(String::from(\"program\")), String::from(\"rga\"));\n    assert_eq!(candidate(String::from(\"language\")), String::from(\"agae\"));\n}\n",
+ "raw": {
+  "name": "mbpp_437_remove_odd",
+  "language": "rs",
+  "prompt": "/// Write a function to remove odd characters in a string.\nfn remove_odd(str1: String) -> String {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_437_remove_odd.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = remove_odd;\n    assert_eq!(candidate(String::from(\"python\")), String::from(\"yhn\"));\n    assert_eq!(candidate(String::from(\"program\")), String::from(\"rga\"));\n    assert_eq!(candidate(String::from(\"language\")), String::from(\"agae\"));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_477_is_lower",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_477_is_lower",
+ "entry_point": "is_lower",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef is_lower(string: str) -> str:\n    \"\"\"\n\tWrite a python function to convert the given string to lower case.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('InValid') == 'invalid'\n    assert candidate('TruE') == 'true'\n    assert candidate('SenTenCE') == 'sentence'\n\ndef test_check():\n    check(is_lower)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_477_is_lower.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef is_lower(string: str) -> str:\n    \"\"\"\n\tWrite a python function to convert the given string to lower case.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('InValid') == 'invalid'\n    assert candidate('TruE') == 'true'\n    assert candidate('SenTenCE') == 'sentence'\n\ndef test_check():\n    check(is_lower)\n\n"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_293_otherside_rightangle",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_293_otherside_rightangle",
+ "entry_point": "otherside_rightangle",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef otherside_rightangle(w: int, h: int) -> float:\n    \"\"\"\n\tWrite a function to find the third side of a right angled triangle.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(7, 8) == 10.63014581273465\n    assert candidate(3, 4) == 5\n    assert candidate(7, 15) == 16.55294535724685\n\ndef test_check():\n    check(otherside_rightangle)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_293_otherside_rightangle.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef otherside_rightangle(w: int, h: int) -> float:\n    \"\"\"\n\tWrite a function to find the third side of a right angled triangle.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(7, 8) == 10.63014581273465\n    assert candidate(3, 4) == 5\n    assert candidate(7, 15) == 16.55294535724685\n\ndef test_check():\n    check(otherside_rightangle)\n\n"
+ }
+}

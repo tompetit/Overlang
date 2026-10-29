@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_415_max_Product",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_415_max_Product",
+ "entry_point": "max_Product",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef max_Product(arr: List[int]) -> Tuple[int, int]:\n    \"\"\"\n\tWrite a python function to find a pair with highest product from a given array of integers.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3, 4, 7, 0, 8, 4]) == (7, 8)\n    assert candidate([0, -1, -2, -4, 5, 0, -6]) == (-4, -6)\n    assert candidate([1, 2, 3]) == (2, 3)\n\ndef test_check():\n    check(max_Product)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_415_max_Product.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef max_Product(arr: List[int]) -> Tuple[int, int]:\n    \"\"\"\n\tWrite a python function to find a pair with highest product from a given array of integers.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3, 4, 7, 0, 8, 4]) == (7, 8)\n    assert candidate([0, -1, -2, -4, 5, 0, -6]) == (-4, -6)\n    assert candidate([1, 2, 3]) == (2, 3)\n\ndef test_check():\n    check(max_Product)\n\n"
+ }
+}

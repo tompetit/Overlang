@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_772_remove_length",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_772_remove_length",
+ "entry_point": "remove_length",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef remove_length(test_str: str, K: int) -> str:\n    \"\"\"\n\tWrite a function to remove all the words with k length in the given string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('The person is most value tet', 3) == 'person is most value'\n    assert candidate('If you told me about this ok', 4) == 'If you me about ok'\n    assert candidate('Forces of darkeness is come into the play', 4) == 'Forces of darkeness is the'\n\ndef test_check():\n    check(remove_length)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_772_remove_length.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef remove_length(test_str: str, K: int) -> str:\n    \"\"\"\n\tWrite a function to remove all the words with k length in the given string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('The person is most value tet', 3) == 'person is most value'\n    assert candidate('If you told me about this ok', 4) == 'If you me about ok'\n    assert candidate('Forces of darkeness is come into the play', 4) == 'Forces of darkeness is the'\n\ndef test_check():\n    check(remove_length)\n\n"
+ }
+}

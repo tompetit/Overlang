@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_396_check_char",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_396_check_char",
+ "entry_point": "check_char",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef check_char(string: str) -> str:\n    \"\"\"\n\tWrite a function to check whether the given string starts and ends with the same character or not.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('abba') == 'Valid'\n    assert candidate('a') == 'Valid'\n    assert candidate('abcd') == 'Invalid'\n\ndef test_check():\n    check(check_char)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_396_check_char.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef check_char(string: str) -> str:\n    \"\"\"\n\tWrite a function to check whether the given string starts and ends with the same character or not.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('abba') == 'Valid'\n    assert candidate('a') == 'Valid'\n    assert candidate('abcd') == 'Invalid'\n\ndef test_check():\n    check(check_char)\n\n"
+ }
+}

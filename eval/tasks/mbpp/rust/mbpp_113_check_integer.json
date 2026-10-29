@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_113_check_integer",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_113_check_integer",
+ "entry_point": "check_integer",
+ "prompt": "/// Write a function to check if a string represents an integer or not.\nfn check_integer(text: String) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = check_integer;\n    assert_eq!(candidate(String::from(\"python\")), false);\n    assert_eq!(candidate(String::from(\"1\")), true);\n    assert_eq!(candidate(String::from(\"12345\")), true);\n}\n",
+ "raw": {
+  "name": "mbpp_113_check_integer",
+  "language": "rs",
+  "prompt": "/// Write a function to check if a string represents an integer or not.\nfn check_integer(text: String) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_113_check_integer.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = check_integer;\n    assert_eq!(candidate(String::from(\"python\")), false);\n    assert_eq!(candidate(String::from(\"1\")), true);\n    assert_eq!(candidate(String::from(\"12345\")), true);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

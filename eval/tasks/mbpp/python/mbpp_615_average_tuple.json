@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_615_average_tuple",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_615_average_tuple",
+ "entry_point": "average_tuple",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef average_tuple(nums: List[List[int]]) -> List[float]:\n    \"\"\"\n\tWrite a function which takes a lists of lists and returns the average value for each sublist as a list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([[10, 10, 10, 12], [30, 45, 56, 45], [81, 80, 39, 32], [1, 2, 3, 4]]) == [30.5, 34.25, 27.0, 23.25]\n    assert candidate([[1, 1, -5], [30, -15, 56], [81, -60, -39], [-10, 2, 3]]) == [25.5, -18.0, 3.75]\n    assert candidate([[100, 100, 100, 120], [300, 450, 560, 450], [810, 800, 390, 320], [10, 20, 30, 40]]) == [305.0, 342.5, 270.0, 232.5]\n\ndef test_check():\n    check(average_tuple)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_615_average_tuple.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef average_tuple(nums: List[List[int]]) -> List[float]:\n    \"\"\"\n\tWrite a function which takes a lists of lists and returns the average value for each sublist as a list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([[10, 10, 10, 12], [30, 45, 56, 45], [81, 80, 39, 32], [1, 2, 3, 4]]) == [30.5, 34.25, 27.0, 23.25]\n    assert candidate([[1, 1, -5], [30, -15, 56], [81, -60, -39], [-10, 2, 3]]) == [25.5, -18.0, 3.75]\n    assert candidate([[100, 100, 100, 120], [300, 450, 560, 450], [810, 800, 390, 320], [10, 20, 30, 40]]) == [305.0, 342.5, 270.0, 232.5]\n\ndef test_check():\n    check(average_tuple)\n\n"
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_565_split",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_565_split",
+ "entry_point": "split",
+ "prompt": "/// Write a rsthon function to split a string into characters.\nfn split(word: String) -> Vec<String> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = split;\n    assert_eq!(candidate(String::from(\"python\")), vec![String::from(\"p\"), String::from(\"y\"), String::from(\"t\"), String::from(\"h\"), String::from(\"o\"), String::from(\"n\")]);\n    assert_eq!(candidate(String::from(\"Name\")), vec![String::from(\"N\"), String::from(\"a\"), String::from(\"m\"), String::from(\"e\")]);\n    assert_eq!(candidate(String::from(\"program\")), vec![String::from(\"p\"), String::from(\"r\"), String::from(\"o\"), String::from(\"g\"), String::from(\"r\"), String::from(\"a\"), String::from(\"m\")]);\n}\n",
+ "raw": {
+  "name": "mbpp_565_split",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to split a string into characters.\nfn split(word: String) -> Vec<String> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_565_split.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = split;\n    assert_eq!(candidate(String::from(\"python\")), vec![String::from(\"p\"), String::from(\"y\"), String::from(\"t\"), String::from(\"h\"), String::from(\"o\"), String::from(\"n\")]);\n    assert_eq!(candidate(String::from(\"Name\")), vec![String::from(\"N\"), String::from(\"a\"), String::from(\"m\"), String::from(\"e\")]);\n    assert_eq!(candidate(String::from(\"program\")), vec![String::from(\"p\"), String::from(\"r\"), String::from(\"o\"), String::from(\"g\"), String::from(\"r\"), String::from(\"a\"), String::from(\"m\")]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

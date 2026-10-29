@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_626_triangle_area",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_626_triangle_area",
+ "entry_point": "triangle_area",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef triangle_area(r: int) -> Optional[int]:\n    \"\"\"\n\tWrite a python function to find the area of the largest triangle that can be inscribed in a semicircle with a given radius.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(-1) == None\n    assert candidate(0) == 0\n    assert candidate(2) == 4\n\ndef test_check():\n    check(triangle_area)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_626_triangle_area.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef triangle_area(r: int) -> Optional[int]:\n    \"\"\"\n\tWrite a python function to find the area of the largest triangle that can be inscribed in a semicircle with a given radius.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(-1) == None\n    assert candidate(0) == 0\n    assert candidate(2) == 4\n\ndef test_check():\n    check(triangle_area)\n\n"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_433_check_greater",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_433_check_greater",
+ "entry_point": "check_greater",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef check_greater(arr: List[int], number: int) -> bool:\n    \"\"\"\n\tWrite a function to check whether the entered number is greater than the elements of the given array.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3, 4, 5], 4) == False\n    assert candidate([2, 3, 4, 5, 6], 8) == True\n    assert candidate([9, 7, 4, 8, 6, 1], 11) == True\n\ndef test_check():\n    check(check_greater)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_433_check_greater.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef check_greater(arr: List[int], number: int) -> bool:\n    \"\"\"\n\tWrite a function to check whether the entered number is greater than the elements of the given array.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3, 4, 5], 4) == False\n    assert candidate([2, 3, 4, 5, 6], 8) == True\n    assert candidate([9, 7, 4, 8, 6, 1], 11) == True\n\ndef test_check():\n    check(check_greater)\n\n"
+ }
+}

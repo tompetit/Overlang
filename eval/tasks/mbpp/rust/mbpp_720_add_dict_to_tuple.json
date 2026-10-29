@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_720_add_dict_to_tuple",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_720_add_dict_to_tuple",
+ "entry_point": "add_dict_to_tuple",
+ "prompt": "use std::collections::HashMap;\n\n/// Write a function to add a HashMap to the tuple. The output should be a tuple.\nfn add_dict_to_tuple(test_tup: (isize, isize, isize), test_dict: HashMap<String, isize>) -> (isize, isize, isize, HashMap<String, isize>) {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = add_dict_to_tuple;\n    assert_eq!(candidate((4, 5, 6), HashMap::from([(String::from(\"MSAM\"), 1), (String::from(\"is\"), 2), (String::from(\"best\"), 3)])), (4, 5, 6, HashMap::from([(String::from(\"MSAM\"), 1), (String::from(\"is\"), 2), (String::from(\"best\"), 3)])));\n    assert_eq!(candidate((1, 2, 3), HashMap::from([(String::from(\"UTS\"), 2), (String::from(\"is\"), 3), (String::from(\"Worst\"), 4)])), (1, 2, 3, HashMap::from([(String::from(\"UTS\"), 2), (String::from(\"is\"), 3), (String::from(\"Worst\"), 4)])));\n    assert_eq!(candidate((8, 9, 10), HashMap::from([(String::from(\"POS\"), 3), (String::from(\"is\"), 4), (String::from(\"Okay\"), 5)])), (8, 9, 10, HashMap::from([(String::from(\"POS\"), 3), (String::from(\"is\"), 4), (String::from(\"Okay\"), 5)])));\n}\n",
+ "raw": {
+  "name": "mbpp_720_add_dict_to_tuple",
+  "language": "rs",
+  "prompt": "use std::collections::HashMap;\n\n/// Write a function to add a HashMap to the tuple. The output should be a tuple.\nfn add_dict_to_tuple(test_tup: (isize, isize, isize), test_dict: HashMap<String, isize>) -> (isize, isize, isize, HashMap<String, isize>) {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_720_add_dict_to_tuple.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = add_dict_to_tuple;\n    assert_eq!(candidate((4, 5, 6), HashMap::from([(String::from(\"MSAM\"), 1), (String::from(\"is\"), 2), (String::from(\"best\"), 3)])), (4, 5, 6, HashMap::from([(String::from(\"MSAM\"), 1), (String::from(\"is\"), 2), (String::from(\"best\"), 3)])));\n    assert_eq!(candidate((1, 2, 3), HashMap::from([(String::from(\"UTS\"), 2), (String::from(\"is\"), 3), (String::from(\"Worst\"), 4)])), (1, 2, 3, HashMap::from([(String::from(\"UTS\"), 2), (String::from(\"is\"), 3), (String::from(\"Worst\"), 4)])));\n    assert_eq!(candidate((8, 9, 10), HashMap::from([(String::from(\"POS\"), 3), (String::from(\"is\"), 4), (String::from(\"Okay\"), 5)])), (8, 9, 10, HashMap::from([(String::from(\"POS\"), 3), (String::from(\"is\"), 4), (String::from(\"Okay\"), 5)])));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

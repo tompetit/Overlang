@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_764_number_ctr",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_764_number_ctr",
+ "entry_point": "number_ctr",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef number_ctr(str: str) -> int:\n    \"\"\"\n\tWrite a python function to count number of digits in a given string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('program2bedone') == 1\n    assert candidate('3wonders') == 1\n    assert candidate('123') == 3\n    assert candidate('3wond-1ers2') == 3\n\ndef test_check():\n    check(number_ctr)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_764_number_ctr.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef number_ctr(str: str) -> int:\n    \"\"\"\n\tWrite a python function to count number of digits in a given string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('program2bedone') == 1\n    assert candidate('3wonders') == 1\n    assert candidate('123') == 3\n    assert candidate('3wond-1ers2') == 3\n\ndef test_check():\n    check(number_ctr)\n\n"
+ }
+}

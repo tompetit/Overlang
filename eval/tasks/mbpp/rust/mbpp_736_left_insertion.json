@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_736_left_insertion",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_736_left_insertion",
+ "entry_point": "left_insertion",
+ "prompt": "/// Write a function to locate the left insertion point for a specified value in sorted order. https://www.w3resource.com/rsthon-exercises/data-structures-and-algorithms/rsthon-data-structure-exercise-24.php\nfn left_insertion(a: Vec<isize>, x: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = left_insertion;\n    assert_eq!(candidate(vec![1, 2, 4, 5], 6), 4);\n    assert_eq!(candidate(vec![1, 2, 4, 5], 3), 2);\n    assert_eq!(candidate(vec![1, 2, 4, 5], 7), 4);\n}\n",
+ "raw": {
+  "name": "mbpp_736_left_insertion",
+  "language": "rs",
+  "prompt": "/// Write a function to locate the left insertion point for a specified value in sorted order. https://www.w3resource.com/rsthon-exercises/data-structures-and-algorithms/rsthon-data-structure-exercise-24.php\nfn left_insertion(a: Vec<isize>, x: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_736_left_insertion.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = left_insertion;\n    assert_eq!(candidate(vec![1, 2, 4, 5], 6), 4);\n    assert_eq!(candidate(vec![1, 2, 4, 5], 3), 2);\n    assert_eq!(candidate(vec![1, 2, 4, 5], 7), 4);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_439_multiple_to_single",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_439_multiple_to_single",
+ "entry_point": "multiple_to_single",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef multiple_to_single(L: List[int]) -> int:\n    \"\"\"\n\tWrite a function to join a list of multiple integers into a single integer.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([11, 33, 50]) == 113350\n    assert candidate([-1, 2, 3, 4, 5, 6]) == -123456\n    assert candidate([10, 15, 20, 25]) == 10152025\n\ndef test_check():\n    check(multiple_to_single)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_439_multiple_to_single.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef multiple_to_single(L: List[int]) -> int:\n    \"\"\"\n\tWrite a function to join a list of multiple integers into a single integer.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([11, 33, 50]) == 113350\n    assert candidate([-1, 2, 3, 4, 5, 6]) == -123456\n    assert candidate([10, 15, 20, 25]) == 10152025\n\ndef test_check():\n    check(multiple_to_single)\n\n"
+ }
+}

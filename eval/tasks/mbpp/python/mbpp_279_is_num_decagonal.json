@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_279_is_num_decagonal",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_279_is_num_decagonal",
+ "entry_point": "is_num_decagonal",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef is_num_decagonal(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the nth decagonal number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(3) == 27\n    assert candidate(7) == 175\n    assert candidate(10) == 370\n\ndef test_check():\n    check(is_num_decagonal)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_279_is_num_decagonal.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef is_num_decagonal(n: int) -> int:\n    \"\"\"\n\tWrite a function to find the nth decagonal number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(3) == 27\n    assert candidate(7) == 175\n    assert candidate(10) == 370\n\ndef test_check():\n    check(is_num_decagonal)\n\n"
+ }
+}

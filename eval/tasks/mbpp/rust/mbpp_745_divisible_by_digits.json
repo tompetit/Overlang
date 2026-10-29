@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_745_divisible_by_digits",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_745_divisible_by_digits",
+ "entry_point": "divisible_by_digits",
+ "prompt": "/// Write a function to find numbers within a given range from startnum ti endnum where every number is divisible by every digit it contains. https://www.w3resource.com/rsthon-exercises/lambda/rsthon-lambda-exercise-24.php\nfn divisible_by_digits(startnum: isize, endnum: isize) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = divisible_by_digits;\n    assert_eq!(candidate(1, 22), vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 15, 22]);\n    assert_eq!(candidate(1, 15), vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 15]);\n    assert_eq!(candidate(20, 25), vec![22, 24]);\n}\n",
+ "raw": {
+  "name": "mbpp_745_divisible_by_digits",
+  "language": "rs",
+  "prompt": "/// Write a function to find numbers within a given range from startnum ti endnum where every number is divisible by every digit it contains. https://www.w3resource.com/rsthon-exercises/lambda/rsthon-lambda-exercise-24.php\nfn divisible_by_digits(startnum: isize, endnum: isize) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_745_divisible_by_digits.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = divisible_by_digits;\n    assert_eq!(candidate(1, 22), vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 15, 22]);\n    assert_eq!(candidate(1, 15), vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 15]);\n    assert_eq!(candidate(20, 25), vec![22, 24]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

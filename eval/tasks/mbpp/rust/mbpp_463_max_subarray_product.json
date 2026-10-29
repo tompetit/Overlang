@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_463_max_subarray_product",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_463_max_subarray_product",
+ "entry_point": "max_subarray_product",
+ "prompt": "/// Write a function to find the maximum product subvector of the given vector.\nfn max_subarray_product(arr: Vec<isize>) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = max_subarray_product;\n    assert_eq!(candidate(vec![1, -2, -3, 0, 7, -8, -2]), 112);\n    assert_eq!(candidate(vec![6, -3, -10, 0, 2]), 180);\n    assert_eq!(candidate(vec![-2, -40, 0, -2, -3]), 80);\n}\n",
+ "raw": {
+  "name": "mbpp_463_max_subarray_product",
+  "language": "rs",
+  "prompt": "/// Write a function to find the maximum product subvector of the given vector.\nfn max_subarray_product(arr: Vec<isize>) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_463_max_subarray_product.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = max_subarray_product;\n    assert_eq!(candidate(vec![1, -2, -3, 0, 7, -8, -2]), 112);\n    assert_eq!(candidate(vec![6, -3, -10, 0, 2]), 180);\n    assert_eq!(candidate(vec![-2, -40, 0, -2, -3]), 80);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_71_comb_sort",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_71_comb_sort",
+ "entry_point": "comb_sort",
+ "prompt": "/// Write a function to sort a vector of elements.\nfn comb_sort(nums: Vec<isize>) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = comb_sort;\n    assert_eq!(candidate(vec![5, 15, 37, 25, 79]), vec![5, 15, 25, 37, 79]);\n    assert_eq!(candidate(vec![41, 32, 15, 19, 22]), vec![15, 19, 22, 32, 41]);\n    assert_eq!(candidate(vec![99, 15, 13, 47]), vec![13, 15, 47, 99]);\n}\n",
+ "raw": {
+  "name": "mbpp_71_comb_sort",
+  "language": "rs",
+  "prompt": "/// Write a function to sort a vector of elements.\nfn comb_sort(nums: Vec<isize>) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_71_comb_sort.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = comb_sort;\n    assert_eq!(candidate(vec![5, 15, 37, 25, 79]), vec![5, 15, 25, 37, 79]);\n    assert_eq!(candidate(vec![41, 32, 15, 19, 22]), vec![15, 19, 22, 32, 41]);\n    assert_eq!(candidate(vec![99, 15, 13, 47]), vec![13, 15, 47, 99]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

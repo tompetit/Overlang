@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_308_large_product",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_308_large_product",
+ "entry_point": "large_product",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef large_product(nums1: List[int], nums2: List[int], N: int) -> List[int]:\n    \"\"\"\n\tWrite a function to find the specified number of largest products from two given lists, selecting one factor from each list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3, 4, 5, 6], [3, 6, 8, 9, 10, 6], 3) == [60, 54, 50]\n    assert candidate([1, 2, 3, 4, 5, 6], [3, 6, 8, 9, 10, 6], 4) == [60, 54, 50, 48]\n    assert candidate([1, 2, 3, 4, 5, 6], [3, 6, 8, 9, 10, 6], 5) == [60, 54, 50, 48, 45]\n\ndef test_check():\n    check(large_product)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_308_large_product.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef large_product(nums1: List[int], nums2: List[int], N: int) -> List[int]:\n    \"\"\"\n\tWrite a function to find the specified number of largest products from two given lists, selecting one factor from each list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3, 4, 5, 6], [3, 6, 8, 9, 10, 6], 3) == [60, 54, 50]\n    assert candidate([1, 2, 3, 4, 5, 6], [3, 6, 8, 9, 10, 6], 4) == [60, 54, 50, 48]\n    assert candidate([1, 2, 3, 4, 5, 6], [3, 6, 8, 9, 10, 6], 5) == [60, 54, 50, 48, 45]\n\ndef test_check():\n    check(large_product)\n\n"
+ }
+}

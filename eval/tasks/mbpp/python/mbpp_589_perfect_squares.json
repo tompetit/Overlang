@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_589_perfect_squares",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_589_perfect_squares",
+ "entry_point": "perfect_squares",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef perfect_squares(a: int, b: int) -> List[int]:\n    \"\"\"\n\tWrite a function to find perfect squares between two given numbers.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(1, 30) == [1, 4, 9, 16, 25]\n    assert candidate(50, 100) == [64, 81, 100]\n    assert candidate(100, 200) == [100, 121, 144, 169, 196]\n\ndef test_check():\n    check(perfect_squares)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_589_perfect_squares.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef perfect_squares(a: int, b: int) -> List[int]:\n    \"\"\"\n\tWrite a function to find perfect squares between two given numbers.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(1, 30) == [1, 4, 9, 16, 25]\n    assert candidate(50, 100) == [64, 81, 100]\n    assert candidate(100, 200) == [100, 121, 144, 169, 196]\n\ndef test_check():\n    check(perfect_squares)\n\n"
+ }
+}

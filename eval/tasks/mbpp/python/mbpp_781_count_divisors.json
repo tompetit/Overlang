@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_781_count_divisors",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_781_count_divisors",
+ "entry_point": "count_divisors",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef count_divisors(n: int) -> bool:\n    \"\"\"\n\tWrite a python function to check whether the count of divisors is even. https://www.w3resource.com/python-exercises/basic/python-basic-1-exercise-24.php\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(10) == True\n    assert candidate(100) == False\n    assert candidate(125) == True\n\ndef test_check():\n    check(count_divisors)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_781_count_divisors.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef count_divisors(n: int) -> bool:\n    \"\"\"\n\tWrite a python function to check whether the count of divisors is even. https://www.w3resource.com/python-exercises/basic/python-basic-1-exercise-24.php\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(10) == True\n    assert candidate(100) == False\n    assert candidate(125) == True\n\ndef test_check():\n    check(count_divisors)\n\n"
+ }
+}

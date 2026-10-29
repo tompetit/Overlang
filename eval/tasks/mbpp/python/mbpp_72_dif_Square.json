@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_72_dif_Square",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_72_dif_Square",
+ "entry_point": "dif_Square",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef dif_Square(n: int) -> bool:\n    \"\"\"\n\tWrite a python function to check whether the given number can be represented as the difference of two squares or not.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(5) == True\n    assert candidate(10) == False\n    assert candidate(15) == True\n\ndef test_check():\n    check(dif_Square)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_72_dif_Square.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef dif_Square(n: int) -> bool:\n    \"\"\"\n\tWrite a python function to check whether the given number can be represented as the difference of two squares or not.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(5) == True\n    assert candidate(10) == False\n    assert candidate(15) == True\n\ndef test_check():\n    check(dif_Square)\n\n"
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_739_find_Index",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_739_find_Index",
+ "entry_point": "find_Index",
+ "prompt": "/// Write a rsthon function to find the index of smallest triangular number with n digits. https://www.geeksforgeeks.org/index-of-smallest-triangular-number-with-n-digits/\nfn find_Index(n: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = find_Index;\n    assert_eq!(candidate(2), 4);\n    assert_eq!(candidate(3), 14);\n    assert_eq!(candidate(4), 45);\n}\n",
+ "raw": {
+  "name": "mbpp_739_find_Index",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to find the index of smallest triangular number with n digits. https://www.geeksforgeeks.org/index-of-smallest-triangular-number-with-n-digits/\nfn find_Index(n: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_739_find_Index.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = find_Index;\n    assert_eq!(candidate(2), 4);\n    assert_eq!(candidate(3), 14);\n    assert_eq!(candidate(4), 45);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

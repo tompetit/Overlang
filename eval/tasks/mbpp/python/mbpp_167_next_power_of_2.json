@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_167_next_power_of_2",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_167_next_power_of_2",
+ "entry_point": "next_power_of_2",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef next_power_of_2(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the smallest power of 2 greater than or equal to n.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(0) == 1\n    assert candidate(5) == 8\n    assert candidate(17) == 32\n\ndef test_check():\n    check(next_power_of_2)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_167_next_power_of_2.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef next_power_of_2(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the smallest power of 2 greater than or equal to n.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(0) == 1\n    assert candidate(5) == 8\n    assert candidate(17) == 32\n\ndef test_check():\n    check(next_power_of_2)\n\n"
+ }
+}

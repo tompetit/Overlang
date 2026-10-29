@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_735_toggle_middle_bits",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_735_toggle_middle_bits",
+ "entry_point": "toggle_middle_bits",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef toggle_middle_bits(n: int) -> int:\n    \"\"\"\n\tWrite a python function to toggle bits of the number except the first and the last bit. https://www.geeksforgeeks.org/toggle-bits-number-expect-first-last-bits/\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(9) == 15\n    assert candidate(10) == 12\n    assert candidate(11) == 13\n    assert candidate(65) == 127\n    assert candidate(77) == 115\n\ndef test_check():\n    check(toggle_middle_bits)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_735_toggle_middle_bits.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef toggle_middle_bits(n: int) -> int:\n    \"\"\"\n\tWrite a python function to toggle bits of the number except the first and the last bit. https://www.geeksforgeeks.org/toggle-bits-number-expect-first-last-bits/\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(9) == 15\n    assert candidate(10) == 12\n    assert candidate(11) == 13\n    assert candidate(65) == 127\n    assert candidate(77) == 115\n\ndef test_check():\n    check(toggle_middle_bits)\n\n"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_569_sort_sublists",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_569_sort_sublists",
+ "entry_point": "sort_sublists",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef sort_sublists(list1: List[List[str]]) -> List[List[str]]:\n    \"\"\"\n\tWrite a function to sort each sublist of strings in a given list of lists.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([['green', 'orange'], ['black', 'white'], ['white', 'black', 'orange']]) == [['green', 'orange'], ['black', 'white'], ['black', 'orange', 'white']]\n    assert candidate([['green', 'orange'], ['black'], ['green', 'orange'], ['white']]) == [['green', 'orange'], ['black'], ['green', 'orange'], ['white']]\n    assert candidate([['a', 'b'], ['d', 'c'], ['g', 'h'], ['f', 'e']]) == [['a', 'b'], ['c', 'd'], ['g', 'h'], ['e', 'f']]\n\ndef test_check():\n    check(sort_sublists)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_569_sort_sublists.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef sort_sublists(list1: List[List[str]]) -> List[List[str]]:\n    \"\"\"\n\tWrite a function to sort each sublist of strings in a given list of lists.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([['green', 'orange'], ['black', 'white'], ['white', 'black', 'orange']]) == [['green', 'orange'], ['black', 'white'], ['black', 'orange', 'white']]\n    assert candidate([['green', 'orange'], ['black'], ['green', 'orange'], ['white']]) == [['green', 'orange'], ['black'], ['green', 'orange'], ['white']]\n    assert candidate([['a', 'b'], ['d', 'c'], ['g', 'h'], ['f', 'e']]) == [['a', 'b'], ['c', 'd'], ['g', 'h'], ['e', 'f']]\n\ndef test_check():\n    check(sort_sublists)\n\n"
+ }
+}

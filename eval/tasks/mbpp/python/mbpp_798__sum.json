@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_798__sum",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_798__sum",
+ "entry_point": "_sum",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef _sum(arr: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find the sum of an array.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3]) == 6\n    assert candidate([15, 12, 13, 10]) == 50\n    assert candidate([0, 1, 2]) == 3\n\ndef test_check():\n    check(_sum)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_798__sum.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef _sum(arr: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find the sum of an array.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3]) == 6\n    assert candidate([15, 12, 13, 10]) == 50\n    assert candidate([0, 1, 2]) == 3\n\ndef test_check():\n    check(_sum)\n\n"
+ }
+}

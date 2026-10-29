@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_123_amicable_numbers_sum",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_123_amicable_numbers_sum",
+ "entry_point": "amicable_numbers_sum",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef amicable_numbers_sum(limit: int) -> int:\n    \"\"\"\n\tWrite a function to sum all amicable numbers from 1 to a specified number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(999) == 504\n    assert candidate(9999) == 31626\n    assert candidate(99) == 0\n\ndef test_check():\n    check(amicable_numbers_sum)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_123_amicable_numbers_sum.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef amicable_numbers_sum(limit: int) -> int:\n    \"\"\"\n\tWrite a function to sum all amicable numbers from 1 to a specified number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(999) == 504\n    assert candidate(9999) == 31626\n    assert candidate(99) == 0\n\ndef test_check():\n    check(amicable_numbers_sum)\n\n"
+ }
+}

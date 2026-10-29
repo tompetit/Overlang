@@ -1,0 +1,21 @@
+{
+ "id": "HumanEval_52_below_threshold",
+ "benchmark": "humaneval",
+ "lang": "rust",
+ "name": "HumanEval_52_below_threshold",
+ "entry_point": "below_threshold",
+ "prompt": "/// Return true if all numbers in the vector l are below threshold t.\n/// >>> below_threshold(vec![1, 2, 4, 10], 100)\n/// true\n/// >>> below_threshold(vec![1, 20, 4, 10], 5)\n/// false\nfn below_threshold(l: Vec<isize>, t: isize) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = below_threshold;\n    assert_eq!(candidate(vec![1, 2, 4, 10], 100), true);\n    assert_eq!(candidate(vec![1, 20, 4, 10], 5), false);\n    assert_eq!(candidate(vec![1, 20, 4, 10], 21), true);\n    assert_eq!(candidate(vec![1, 20, 4, 10], 22), true);\n    assert_eq!(candidate(vec![1, 8, 4, 10], 11), true);\n    assert_eq!(candidate(vec![1, 8, 4, 10], 10), false);\n}\n",
+ "raw": {
+  "name": "HumanEval_52_below_threshold",
+  "language": "rs",
+  "prompt": "/// Return true if all numbers in the vector l are below threshold t.\n/// >>> below_threshold(vec![1, 2, 4, 10], 100)\n/// true\n/// >>> below_threshold(vec![1, 20, 4, 10], 5)\n/// false\nfn below_threshold(l: Vec<isize>, t: isize) -> bool {\n",
+  "doctests": "transform",
+  "original": "/work/arjunguha-research-group/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_52_below_threshold.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = below_threshold;\n    assert_eq!(candidate(vec![1, 2, 4, 10], 100), true);\n    assert_eq!(candidate(vec![1, 20, 4, 10], 5), false);\n    assert_eq!(candidate(vec![1, 20, 4, 10], 21), true);\n    assert_eq!(candidate(vec![1, 20, 4, 10], 22), true);\n    assert_eq!(candidate(vec![1, 8, 4, 10], 11), true);\n    assert_eq!(candidate(vec![1, 8, 4, 10], 10), false);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

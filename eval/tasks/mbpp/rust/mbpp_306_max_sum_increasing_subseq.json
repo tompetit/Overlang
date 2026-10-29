@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_306_max_sum_increasing_subseq",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_306_max_sum_increasing_subseq",
+ "entry_point": "max_sum_increasing_subseq",
+ "prompt": "/// Write a function to find the maximum sum of increasing subsequence from prefix until ith index and also including a given kth element which is after i, i.e., k > i .\nfn max_sum_increasing_subseq(a: Vec<isize>, n: isize, index: isize, k: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = max_sum_increasing_subseq;\n    assert_eq!(candidate(vec![1, 101, 2, 3, 100, 4, 5], 7, 4, 6), 11);\n    assert_eq!(candidate(vec![1, 101, 2, 3, 100, 4, 5], 7, 2, 5), 7);\n    assert_eq!(candidate(vec![11, 15, 19, 21, 26, 28, 31], 7, 2, 4), 71);\n}\n",
+ "raw": {
+  "name": "mbpp_306_max_sum_increasing_subseq",
+  "language": "rs",
+  "prompt": "/// Write a function to find the maximum sum of increasing subsequence from prefix until ith index and also including a given kth element which is after i, i.e., k > i .\nfn max_sum_increasing_subseq(a: Vec<isize>, n: isize, index: isize, k: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_306_max_sum_increasing_subseq.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = max_sum_increasing_subseq;\n    assert_eq!(candidate(vec![1, 101, 2, 3, 100, 4, 5], 7, 4, 6), 11);\n    assert_eq!(candidate(vec![1, 101, 2, 3, 100, 4, 5], 7, 2, 5), 7);\n    assert_eq!(candidate(vec![11, 15, 19, 21, 26, 28, 31], 7, 2, 4), 71);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_793_last",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_793_last",
+ "entry_point": "last",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef last(arr: List[int], x: int) -> int:\n    \"\"\"\n\tWrite a python function to find the last position of an element in a sorted array.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3], 1) == 0\n    assert candidate([1, 1, 1, 2, 3, 4], 1) == 2\n    assert candidate([2, 3, 2, 3, 6, 8, 9], 3) == 3\n\ndef test_check():\n    check(last)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_793_last.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef last(arr: List[int], x: int) -> int:\n    \"\"\"\n\tWrite a python function to find the last position of an element in a sorted array.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3], 1) == 0\n    assert candidate([1, 1, 1, 2, 3, 4], 1) == 2\n    assert candidate([2, 3, 2, 3, 6, 8, 9], 3) == 3\n\ndef test_check():\n    check(last)\n\n"
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_260_newman_prime",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_260_newman_prime",
+ "entry_point": "newman_prime",
+ "prompt": "/// Write a function to find the nth newman\u2013shanks\u2013williams prime number.\nfn newman_prime(n: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = newman_prime;\n    assert_eq!(candidate(3), 7);\n    assert_eq!(candidate(4), 17);\n    assert_eq!(candidate(5), 41);\n}\n",
+ "raw": {
+  "name": "mbpp_260_newman_prime",
+  "language": "rs",
+  "prompt": "/// Write a function to find the nth newman\u2013shanks\u2013williams prime number.\nfn newman_prime(n: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_260_newman_prime.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = newman_prime;\n    assert_eq!(candidate(3), 7);\n    assert_eq!(candidate(4), 17);\n    assert_eq!(candidate(5), 41);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

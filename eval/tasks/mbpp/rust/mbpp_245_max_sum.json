@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_245_max_sum",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_245_max_sum",
+ "entry_point": "max_sum",
+ "prompt": "/// Write a function that takes a vector and finds the maximum sum of a bitonic subsequence for the given vector, where a sequence is bitonic if it is first increasing and then decreasing.\nfn max_sum(arr: Vec<isize>) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = max_sum;\n    assert_eq!(candidate(vec![1, 15, 51, 45, 33, 100, 12, 18, 9]), 194);\n    assert_eq!(candidate(vec![80, 60, 30, 40, 20, 10]), 210);\n    assert_eq!(candidate(vec![2, 3, 14, 16, 21, 23, 29, 30]), 138);\n}\n",
+ "raw": {
+  "name": "mbpp_245_max_sum",
+  "language": "rs",
+  "prompt": "/// Write a function that takes a vector and finds the maximum sum of a bitonic subsequence for the given vector, where a sequence is bitonic if it is first increasing and then decreasing.\nfn max_sum(arr: Vec<isize>) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_245_max_sum.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = max_sum;\n    assert_eq!(candidate(vec![1, 15, 51, 45, 33, 100, 12, 18, 9]), 194);\n    assert_eq!(candidate(vec![80, 60, 30, 40, 20, 10]), 210);\n    assert_eq!(candidate(vec![2, 3, 14, 16, 21, 23, 29, 30]), 138);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

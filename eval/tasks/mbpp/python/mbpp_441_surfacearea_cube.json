@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_441_surfacearea_cube",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_441_surfacearea_cube",
+ "entry_point": "surfacearea_cube",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef surfacearea_cube(l: int) -> int:\n    \"\"\"\n\tWrite a function to find the surface area of a cube of a given size.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(5) == 150\n    assert candidate(3) == 54\n    assert candidate(10) == 600\n\ndef test_check():\n    check(surfacearea_cube)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_441_surfacearea_cube.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef surfacearea_cube(l: int) -> int:\n    \"\"\"\n\tWrite a function to find the surface area of a cube of a given size.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(5) == 150\n    assert candidate(3) == 54\n    assert candidate(10) == 600\n\ndef test_check():\n    check(surfacearea_cube)\n\n"
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_67_bell_number",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_67_bell_number",
+ "entry_point": "bell_number",
+ "prompt": "/// Write a function to find the number of ways to partition a set of Bell numbers.\nfn bell_number(n: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = bell_number;\n    assert_eq!(candidate(2), 2);\n    assert_eq!(candidate(10), 115975);\n    assert_eq!(candidate(56), 6775685320645824322581483068371419745979053216268760300);\n}\n",
+ "raw": {
+  "name": "mbpp_67_bell_number",
+  "language": "rs",
+  "prompt": "/// Write a function to find the number of ways to partition a set of Bell numbers.\nfn bell_number(n: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_67_bell_number.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = bell_number;\n    assert_eq!(candidate(2), 2);\n    assert_eq!(candidate(10), 115975);\n    assert_eq!(candidate(56), 6775685320645824322581483068371419745979053216268760300);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

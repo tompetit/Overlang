@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_130_max_occurrences",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_130_max_occurrences",
+ "entry_point": "max_occurrences",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef max_occurrences(nums: List[int]) -> int:\n    \"\"\"\n\tWrite a function to find the item with maximum frequency in a given list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([2, 3, 8, 4, 7, 9, 8, 2, 6, 5, 1, 6, 1, 2, 3, 2, 4, 6, 9, 1, 2]) == 2\n    assert candidate([2, 3, 8, 4, 7, 9, 8, 7, 9, 15, 14, 10, 12, 13, 16, 18]) == 8\n    assert candidate([10, 20, 20, 30, 40, 90, 80, 50, 30, 20, 50, 10]) == 20\n\ndef test_check():\n    check(max_occurrences)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_130_max_occurrences.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef max_occurrences(nums: List[int]) -> int:\n    \"\"\"\n\tWrite a function to find the item with maximum frequency in a given list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([2, 3, 8, 4, 7, 9, 8, 2, 6, 5, 1, 6, 1, 2, 3, 2, 4, 6, 9, 1, 2]) == 2\n    assert candidate([2, 3, 8, 4, 7, 9, 8, 7, 9, 15, 14, 10, 12, 13, 16, 18]) == 8\n    assert candidate([10, 20, 20, 30, 40, 90, 80, 50, 30, 20, 50, 10]) == 20\n\ndef test_check():\n    check(max_occurrences)\n\n"
+ }
+}

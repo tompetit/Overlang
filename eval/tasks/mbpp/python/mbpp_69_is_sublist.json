@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_69_is_sublist",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_69_is_sublist",
+ "entry_point": "is_sublist",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef is_sublist(l: List[int], s: List[int]) -> bool:\n    \"\"\"\n\tWrite a function to check whether a list contains the given sublist or not.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([2, 4, 3, 5, 7], [3, 7]) == False\n    assert candidate([2, 4, 3, 5, 7], [4, 3]) == True\n    assert candidate([2, 4, 3, 5, 7], [1, 6]) == False\n\ndef test_check():\n    check(is_sublist)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_69_is_sublist.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef is_sublist(l: List[int], s: List[int]) -> bool:\n    \"\"\"\n\tWrite a function to check whether a list contains the given sublist or not.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([2, 4, 3, 5, 7], [3, 7]) == False\n    assert candidate([2, 4, 3, 5, 7], [4, 3]) == True\n    assert candidate([2, 4, 3, 5, 7], [1, 6]) == False\n\ndef test_check():\n    check(is_sublist)\n\n"
+ }
+}

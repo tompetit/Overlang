@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_306_max_sum_increasing_subseq",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_306_max_sum_increasing_subseq",
+ "entry_point": "max_sum_increasing_subseq",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef max_sum_increasing_subseq(a: List[int], n: int, index: int, k: int) -> int:\n    \"\"\"\n\tWrite a function to find the maximum sum of increasing subsequence from prefix until ith index and also including a given kth element which is after i, i.e., k > i .\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 101, 2, 3, 100, 4, 5], 7, 4, 6) == 11\n    assert candidate([1, 101, 2, 3, 100, 4, 5], 7, 2, 5) == 7\n    assert candidate([11, 15, 19, 21, 26, 28, 31], 7, 2, 4) == 71\n\ndef test_check():\n    check(max_sum_increasing_subseq)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_306_max_sum_increasing_subseq.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef max_sum_increasing_subseq(a: List[int], n: int, index: int, k: int) -> int:\n    \"\"\"\n\tWrite a function to find the maximum sum of increasing subsequence from prefix until ith index and also including a given kth element which is after i, i.e., k > i .\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 101, 2, 3, 100, 4, 5], 7, 4, 6) == 11\n    assert candidate([1, 101, 2, 3, 100, 4, 5], 7, 2, 5) == 7\n    assert candidate([11, 15, 19, 21, 26, 28, 31], 7, 2, 4) == 71\n\ndef test_check():\n    check(max_sum_increasing_subseq)\n\n"
+ }
+}

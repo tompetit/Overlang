@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_753_min_k",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_753_min_k",
+ "entry_point": "min_k",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef min_k(test_list: List[Tuple[str, int]], K: int) -> List[Tuple[str, int]]:\n    \"\"\"\n\tWrite a function to find minimum k records from tuple list. https://www.geeksforgeeks.org/python-find-minimum-k-records-from-tuple-list/ - in this case a verbatim copy of test cases\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([('Manjeet', 10), ('Akshat', 4), ('Akash', 2), ('Nikhil', 8)], 2) == [('Akash', 2), ('Akshat', 4)]\n    assert candidate([('Sanjeev', 11), ('Angat', 5), ('Akash', 3), ('Nepin', 9)], 3) == [('Akash', 3), ('Angat', 5), ('Nepin', 9)]\n    assert candidate([('tanmay', 14), ('Amer', 11), ('Ayesha', 9), ('SKD', 16)], 1) == [('Ayesha', 9)]\n\ndef test_check():\n    check(min_k)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_753_min_k.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef min_k(test_list: List[Tuple[str, int]], K: int) -> List[Tuple[str, int]]:\n    \"\"\"\n\tWrite a function to find minimum k records from tuple list. https://www.geeksforgeeks.org/python-find-minimum-k-records-from-tuple-list/ - in this case a verbatim copy of test cases\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([('Manjeet', 10), ('Akshat', 4), ('Akash', 2), ('Nikhil', 8)], 2) == [('Akash', 2), ('Akshat', 4)]\n    assert candidate([('Sanjeev', 11), ('Angat', 5), ('Akash', 3), ('Nepin', 9)], 3) == [('Akash', 3), ('Angat', 5), ('Nepin', 9)]\n    assert candidate([('tanmay', 14), ('Amer', 11), ('Ayesha', 9), ('SKD', 16)], 1) == [('Ayesha', 9)]\n\ndef test_check():\n    check(min_k)\n\n"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_86_centered_hexagonal_number",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_86_centered_hexagonal_number",
+ "entry_point": "centered_hexagonal_number",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef centered_hexagonal_number(n: int) -> int:\n    \"\"\"\n\tWrite a function to find nth centered hexagonal number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(10) == 271\n    assert candidate(2) == 7\n    assert candidate(9) == 217\n\ndef test_check():\n    check(centered_hexagonal_number)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_86_centered_hexagonal_number.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef centered_hexagonal_number(n: int) -> int:\n    \"\"\"\n\tWrite a function to find nth centered hexagonal number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(10) == 271\n    assert candidate(2) == 7\n    assert candidate(9) == 217\n\ndef test_check():\n    check(centered_hexagonal_number)\n\n"
+ }
+}

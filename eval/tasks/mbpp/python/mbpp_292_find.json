@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_292_find",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_292_find",
+ "entry_point": "find",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef find(n: int, m: int) -> int:\n    \"\"\"\n\tWrite a python function to find quotient of two numbers (rounded down to the nearest integer).\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(10, 3) == 3\n    assert candidate(4, 2) == 2\n    assert candidate(20, 5) == 4\n\ndef test_check():\n    check(find)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_292_find.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef find(n: int, m: int) -> int:\n    \"\"\"\n\tWrite a python function to find quotient of two numbers (rounded down to the nearest integer).\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(10, 3) == 3\n    assert candidate(4, 2) == 2\n    assert candidate(20, 5) == 4\n\ndef test_check():\n    check(find)\n\n"
+ }
+}

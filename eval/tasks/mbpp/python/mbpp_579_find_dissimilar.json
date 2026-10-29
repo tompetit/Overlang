@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_579_find_dissimilar",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_579_find_dissimilar",
+ "entry_point": "find_dissimilar",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef find_dissimilar(test_tup1: Tuple[int, int, int, int], test_tup2: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:\n    \"\"\"\n\tWrite a function to find the dissimilar elements in the given two tuples.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate((3, 4, 5, 6), (5, 7, 4, 10)) == (3, 6, 7, 10)\n    assert candidate((1, 2, 3, 4), (7, 2, 3, 9)) == (1, 4, 7, 9)\n    assert candidate((21, 11, 25, 26), (26, 34, 21, 36)) == (34, 36, 11, 25)\n\ndef test_check():\n    check(find_dissimilar)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_579_find_dissimilar.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef find_dissimilar(test_tup1: Tuple[int, int, int, int], test_tup2: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:\n    \"\"\"\n\tWrite a function to find the dissimilar elements in the given two tuples.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate((3, 4, 5, 6), (5, 7, 4, 10)) == (3, 6, 7, 10)\n    assert candidate((1, 2, 3, 4), (7, 2, 3, 9)) == (1, 4, 7, 9)\n    assert candidate((21, 11, 25, 26), (26, 34, 21, 36)) == (34, 36, 11, 25)\n\ndef test_check():\n    check(find_dissimilar)\n\n"
+ }
+}

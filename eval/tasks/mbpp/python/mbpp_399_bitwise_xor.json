@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_399_bitwise_xor",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_399_bitwise_xor",
+ "entry_point": "bitwise_xor",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef bitwise_xor(test_tup1: Tuple[int, int, int, int], test_tup2: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:\n    \"\"\"\n\tWrite a function to perform the mathematical bitwise xor operation across the given tuples.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate((10, 4, 6, 9), (5, 2, 3, 3)) == (15, 6, 5, 10)\n    assert candidate((11, 5, 7, 10), (6, 3, 4, 4)) == (13, 6, 3, 14)\n    assert candidate((12, 6, 8, 11), (7, 4, 5, 6)) == (11, 2, 13, 13)\n\ndef test_check():\n    check(bitwise_xor)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_399_bitwise_xor.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef bitwise_xor(test_tup1: Tuple[int, int, int, int], test_tup2: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:\n    \"\"\"\n\tWrite a function to perform the mathematical bitwise xor operation across the given tuples.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate((10, 4, 6, 9), (5, 2, 3, 3)) == (15, 6, 5, 10)\n    assert candidate((11, 5, 7, 10), (6, 3, 4, 4)) == (13, 6, 3, 14)\n    assert candidate((12, 6, 8, 11), (7, 4, 5, 6)) == (11, 2, 13, 13)\n\ndef test_check():\n    check(bitwise_xor)\n\n"
+ }
+}

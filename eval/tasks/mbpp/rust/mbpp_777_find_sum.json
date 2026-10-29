@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_777_find_sum",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_777_find_sum",
+ "entry_point": "find_sum",
+ "prompt": "/// Write a rsthon function to find the sum of non-repeated elements in a given vector.\nfn find_sum(arr: Vec<isize>) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = find_sum;\n    assert_eq!(candidate(vec![1, 2, 3, 1, 1, 4, 5, 6]), 21);\n    assert_eq!(candidate(vec![1, 10, 9, 4, 2, 10, 10, 45, 4]), 71);\n    assert_eq!(candidate(vec![12, 10, 9, 45, 2, 10, 10, 45, 10]), 78);\n}\n",
+ "raw": {
+  "name": "mbpp_777_find_sum",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to find the sum of non-repeated elements in a given vector.\nfn find_sum(arr: Vec<isize>) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_777_find_sum.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = find_sum;\n    assert_eq!(candidate(vec![1, 2, 3, 1, 1, 4, 5, 6]), 21);\n    assert_eq!(candidate(vec![1, 10, 9, 4, 2, 10, 10, 45, 4]), 71);\n    assert_eq!(candidate(vec![12, 10, 9, 45, 2, 10, 10, 45, 10]), 78);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

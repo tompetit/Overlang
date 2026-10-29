@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_592_sum_Of_product",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_592_sum_Of_product",
+ "entry_point": "sum_Of_product",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef sum_Of_product(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the sum of the product of consecutive binomial co-efficients.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(3) == 15\n    assert candidate(4) == 56\n    assert candidate(1) == 1\n\ndef test_check():\n    check(sum_Of_product)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_592_sum_Of_product.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef sum_Of_product(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the sum of the product of consecutive binomial co-efficients.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(3) == 15\n    assert candidate(4) == 56\n    assert candidate(1) == 1\n\ndef test_check():\n    check(sum_Of_product)\n\n"
+ }
+}

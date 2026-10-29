@@ -1,0 +1,21 @@
+{
+ "id": "HumanEval_55_fib",
+ "benchmark": "humaneval",
+ "lang": "rust",
+ "name": "HumanEval_55_fib",
+ "entry_point": "fib",
+ "prompt": "/// Return n-th Fibonacci number.\n/// >>> fib(10)\n/// 55\n/// >>> fib(1)\n/// 1\n/// >>> fib(8)\n/// 21\nfn fib(n: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = fib;\n    assert_eq!(candidate(10), 55);\n    assert_eq!(candidate(1), 1);\n    assert_eq!(candidate(8), 21);\n    assert_eq!(candidate(11), 89);\n    assert_eq!(candidate(12), 144);\n}\n",
+ "raw": {
+  "name": "HumanEval_55_fib",
+  "language": "rs",
+  "prompt": "/// Return n-th Fibonacci number.\n/// >>> fib(10)\n/// 55\n/// >>> fib(1)\n/// 1\n/// >>> fib(8)\n/// 21\nfn fib(n: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/work/arjunguha-research-group/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_55_fib.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = fib;\n    assert_eq!(candidate(10), 55);\n    assert_eq!(candidate(1), 1);\n    assert_eq!(candidate(8), 21);\n    assert_eq!(candidate(11), 89);\n    assert_eq!(candidate(12), 144);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_166_find_even_pair",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_166_find_even_pair",
+ "entry_point": "find_even_pair",
+ "prompt": "/// Write a function that counts the number of pairs of integers in a vector that xor to an even number.\nfn find_even_pair(A: Vec<isize>) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = find_even_pair;\n    assert_eq!(candidate(vec![5, 4, 7, 2, 1]), 4);\n    assert_eq!(candidate(vec![7, 2, 8, 1, 0, 5, 11]), 9);\n    assert_eq!(candidate(vec![1, 2, 3]), 1);\n}\n",
+ "raw": {
+  "name": "mbpp_166_find_even_pair",
+  "language": "rs",
+  "prompt": "/// Write a function that counts the number of pairs of integers in a vector that xor to an even number.\nfn find_even_pair(A: Vec<isize>) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_166_find_even_pair.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = find_even_pair;\n    assert_eq!(candidate(vec![5, 4, 7, 2, 1]), 4);\n    assert_eq!(candidate(vec![7, 2, 8, 1, 0, 5, 11]), 9);\n    assert_eq!(candidate(vec![1, 2, 3]), 1);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

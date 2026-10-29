@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_638_wind_chill",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_638_wind_chill",
+ "entry_point": "wind_chill",
+ "prompt": "/// Write a function to calculate the wind chill index rounded to the next integer given the wind velocity in km/h and a temperature in celsius.\nfn wind_chill(v: isize, t: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = wind_chill;\n    assert_eq!(candidate(120, 35), 40);\n    assert_eq!(candidate(40, 20), 19);\n    assert_eq!(candidate(10, 8), 6);\n}\n",
+ "raw": {
+  "name": "mbpp_638_wind_chill",
+  "language": "rs",
+  "prompt": "/// Write a function to calculate the wind chill index rounded to the next integer given the wind velocity in km/h and a temperature in celsius.\nfn wind_chill(v: isize, t: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_638_wind_chill.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = wind_chill;\n    assert_eq!(candidate(120, 35), 40);\n    assert_eq!(candidate(40, 20), 19);\n    assert_eq!(candidate(10, 8), 6);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

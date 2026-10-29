@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_450_extract_string",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_450_extract_string",
+ "entry_point": "extract_string",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef extract_string(str: List[str], l: int) -> List[str]:\n    \"\"\"\n\tWrite a function to extract specified size of strings from a given list of string values.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(['Python', 'list', 'exercises', 'practice', 'solution'], 8) == ['practice', 'solution']\n    assert candidate(['Python', 'list', 'exercises', 'practice', 'solution'], 6) == ['Python']\n    assert candidate(['Python', 'list', 'exercises', 'practice', 'solution'], 9) == ['exercises']\n\ndef test_check():\n    check(extract_string)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_450_extract_string.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef extract_string(str: List[str], l: int) -> List[str]:\n    \"\"\"\n\tWrite a function to extract specified size of strings from a given list of string values.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(['Python', 'list', 'exercises', 'practice', 'solution'], 8) == ['practice', 'solution']\n    assert candidate(['Python', 'list', 'exercises', 'practice', 'solution'], 6) == ['Python']\n    assert candidate(['Python', 'list', 'exercises', 'practice', 'solution'], 9) == ['exercises']\n\ndef test_check():\n    check(extract_string)\n\n"
+ }
+}

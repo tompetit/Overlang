@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_305_start_withp",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_305_start_withp",
+ "entry_point": "start_withp",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef start_withp(words: List[str]) -> Tuple[str, str]:\n    \"\"\"\n\tWrite a function to return two words from a list of words starting with letter 'p'.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(['Python PHP', 'Java JavaScript', 'c c++']) == ('Python', 'PHP')\n    assert candidate(['Python Programming', 'Java Programming']) == ('Python', 'Programming')\n    assert candidate(['Pqrst Pqr', 'qrstuv']) == ('Pqrst', 'Pqr')\n\ndef test_check():\n    check(start_withp)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_305_start_withp.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef start_withp(words: List[str]) -> Tuple[str, str]:\n    \"\"\"\n\tWrite a function to return two words from a list of words starting with letter 'p'.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(['Python PHP', 'Java JavaScript', 'c c++']) == ('Python', 'PHP')\n    assert candidate(['Python Programming', 'Java Programming']) == ('Python', 'Programming')\n    assert candidate(['Pqrst Pqr', 'qrstuv']) == ('Pqrst', 'Pqr')\n\ndef test_check():\n    check(start_withp)\n\n"
+ }
+}

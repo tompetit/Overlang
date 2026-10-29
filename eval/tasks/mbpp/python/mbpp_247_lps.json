@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_247_lps",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_247_lps",
+ "entry_point": "lps",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef lps(str: str) -> int:\n    \"\"\"\n\tWrite a function to find the length of the longest palindromic subsequence in the given string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('TENS FOR TENS') == 5\n    assert candidate('CARDIO FOR CARDS') == 7\n    assert candidate('PART OF THE JOURNEY IS PART') == 9\n\ndef test_check():\n    check(lps)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_247_lps.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef lps(str: str) -> int:\n    \"\"\"\n\tWrite a function to find the length of the longest palindromic subsequence in the given string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('TENS FOR TENS') == 5\n    assert candidate('CARDIO FOR CARDS') == 7\n    assert candidate('PART OF THE JOURNEY IS PART') == 9\n\ndef test_check():\n    check(lps)\n\n"
+ }
+}

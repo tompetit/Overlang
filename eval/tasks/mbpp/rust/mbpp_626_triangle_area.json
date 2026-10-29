@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_626_triangle_area",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_626_triangle_area",
+ "entry_point": "triangle_area",
+ "prompt": "/// Write a rsthon function to find the area of the largest triangle that can be inscribed in a semicircle with a given radius.\nfn triangle_area(r: isize) -> Option<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = triangle_area;\n    assert_eq!(candidate(-1), None);\n    assert_eq!(candidate(0), Some(0));\n    assert_eq!(candidate(2), Some(4));\n}\n",
+ "raw": {
+  "name": "mbpp_626_triangle_area",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to find the area of the largest triangle that can be inscribed in a semicircle with a given radius.\nfn triangle_area(r: isize) -> Option<isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_626_triangle_area.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = triangle_area;\n    assert_eq!(candidate(-1), None);\n    assert_eq!(candidate(0), Some(0));\n    assert_eq!(candidate(2), Some(4));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

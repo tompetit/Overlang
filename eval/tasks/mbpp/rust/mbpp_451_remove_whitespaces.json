@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_451_remove_whitespaces",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_451_remove_whitespaces",
+ "entry_point": "remove_whitespaces",
+ "prompt": "/// Write a function to remove all whitespaces from the given string.\nfn remove_whitespaces(text1: String) -> String {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = remove_whitespaces;\n    assert_eq!(candidate(String::from(\" Google    Flutter \")), String::from(\"GoogleFlutter\"));\n    assert_eq!(candidate(String::from(\" Google    Dart \")), String::from(\"GoogleDart\"));\n    assert_eq!(candidate(String::from(\" iOS    Swift \")), String::from(\"iOSSwift\"));\n}\n",
+ "raw": {
+  "name": "mbpp_451_remove_whitespaces",
+  "language": "rs",
+  "prompt": "/// Write a function to remove all whitespaces from the given string.\nfn remove_whitespaces(text1: String) -> String {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_451_remove_whitespaces.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = remove_whitespaces;\n    assert_eq!(candidate(String::from(\" Google    Flutter \")), String::from(\"GoogleFlutter\"));\n    assert_eq!(candidate(String::from(\" Google    Dart \")), String::from(\"GoogleDart\"));\n    assert_eq!(candidate(String::from(\" iOS    Swift \")), String::from(\"iOSSwift\"));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

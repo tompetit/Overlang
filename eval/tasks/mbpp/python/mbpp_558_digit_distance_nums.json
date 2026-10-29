@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_558_digit_distance_nums",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_558_digit_distance_nums",
+ "entry_point": "digit_distance_nums",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef digit_distance_nums(n1: int, n2: int) -> int:\n    \"\"\"\n\tWrite a python function to find the sum of the per-digit difference between two integers.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(1, 2) == 1\n    assert candidate(23, 56) == 6\n    assert candidate(123, 256) == 7\n\ndef test_check():\n    check(digit_distance_nums)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_558_digit_distance_nums.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef digit_distance_nums(n1: int, n2: int) -> int:\n    \"\"\"\n\tWrite a python function to find the sum of the per-digit difference between two integers.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(1, 2) == 1\n    assert candidate(23, 56) == 6\n    assert candidate(123, 256) == 7\n\ndef test_check():\n    check(digit_distance_nums)\n\n"
+ }
+}

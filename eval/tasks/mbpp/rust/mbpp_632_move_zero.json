@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_632_move_zero",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_632_move_zero",
+ "entry_point": "move_zero",
+ "prompt": "/// Write a rsthon function to move all zeroes to the end of the given vector.\nfn move_zero(num_list: Vec<isize>) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = move_zero;\n    assert_eq!(candidate(vec![1, 0, 2, 0, 3, 4]), vec![1, 2, 3, 4, 0, 0]);\n    assert_eq!(candidate(vec![2, 3, 2, 0, 0, 4, 0, 5, 0]), vec![2, 3, 2, 4, 5, 0, 0, 0, 0]);\n    assert_eq!(candidate(vec![0, 1, 0, 1, 1]), vec![1, 1, 1, 0, 0]);\n}\n",
+ "raw": {
+  "name": "mbpp_632_move_zero",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to move all zeroes to the end of the given vector.\nfn move_zero(num_list: Vec<isize>) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_632_move_zero.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = move_zero;\n    assert_eq!(candidate(vec![1, 0, 2, 0, 3, 4]), vec![1, 2, 3, 4, 0, 0]);\n    assert_eq!(candidate(vec![2, 3, 2, 0, 0, 4, 0, 5, 0]), vec![2, 3, 2, 4, 5, 0, 0, 0, 0]);\n    assert_eq!(candidate(vec![0, 1, 0, 1, 1]), vec![1, 1, 1, 0, 0]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

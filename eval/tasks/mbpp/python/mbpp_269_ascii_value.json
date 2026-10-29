@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_269_ascii_value",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_269_ascii_value",
+ "entry_point": "ascii_value",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef ascii_value(k: str) -> int:\n    \"\"\"\n\tWrite a function to find the ascii value of a character.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('A') == 65\n    assert candidate('R') == 82\n    assert candidate('S') == 83\n\ndef test_check():\n    check(ascii_value)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_269_ascii_value.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef ascii_value(k: str) -> int:\n    \"\"\"\n\tWrite a function to find the ascii value of a character.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('A') == 65\n    assert candidate('R') == 82\n    assert candidate('S') == 83\n\ndef test_check():\n    check(ascii_value)\n\n"
+ }
+}

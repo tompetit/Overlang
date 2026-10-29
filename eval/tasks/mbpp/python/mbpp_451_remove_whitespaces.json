@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_451_remove_whitespaces",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_451_remove_whitespaces",
+ "entry_point": "remove_whitespaces",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef remove_whitespaces(text1: str) -> str:\n    \"\"\"\n\tWrite a function to remove all whitespaces from the given string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(' Google    Flutter ') == 'GoogleFlutter'\n    assert candidate(' Google    Dart ') == 'GoogleDart'\n    assert candidate(' iOS    Swift ') == 'iOSSwift'\n\ndef test_check():\n    check(remove_whitespaces)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_451_remove_whitespaces.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef remove_whitespaces(text1: str) -> str:\n    \"\"\"\n\tWrite a function to remove all whitespaces from the given string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(' Google    Flutter ') == 'GoogleFlutter'\n    assert candidate(' Google    Dart ') == 'GoogleDart'\n    assert candidate(' iOS    Swift ') == 'iOSSwift'\n\ndef test_check():\n    check(remove_whitespaces)\n\n"
+ }
+}

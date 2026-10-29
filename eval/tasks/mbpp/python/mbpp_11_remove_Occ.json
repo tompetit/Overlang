@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_11_remove_Occ",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_11_remove_Occ",
+ "entry_point": "remove_Occ",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef remove_Occ(s: str, ch: str) -> str:\n    \"\"\"\n\tWrite a python function to remove first and last occurrence of a given character from the string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('hello', 'l') == 'heo'\n    assert candidate('abcda', 'a') == 'bcd'\n    assert candidate('PHP', 'P') == 'H'\n\ndef test_check():\n    check(remove_Occ)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_11_remove_Occ.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef remove_Occ(s: str, ch: str) -> str:\n    \"\"\"\n\tWrite a python function to remove first and last occurrence of a given character from the string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('hello', 'l') == 'heo'\n    assert candidate('abcda', 'a') == 'bcd'\n    assert candidate('PHP', 'P') == 'H'\n\ndef test_check():\n    check(remove_Occ)\n\n"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_274_even_binomial_Coeff_Sum",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_274_even_binomial_Coeff_Sum",
+ "entry_point": "even_binomial_Coeff_Sum",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef even_binomial_Coeff_Sum(n: int) -> int:\n    \"\"\"\n\tWrite a python function that takes in a positive integer n and finds the sum of even index binomial coefficients.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(4) == 8\n    assert candidate(6) == 32\n    assert candidate(2) == 2\n\ndef test_check():\n    check(even_binomial_Coeff_Sum)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_274_even_binomial_Coeff_Sum.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef even_binomial_Coeff_Sum(n: int) -> int:\n    \"\"\"\n\tWrite a python function that takes in a positive integer n and finds the sum of even index binomial coefficients.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(4) == 8\n    assert candidate(6) == 32\n    assert candidate(2) == 2\n\ndef test_check():\n    check(even_binomial_Coeff_Sum)\n\n"
+ }
+}

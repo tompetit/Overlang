@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_567_issort_list",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_567_issort_list",
+ "entry_point": "issort_list",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef issort_list(list1: List[int]) -> bool:\n    \"\"\"\n\tWrite a function to check whether a specified list is sorted or not.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 4, 6, 8, 10, 12, 14, 16, 17]) == True\n    assert candidate([1, 2, 4, 6, 8, 10, 12, 14, 20, 17]) == False\n    assert candidate([1, 2, 4, 6, 8, 10, 15, 14, 20]) == False\n\ndef test_check():\n    check(issort_list)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_567_issort_list.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef issort_list(list1: List[int]) -> bool:\n    \"\"\"\n\tWrite a function to check whether a specified list is sorted or not.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 4, 6, 8, 10, 12, 14, 16, 17]) == True\n    assert candidate([1, 2, 4, 6, 8, 10, 12, 14, 20, 17]) == False\n    assert candidate([1, 2, 4, 6, 8, 10, 15, 14, 20]) == False\n\ndef test_check():\n    check(issort_list)\n\n"
+ }
+}

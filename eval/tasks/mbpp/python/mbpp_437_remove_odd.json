@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_437_remove_odd",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_437_remove_odd",
+ "entry_point": "remove_odd",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef remove_odd(str1: str) -> str:\n    \"\"\"\n\tWrite a function to remove odd characters in a string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('python') == 'yhn'\n    assert candidate('program') == 'rga'\n    assert candidate('language') == 'agae'\n\ndef test_check():\n    check(remove_odd)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_437_remove_odd.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef remove_odd(str1: str) -> str:\n    \"\"\"\n\tWrite a function to remove odd characters in a string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('python') == 'yhn'\n    assert candidate('program') == 'rga'\n    assert candidate('language') == 'agae'\n\ndef test_check():\n    check(remove_odd)\n\n"
+ }
+}

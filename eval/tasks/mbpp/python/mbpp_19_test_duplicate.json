@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_19_test_duplicate",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_19_test_duplicate",
+ "entry_point": "test_duplicate",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef test_duplicate(arraynums: List[int]) -> bool:\n    \"\"\"\n\tWrite a function to find whether a given array of integers contains any duplicate element.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3, 4, 5]) == False\n    assert candidate([1, 2, 3, 4, 4]) == True\n    assert candidate([1, 1, 2, 2, 3, 3, 4, 4, 5]) == True\n\ndef test_check():\n    check(test_duplicate)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_19_test_duplicate.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef test_duplicate(arraynums: List[int]) -> bool:\n    \"\"\"\n\tWrite a function to find whether a given array of integers contains any duplicate element.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3, 4, 5]) == False\n    assert candidate([1, 2, 3, 4, 4]) == True\n    assert candidate([1, 1, 2, 2, 3, 3, 4, 4, 5]) == True\n\ndef test_check():\n    check(test_duplicate)\n\n"
+ }
+}

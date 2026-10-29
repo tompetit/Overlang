@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_772_remove_length",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_772_remove_length",
+ "entry_point": "remove_length",
+ "prompt": "/// Write a function to remove all the words with k length in the given string.\nfn remove_length(test_str: String, K: isize) -> String {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = remove_length;\n    assert_eq!(candidate(String::from(\"The person is most value tet\"), 3), String::from(\"person is most value\"));\n    assert_eq!(candidate(String::from(\"If you told me about this ok\"), 4), String::from(\"If you me about ok\"));\n    assert_eq!(candidate(String::from(\"Forces of darkeness is come into the play\"), 4), String::from(\"Forces of darkeness is the\"));\n}\n",
+ "raw": {
+  "name": "mbpp_772_remove_length",
+  "language": "rs",
+  "prompt": "/// Write a function to remove all the words with k length in the given string.\nfn remove_length(test_str: String, K: isize) -> String {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_772_remove_length.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = remove_length;\n    assert_eq!(candidate(String::from(\"The person is most value tet\"), 3), String::from(\"person is most value\"));\n    assert_eq!(candidate(String::from(\"If you told me about this ok\"), 4), String::from(\"If you me about ok\"));\n    assert_eq!(candidate(String::from(\"Forces of darkeness is come into the play\"), 4), String::from(\"Forces of darkeness is the\"));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

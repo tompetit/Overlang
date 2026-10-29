@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_748_capital_words_spaces",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_748_capital_words_spaces",
+ "entry_point": "capital_words_spaces",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef capital_words_spaces(str1: str) -> str:\n    \"\"\"\n\tWrite a function to put spaces between words starting with capital letters in a given string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('Python') == 'Python'\n    assert candidate('PythonProgrammingExamples') == 'Python Programming Examples'\n    assert candidate('GetReadyToBeCodingFreak') == 'Get Ready To Be Coding Freak'\n\ndef test_check():\n    check(capital_words_spaces)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_748_capital_words_spaces.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef capital_words_spaces(str1: str) -> str:\n    \"\"\"\n\tWrite a function to put spaces between words starting with capital letters in a given string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('Python') == 'Python'\n    assert candidate('PythonProgrammingExamples') == 'Python Programming Examples'\n    assert candidate('GetReadyToBeCodingFreak') == 'Get Ready To Be Coding Freak'\n\ndef test_check():\n    check(capital_words_spaces)\n\n"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_281_all_unique",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_281_all_unique",
+ "entry_point": "all_unique",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef all_unique(test_list: List[int]) -> bool:\n    \"\"\"\n\tWrite a python function to check if the elements of a given list are unique or not.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3]) == True\n    assert candidate([1, 2, 1, 2]) == False\n    assert candidate([1, 2, 3, 4, 5]) == True\n\ndef test_check():\n    check(all_unique)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_281_all_unique.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef all_unique(test_list: List[int]) -> bool:\n    \"\"\"\n\tWrite a python function to check if the elements of a given list are unique or not.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3]) == True\n    assert candidate([1, 2, 1, 2]) == False\n    assert candidate([1, 2, 3, 4, 5]) == True\n\ndef test_check():\n    check(all_unique)\n\n"
+ }
+}

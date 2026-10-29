@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_565_split",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_565_split",
+ "entry_point": "split",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef split(word: str) -> List[str]:\n    \"\"\"\n\tWrite a python function to split a string into characters.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('python') == ['p', 'y', 't', 'h', 'o', 'n']\n    assert candidate('Name') == ['N', 'a', 'm', 'e']\n    assert candidate('program') == ['p', 'r', 'o', 'g', 'r', 'a', 'm']\n\ndef test_check():\n    check(split)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_565_split.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef split(word: str) -> List[str]:\n    \"\"\"\n\tWrite a python function to split a string into characters.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('python') == ['p', 'y', 't', 'h', 'o', 'n']\n    assert candidate('Name') == ['N', 'a', 'm', 'e']\n    assert candidate('program') == ['p', 'r', 'o', 'g', 'r', 'a', 'm']\n\ndef test_check():\n    check(split)\n\n"
+ }
+}

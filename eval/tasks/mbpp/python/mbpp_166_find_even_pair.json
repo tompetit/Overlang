@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_166_find_even_pair",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_166_find_even_pair",
+ "entry_point": "find_even_pair",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef find_even_pair(A: List[int]) -> int:\n    \"\"\"\n\tWrite a function that counts the number of pairs of integers in a list that xor to an even number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([5, 4, 7, 2, 1]) == 4\n    assert candidate([7, 2, 8, 1, 0, 5, 11]) == 9\n    assert candidate([1, 2, 3]) == 1\n\ndef test_check():\n    check(find_even_pair)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_166_find_even_pair.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef find_even_pair(A: List[int]) -> int:\n    \"\"\"\n\tWrite a function that counts the number of pairs of integers in a list that xor to an even number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([5, 4, 7, 2, 1]) == 4\n    assert candidate([7, 2, 8, 1, 0, 5, 11]) == 9\n    assert candidate([1, 2, 3]) == 1\n\ndef test_check():\n    check(find_even_pair)\n\n"
+ }
+}

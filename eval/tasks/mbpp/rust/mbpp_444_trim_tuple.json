@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_444_trim_tuple",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_444_trim_tuple",
+ "entry_point": "trim_tuple",
+ "prompt": "/// Write a function to trim each vector by k in the given vectors.\nfn trim_tuple(test_list: Vec<Vec<isize>>, K: isize) -> Vec<Vec<isize>> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = trim_tuple;\n    assert_eq!(candidate(vec![vec![5, 3, 2, 1, 4], vec![3, 4, 9, 2, 1], vec![9, 1, 2, 3, 5], vec![4, 8, 2, 1, 7]], 2), vec![vec![2], vec![9], vec![2], vec![2]]);\n    assert_eq!(candidate(vec![vec![5, 3, 2, 1, 4], vec![3, 4, 9, 2, 1], vec![9, 1, 2, 3, 5], vec![4, 8, 2, 1, 7]], 1), vec![vec![3, 2, 1], vec![4, 9, 2], vec![1, 2, 3], vec![8, 2, 1]]);\n    assert_eq!(candidate(vec![vec![7, 8, 4, 9], vec![11, 8, 12, 4], vec![4, 1, 7, 8], vec![3, 6, 9, 7]], 1), vec![vec![8, 4], vec![8, 12], vec![1, 7], vec![6, 9]]);\n}\n",
+ "raw": {
+  "name": "mbpp_444_trim_tuple",
+  "language": "rs",
+  "prompt": "/// Write a function to trim each vector by k in the given vectors.\nfn trim_tuple(test_list: Vec<Vec<isize>>, K: isize) -> Vec<Vec<isize>> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_444_trim_tuple.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = trim_tuple;\n    assert_eq!(candidate(vec![vec![5, 3, 2, 1, 4], vec![3, 4, 9, 2, 1], vec![9, 1, 2, 3, 5], vec![4, 8, 2, 1, 7]], 2), vec![vec![2], vec![9], vec![2], vec![2]]);\n    assert_eq!(candidate(vec![vec![5, 3, 2, 1, 4], vec![3, 4, 9, 2, 1], vec![9, 1, 2, 3, 5], vec![4, 8, 2, 1, 7]], 1), vec![vec![3, 2, 1], vec![4, 9, 2], vec![1, 2, 3], vec![8, 2, 1]]);\n    assert_eq!(candidate(vec![vec![7, 8, 4, 9], vec![11, 8, 12, 4], vec![4, 1, 7, 8], vec![3, 6, 9, 7]], 1), vec![vec![8, 4], vec![8, 12], vec![1, 7], vec![6, 9]]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

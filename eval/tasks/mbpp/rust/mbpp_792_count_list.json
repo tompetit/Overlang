@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_792_count_list",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_792_count_list",
+ "entry_point": "count_list",
+ "prompt": "/// Write a rsthon function to count the number of vectors in a given number of vectors.\nfn count_list(input_list: Vec<Vec<isize>>) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = count_list;\n    assert_eq!(candidate(vec![vec![1, 3], vec![5, 7], vec![9, 11], vec![13, 15, 17]]), 4);\n    assert_eq!(candidate(vec![vec![1, 2], vec![2, 3], vec![4, 5]]), 3);\n    assert_eq!(candidate(vec![vec![1, 0], vec![2, 0]]), 2);\n}\n",
+ "raw": {
+  "name": "mbpp_792_count_list",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to count the number of vectors in a given number of vectors.\nfn count_list(input_list: Vec<Vec<isize>>) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_792_count_list.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = count_list;\n    assert_eq!(candidate(vec![vec![1, 3], vec![5, 7], vec![9, 11], vec![13, 15, 17]]), 4);\n    assert_eq!(candidate(vec![vec![1, 2], vec![2, 3], vec![4, 5]]), 3);\n    assert_eq!(candidate(vec![vec![1, 0], vec![2, 0]]), 2);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

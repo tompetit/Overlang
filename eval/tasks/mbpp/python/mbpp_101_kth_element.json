@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_101_kth_element",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_101_kth_element",
+ "entry_point": "kth_element",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef kth_element(arr: List[int], k: int) -> int:\n    \"\"\"\n\tWrite a function to find the kth element in the given array using 1-based indexing.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([12, 3, 5, 7, 19], 2) == 3\n    assert candidate([17, 24, 8, 23], 3) == 8\n    assert candidate([16, 21, 25, 36, 4], 4) == 36\n\ndef test_check():\n    check(kth_element)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_101_kth_element.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef kth_element(arr: List[int], k: int) -> int:\n    \"\"\"\n\tWrite a function to find the kth element in the given array using 1-based indexing.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([12, 3, 5, 7, 19], 2) == 3\n    assert candidate([17, 24, 8, 23], 3) == 8\n    assert candidate([16, 21, 25, 36, 4], 4) == 36\n\ndef test_check():\n    check(kth_element)\n\n"
+ }
+}

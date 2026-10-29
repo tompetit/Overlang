@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_280_sequential_search",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_280_sequential_search",
+ "entry_point": "sequential_search",
+ "prompt": "/// Write a function that takes in a vector and element and returns a tuple containing a boolean that indicates if the element is in the vector and the index position of the element (or -1 if the element is not found).\nfn sequential_search(dlist: Vec<isize>, item: isize) -> (bool, isize) {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = sequential_search;\n    assert_eq!(candidate(vec![11, 23, 58, 31, 56, 77, 43, 12, 65, 19], 31), (true, 3));\n    assert_eq!(candidate(vec![12, 32, 45, 62, 35, 47, 44, 61], 61), (true, 7));\n    assert_eq!(candidate(vec![9, 10, 17, 19, 22, 39, 48, 56], 48), (true, 6));\n}\n",
+ "raw": {
+  "name": "mbpp_280_sequential_search",
+  "language": "rs",
+  "prompt": "/// Write a function that takes in a vector and element and returns a tuple containing a boolean that indicates if the element is in the vector and the index position of the element (or -1 if the element is not found).\nfn sequential_search(dlist: Vec<isize>, item: isize) -> (bool, isize) {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_280_sequential_search.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = sequential_search;\n    assert_eq!(candidate(vec![11, 23, 58, 31, 56, 77, 43, 12, 65, 19], 31), (true, 3));\n    assert_eq!(candidate(vec![12, 32, 45, 62, 35, 47, 44, 61], 61), (true, 7));\n    assert_eq!(candidate(vec![9, 10, 17, 19, 22, 39, 48, 56], 48), (true, 6));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

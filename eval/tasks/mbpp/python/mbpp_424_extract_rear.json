@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_424_extract_rear",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_424_extract_rear",
+ "entry_point": "extract_rear",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef extract_rear(test_tuple: Tuple[str, str, str]) -> List[str]:\n    \"\"\"\n\tWrite a function to extract only the rear index element of each string in the given tuple.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(('Mers', 'for', 'Vers')) == ['s', 'r', 's']\n    assert candidate(('Avenge', 'for', 'People')) == ['e', 'r', 'e']\n    assert candidate(('Gotta', 'get', 'go')) == ['a', 't', 'o']\n\ndef test_check():\n    check(extract_rear)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_424_extract_rear.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef extract_rear(test_tuple: Tuple[str, str, str]) -> List[str]:\n    \"\"\"\n\tWrite a function to extract only the rear index element of each string in the given tuple.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(('Mers', 'for', 'Vers')) == ['s', 'r', 's']\n    assert candidate(('Avenge', 'for', 'People')) == ['e', 'r', 'e']\n    assert candidate(('Gotta', 'get', 'go')) == ['a', 't', 'o']\n\ndef test_check():\n    check(extract_rear)\n\n"
+ }
+}

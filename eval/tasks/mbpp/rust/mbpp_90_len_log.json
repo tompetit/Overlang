@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_90_len_log",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_90_len_log",
+ "entry_point": "len_log",
+ "prompt": "/// Write a rsthon function to find the length of the longest word.\nfn len_log(list1: Vec<String>) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = len_log;\n    assert_eq!(candidate(vec![String::from(\"python\"), String::from(\"PHP\"), String::from(\"bigdata\")]), 7);\n    assert_eq!(candidate(vec![String::from(\"a\"), String::from(\"ab\"), String::from(\"abc\")]), 3);\n    assert_eq!(candidate(vec![String::from(\"small\"), String::from(\"big\"), String::from(\"tall\")]), 5);\n}\n",
+ "raw": {
+  "name": "mbpp_90_len_log",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to find the length of the longest word.\nfn len_log(list1: Vec<String>) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_90_len_log.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = len_log;\n    assert_eq!(candidate(vec![String::from(\"python\"), String::from(\"PHP\"), String::from(\"bigdata\")]), 7);\n    assert_eq!(candidate(vec![String::from(\"a\"), String::from(\"ab\"), String::from(\"abc\")]), 3);\n    assert_eq!(candidate(vec![String::from(\"small\"), String::from(\"big\"), String::from(\"tall\")]), 5);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

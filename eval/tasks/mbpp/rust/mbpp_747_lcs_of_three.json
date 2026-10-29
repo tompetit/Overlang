@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_747_lcs_of_three",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_747_lcs_of_three",
+ "entry_point": "lcs_of_three",
+ "prompt": "/// Write a function to find the longest common subsequence for the given three string sequence. https://www.geeksforgeeks.org/lcs-longest-common-subsequence-three-strings/\nfn lcs_of_three(X: String, Y: String, Z: String) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = lcs_of_three;\n    assert_eq!(candidate(String::from(\"AGGT12\"), String::from(\"12TXAYB\"), String::from(\"12XBA\")), 2);\n    assert_eq!(candidate(String::from(\"Reels\"), String::from(\"Reelsfor\"), String::from(\"ReelsforReels\")), 5);\n    assert_eq!(candidate(String::from(\"abcd1e2\"), String::from(\"bc12ea\"), String::from(\"bd1ea\")), 3);\n}\n",
+ "raw": {
+  "name": "mbpp_747_lcs_of_three",
+  "language": "rs",
+  "prompt": "/// Write a function to find the longest common subsequence for the given three string sequence. https://www.geeksforgeeks.org/lcs-longest-common-subsequence-three-strings/\nfn lcs_of_three(X: String, Y: String, Z: String) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_747_lcs_of_three.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = lcs_of_three;\n    assert_eq!(candidate(String::from(\"AGGT12\"), String::from(\"12TXAYB\"), String::from(\"12XBA\")), 2);\n    assert_eq!(candidate(String::from(\"Reels\"), String::from(\"Reelsfor\"), String::from(\"ReelsforReels\")), 5);\n    assert_eq!(candidate(String::from(\"abcd1e2\"), String::from(\"bc12ea\"), String::from(\"bd1ea\")), 3);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

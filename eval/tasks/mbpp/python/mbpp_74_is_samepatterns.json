@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_74_is_samepatterns",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_74_is_samepatterns",
+ "entry_point": "is_samepatterns",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef is_samepatterns(colors: List[str], patterns: List[str]) -> bool:\n    \"\"\"\n\tWrite a function to check whether it follows the sequence given in the patterns array.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(['red', 'green', 'green'], ['a', 'b', 'b']) == True\n    assert candidate(['red', 'green', 'greenn'], ['a', 'b', 'b']) == False\n    assert candidate(['red', 'green', 'greenn'], ['a', 'b']) == False\n\ndef test_check():\n    check(is_samepatterns)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_74_is_samepatterns.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef is_samepatterns(colors: List[str], patterns: List[str]) -> bool:\n    \"\"\"\n\tWrite a function to check whether it follows the sequence given in the patterns array.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(['red', 'green', 'green'], ['a', 'b', 'b']) == True\n    assert candidate(['red', 'green', 'greenn'], ['a', 'b', 'b']) == False\n    assert candidate(['red', 'green', 'greenn'], ['a', 'b']) == False\n\ndef test_check():\n    check(is_samepatterns)\n\n"
+ }
+}

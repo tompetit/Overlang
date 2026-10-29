@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_435_last_Digit",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_435_last_Digit",
+ "entry_point": "last_Digit",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef last_Digit(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the last digit of a given number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(123) == 3\n    assert candidate(25) == 5\n    assert candidate(30) == 0\n\ndef test_check():\n    check(last_Digit)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_435_last_Digit.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef last_Digit(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the last digit of a given number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(123) == 3\n    assert candidate(25) == 5\n    assert candidate(30) == 0\n\ndef test_check():\n    check(last_Digit)\n\n"
+ }
+}

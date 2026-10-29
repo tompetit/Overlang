@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_145_max_Abs_Diff",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_145_max_Abs_Diff",
+ "entry_point": "max_Abs_Diff",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef max_Abs_Diff(arr: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find the maximum difference between any two elements in a given array.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([2, 1, 5, 3]) == 4\n    assert candidate([9, 3, 2, 5, 1]) == 8\n    assert candidate([3, 2, 1]) == 2\n\ndef test_check():\n    check(max_Abs_Diff)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_145_max_Abs_Diff.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef max_Abs_Diff(arr: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find the maximum difference between any two elements in a given array.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([2, 1, 5, 3]) == 4\n    assert candidate([9, 3, 2, 5, 1]) == 8\n    assert candidate([3, 2, 1]) == 2\n\ndef test_check():\n    check(max_Abs_Diff)\n\n"
+ }
+}

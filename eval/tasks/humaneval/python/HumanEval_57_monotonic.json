@@ -1,0 +1,14 @@
+{
+ "id": "HumanEval_57_monotonic",
+ "benchmark": "humaneval",
+ "lang": "python",
+ "name": "HumanEval_57_monotonic",
+ "entry_point": "monotonic",
+ "prompt": "from typing import List\n\ndef monotonic(l: List[int]) -> bool:\n    \"\"\"Return True is list elements are monotonically increasing or decreasing.\n    >>> monotonic([1, 2, 4, 20])\n    True\n    >>> monotonic([1, 20, 4, 10])\n    False\n    >>> monotonic([4, 1, 0, -10])\n    True\n    \"\"\"\n",
+ "tests": "METADATA = {}\n\n\ndef check(candidate):\n    assert candidate([1, 2, 4, 10]) == True\n    assert candidate([1, 2, 4, 20]) == True\n    assert candidate([1, 20, 4, 10]) == False\n    assert candidate([4, 1, 0, -10]) == True\n    assert candidate([4, 1, 1, 0]) == True\n    assert candidate([1, 2, 3, 2, 5, 60]) == False\n    assert candidate([1, 2, 3, 4, 5, 60]) == True\n    assert candidate([9, 9, 9, 9]) == True\n\ndef test_check():\n    check(monotonic)\n",
+ "solution": "from typing import List\n\ndef monotonic(l: List[int]) -> bool:\n    \"\"\"Return True is list elements are monotonically increasing or decreasing.\n    >>> monotonic([1, 2, 4, 20])\n    True\n    >>> monotonic([1, 20, 4, 10])\n    False\n    >>> monotonic([4, 1, 0, -10])\n    True\n    \"\"\"\n\n    if l == sorted(l) or l == sorted(l, reverse=True):\n        return True\n    return False\n\n",
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/originals-with-cleaned-doctests/HumanEval_57_monotonic.py",
+  "text": "from typing import List\n\ndef monotonic(l: List[int]) -> bool:\n    \"\"\"Return True is list elements are monotonically increasing or decreasing.\n    >>> monotonic([1, 2, 4, 20])\n    True\n    >>> monotonic([1, 20, 4, 10])\n    False\n    >>> monotonic([4, 1, 0, -10])\n    True\n    \"\"\"\n    ### Canonical solution below ###\n    if l == sorted(l) or l == sorted(l, reverse=True):\n        return True\n    return False\n\n### Unit tests below ###\n\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate([1, 2, 4, 10]) == True\n    assert candidate([1, 2, 4, 20]) == True\n    assert candidate([1, 20, 4, 10]) == False\n    assert candidate([4, 1, 0, -10]) == True\n    assert candidate([4, 1, 1, 0]) == True\n    assert candidate([1, 2, 3, 2, 5, 60]) == False\n    assert candidate([1, 2, 3, 4, 5, 60]) == True\n    assert candidate([9, 9, 9, 9]) == True\n\ndef test_check():\n    check(monotonic)\n"
+ }
+}

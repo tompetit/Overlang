@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_409_min_product_tuple",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_409_min_product_tuple",
+ "entry_point": "min_product_tuple",
+ "prompt": "/// Write a function to find the minimum product from the pairs of tuples within a given vector.\nfn min_product_tuple(list1: Vec<(isize, isize)>) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = min_product_tuple;\n    assert_eq!(candidate(vec![(2, 7), (2, 6), (1, 8), (4, 9)]), 8);\n    assert_eq!(candidate(vec![(10, 20), (15, 2), (5, 10)]), 30);\n    assert_eq!(candidate(vec![(11, 44), (10, 15), (20, 5), (12, 9)]), 100);\n}\n",
+ "raw": {
+  "name": "mbpp_409_min_product_tuple",
+  "language": "rs",
+  "prompt": "/// Write a function to find the minimum product from the pairs of tuples within a given vector.\nfn min_product_tuple(list1: Vec<(isize, isize)>) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_409_min_product_tuple.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = min_product_tuple;\n    assert_eq!(candidate(vec![(2, 7), (2, 6), (1, 8), (4, 9)]), 8);\n    assert_eq!(candidate(vec![(10, 20), (15, 2), (5, 10)]), 30);\n    assert_eq!(candidate(vec![(11, 44), (10, 15), (20, 5), (12, 9)]), 100);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

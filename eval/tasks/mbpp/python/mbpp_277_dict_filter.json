@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_277_dict_filter",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_277_dict_filter",
+ "entry_point": "dict_filter",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef dict_filter(dict: Dict[str, int], n: int) -> Dict[str, int]:\n    \"\"\"\n\tWrite a function that takes in a dictionary and integer n and filters the dictionary to only include entries with values greater than or equal to n.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate({'Cierra Vega': 175, 'Alden Cantrell': 180, 'Kierra Gentry': 165, 'Pierre Cox': 190}, 170) == {'Cierra Vega': 175, 'Alden Cantrell': 180, 'Pierre Cox': 190}\n    assert candidate({'Cierra Vega': 175, 'Alden Cantrell': 180, 'Kierra Gentry': 165, 'Pierre Cox': 190}, 180) == {'Alden Cantrell': 180, 'Pierre Cox': 190}\n    assert candidate({'Cierra Vega': 175, 'Alden Cantrell': 180, 'Kierra Gentry': 165, 'Pierre Cox': 190}, 190) == {'Pierre Cox': 190}\n\ndef test_check():\n    check(dict_filter)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_277_dict_filter.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef dict_filter(dict: Dict[str, int], n: int) -> Dict[str, int]:\n    \"\"\"\n\tWrite a function that takes in a dictionary and integer n and filters the dictionary to only include entries with values greater than or equal to n.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate({'Cierra Vega': 175, 'Alden Cantrell': 180, 'Kierra Gentry': 165, 'Pierre Cox': 190}, 170) == {'Cierra Vega': 175, 'Alden Cantrell': 180, 'Pierre Cox': 190}\n    assert candidate({'Cierra Vega': 175, 'Alden Cantrell': 180, 'Kierra Gentry': 165, 'Pierre Cox': 190}, 180) == {'Alden Cantrell': 180, 'Pierre Cox': 190}\n    assert candidate({'Cierra Vega': 175, 'Alden Cantrell': 180, 'Kierra Gentry': 165, 'Pierre Cox': 190}, 190) == {'Pierre Cox': 190}\n\ndef test_check():\n    check(dict_filter)\n\n"
+ }
+}

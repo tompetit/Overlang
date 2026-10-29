@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_93_power",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_93_power",
+ "entry_point": "power",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef power(a: int, b: int) -> int:\n    \"\"\"\n\tWrite a function to calculate the value of 'a' to the power 'b'.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(3, 4) == 81\n    assert candidate(2, 3) == 8\n    assert candidate(5, 5) == 3125\n\ndef test_check():\n    check(power)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_93_power.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef power(a: int, b: int) -> int:\n    \"\"\"\n\tWrite a function to calculate the value of 'a' to the power 'b'.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(3, 4) == 81\n    assert candidate(2, 3) == 8\n    assert candidate(5, 5) == 3125\n\ndef test_check():\n    check(power)\n\n"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_805_max_sum_list",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_805_max_sum_list",
+ "entry_point": "max_sum_list",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef max_sum_list(lists: List[List[int]]) -> List[int]:\n    \"\"\"\n\tWrite a function that returns the list in a list of lists whose sum of elements is the highest.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([[1, 2, 3], [4, 5, 6], [10, 11, 12], [7, 8, 9]]) == [10, 11, 12]\n    assert candidate([[3, 2, 1], [6, 5, 4], [12, 11, 10]]) == [12, 11, 10]\n    assert candidate([[2, 3, 1]]) == [2, 3, 1]\n\ndef test_check():\n    check(max_sum_list)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_805_max_sum_list.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef max_sum_list(lists: List[List[int]]) -> List[int]:\n    \"\"\"\n\tWrite a function that returns the list in a list of lists whose sum of elements is the highest.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([[1, 2, 3], [4, 5, 6], [10, 11, 12], [7, 8, 9]]) == [10, 11, 12]\n    assert candidate([[3, 2, 1], [6, 5, 4], [12, 11, 10]]) == [12, 11, 10]\n    assert candidate([[2, 3, 1]]) == [2, 3, 1]\n\ndef test_check():\n    check(max_sum_list)\n\n"
+ }
+}

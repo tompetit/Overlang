@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_127_multiply_int",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_127_multiply_int",
+ "entry_point": "multiply_int",
+ "prompt": "/// Write a function to multiply two integers.\nfn multiply_int(x: isize, y: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = multiply_int;\n    assert_eq!(candidate(10, 20), 200);\n    assert_eq!(candidate(5, 10), 50);\n    assert_eq!(candidate(4, 8), 32);\n}\n",
+ "raw": {
+  "name": "mbpp_127_multiply_int",
+  "language": "rs",
+  "prompt": "/// Write a function to multiply two integers.\nfn multiply_int(x: isize, y: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_127_multiply_int.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = multiply_int;\n    assert_eq!(candidate(10, 20), 200);\n    assert_eq!(candidate(5, 10), 50);\n    assert_eq!(candidate(4, 8), 32);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

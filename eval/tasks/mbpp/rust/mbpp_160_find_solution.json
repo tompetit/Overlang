@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_160_find_solution",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_160_find_solution",
+ "entry_point": "find_solution",
+ "prompt": "/// Write a function that returns integers x and y that satisfy ax + by = n as a tuple, or return None if no solution exists.\nfn find_solution(a: isize, b: isize, n: isize) -> Option<(isize, isize)> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = find_solution;\n    assert_eq!(candidate(2, 3, 7), Some((2, 1)));\n    assert_eq!(candidate(4, 2, 7), None);\n    assert_eq!(candidate(1, 13, 17), Some((4, 1)));\n}\n",
+ "raw": {
+  "name": "mbpp_160_find_solution",
+  "language": "rs",
+  "prompt": "/// Write a function that returns integers x and y that satisfy ax + by = n as a tuple, or return None if no solution exists.\nfn find_solution(a: isize, b: isize, n: isize) -> Option<(isize, isize)> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_160_find_solution.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = find_solution;\n    assert_eq!(candidate(2, 3, 7), Some((2, 1)));\n    assert_eq!(candidate(4, 2, 7), None);\n    assert_eq!(candidate(1, 13, 17), Some((4, 1)));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

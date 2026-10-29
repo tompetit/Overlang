@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_421_concatenate_tuple",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_421_concatenate_tuple",
+ "entry_point": "concatenate_tuple",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef concatenate_tuple(test_tup: Tuple[str, str, int, str]) -> str:\n    \"\"\"\n\tWrite a function to concatenate each element of tuple by the delimiter.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(('ID', 'is', 4, 'UTS')) == 'ID-is-4-UTS'\n    assert candidate(('QWE', 'is', 4, 'RTY')) == 'QWE-is-4-RTY'\n    assert candidate(('ZEN', 'is', 4, 'OP')) == 'ZEN-is-4-OP'\n\ndef test_check():\n    check(concatenate_tuple)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_421_concatenate_tuple.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef concatenate_tuple(test_tup: Tuple[str, str, int, str]) -> str:\n    \"\"\"\n\tWrite a function to concatenate each element of tuple by the delimiter.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(('ID', 'is', 4, 'UTS')) == 'ID-is-4-UTS'\n    assert candidate(('QWE', 'is', 4, 'RTY')) == 'QWE-is-4-RTY'\n    assert candidate(('ZEN', 'is', 4, 'OP')) == 'ZEN-is-4-OP'\n\ndef test_check():\n    check(concatenate_tuple)\n\n"
+ }
+}

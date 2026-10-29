@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_223_is_majority",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_223_is_majority",
+ "entry_point": "is_majority",
+ "prompt": "/// Write a function that takes in a sorted vector, its length (n), and an element and returns whether the element is the majority element in the given sorted vector. (The majority element is the element that occurs more than n/2 times.)\nfn is_majority(arr: Vec<isize>, n: isize, x: isize) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = is_majority;\n    assert_eq!(candidate(vec![1, 2, 3, 3, 3, 3, 10], 7, 3), true);\n    assert_eq!(candidate(vec![1, 1, 2, 4, 4, 4, 6, 6], 8, 4), false);\n    assert_eq!(candidate(vec![1, 1, 1, 2, 2], 5, 1), true);\n    assert_eq!(candidate(vec![1, 1, 2, 2], 5, 1), false);\n}\n",
+ "raw": {
+  "name": "mbpp_223_is_majority",
+  "language": "rs",
+  "prompt": "/// Write a function that takes in a sorted vector, its length (n), and an element and returns whether the element is the majority element in the given sorted vector. (The majority element is the element that occurs more than n/2 times.)\nfn is_majority(arr: Vec<isize>, n: isize, x: isize) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_223_is_majority.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = is_majority;\n    assert_eq!(candidate(vec![1, 2, 3, 3, 3, 3, 10], 7, 3), true);\n    assert_eq!(candidate(vec![1, 1, 2, 4, 4, 4, 6, 6], 8, 4), false);\n    assert_eq!(candidate(vec![1, 1, 1, 2, 2], 5, 1), true);\n    assert_eq!(candidate(vec![1, 1, 2, 2], 5, 1), false);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

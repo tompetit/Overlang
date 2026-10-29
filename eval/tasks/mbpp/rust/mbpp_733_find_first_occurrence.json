@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_733_find_first_occurrence",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_733_find_first_occurrence",
+ "entry_point": "find_first_occurrence",
+ "prompt": "/// Write a function to find the index of the first occurrence of a given number in a sorted vector.\nfn find_first_occurrence(A: Vec<isize>, x: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = find_first_occurrence;\n    assert_eq!(candidate(vec![2, 5, 5, 5, 6, 6, 8, 9, 9, 9], 5), 1);\n    assert_eq!(candidate(vec![2, 3, 5, 5, 6, 6, 8, 9, 9, 9], 5), 2);\n    assert_eq!(candidate(vec![2, 4, 1, 5, 6, 6, 8, 9, 9, 9], 6), 4);\n}\n",
+ "raw": {
+  "name": "mbpp_733_find_first_occurrence",
+  "language": "rs",
+  "prompt": "/// Write a function to find the index of the first occurrence of a given number in a sorted vector.\nfn find_first_occurrence(A: Vec<isize>, x: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_733_find_first_occurrence.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = find_first_occurrence;\n    assert_eq!(candidate(vec![2, 5, 5, 5, 6, 6, 8, 9, 9, 9], 5), 1);\n    assert_eq!(candidate(vec![2, 3, 5, 5, 6, 6, 8, 9, 9, 9], 5), 2);\n    assert_eq!(candidate(vec![2, 4, 1, 5, 6, 6, 8, 9, 9, 9], 6), 4);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_589_perfect_squares",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_589_perfect_squares",
+ "entry_point": "perfect_squares",
+ "prompt": "/// Write a function to find perfect squares between two given numbers.\nfn perfect_squares(a: isize, b: isize) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = perfect_squares;\n    assert_eq!(candidate(1, 30), vec![1, 4, 9, 16, 25]);\n    assert_eq!(candidate(50, 100), vec![64, 81, 100]);\n    assert_eq!(candidate(100, 200), vec![100, 121, 144, 169, 196]);\n}\n",
+ "raw": {
+  "name": "mbpp_589_perfect_squares",
+  "language": "rs",
+  "prompt": "/// Write a function to find perfect squares between two given numbers.\nfn perfect_squares(a: isize, b: isize) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_589_perfect_squares.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = perfect_squares;\n    assert_eq!(candidate(1, 30), vec![1, 4, 9, 16, 25]);\n    assert_eq!(candidate(50, 100), vec![64, 81, 100]);\n    assert_eq!(candidate(100, 200), vec![100, 121, 144, 169, 196]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_291_count_no_of_ways",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_291_count_no_of_ways",
+ "entry_point": "count_no_of_ways",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef count_no_of_ways(n: int, k: int) -> int:\n    \"\"\"\n\tWrite a function to find out the number of ways of painting the fence such that at most 2 adjacent posts have the same color for the given fence with n posts and k colors.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(2, 4) == 16\n    assert candidate(3, 2) == 6\n    assert candidate(4, 4) == 228\n\ndef test_check():\n    check(count_no_of_ways)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_291_count_no_of_ways.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef count_no_of_ways(n: int, k: int) -> int:\n    \"\"\"\n\tWrite a function to find out the number of ways of painting the fence such that at most 2 adjacent posts have the same color for the given fence with n posts and k colors.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(2, 4) == 16\n    assert candidate(3, 2) == 6\n    assert candidate(4, 4) == 228\n\ndef test_check():\n    check(count_no_of_ways)\n\n"
+ }
+}

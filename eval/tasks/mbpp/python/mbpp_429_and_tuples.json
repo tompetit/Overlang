@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_429_and_tuples",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_429_and_tuples",
+ "entry_point": "and_tuples",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef and_tuples(test_tup1: Tuple[int, int, int, int], test_tup2: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:\n    \"\"\"\n\tWrite a function to extract the elementwise and tuples from the given two tuples.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate((10, 4, 6, 9), (5, 2, 3, 3)) == (0, 0, 2, 1)\n    assert candidate((1, 2, 3, 4), (5, 6, 7, 8)) == (1, 2, 3, 0)\n    assert candidate((8, 9, 11, 12), (7, 13, 14, 17)) == (0, 9, 10, 0)\n\ndef test_check():\n    check(and_tuples)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_429_and_tuples.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef and_tuples(test_tup1: Tuple[int, int, int, int], test_tup2: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:\n    \"\"\"\n\tWrite a function to extract the elementwise and tuples from the given two tuples.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate((10, 4, 6, 9), (5, 2, 3, 3)) == (0, 0, 2, 1)\n    assert candidate((1, 2, 3, 4), (5, 6, 7, 8)) == (1, 2, 3, 0)\n    assert candidate((8, 9, 11, 12), (7, 13, 14, 17)) == (0, 9, 10, 0)\n\ndef test_check():\n    check(and_tuples)\n\n"
+ }
+}

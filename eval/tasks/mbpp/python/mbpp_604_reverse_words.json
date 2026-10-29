@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_604_reverse_words",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_604_reverse_words",
+ "entry_point": "reverse_words",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef reverse_words(s: str) -> str:\n    \"\"\"\n\tWrite a function to reverse words seperated by spaces in a given string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('python program') == 'program python'\n    assert candidate('java language') == 'language java'\n    assert candidate('indian man') == 'man indian'\n\ndef test_check():\n    check(reverse_words)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_604_reverse_words.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef reverse_words(s: str) -> str:\n    \"\"\"\n\tWrite a function to reverse words seperated by spaces in a given string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('python program') == 'program python'\n    assert candidate('java language') == 'language java'\n    assert candidate('indian man') == 'man indian'\n\ndef test_check():\n    check(reverse_words)\n\n"
+ }
+}

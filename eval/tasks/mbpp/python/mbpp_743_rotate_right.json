@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_743_rotate_right",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_743_rotate_right",
+ "entry_point": "rotate_right",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef rotate_right(list: List[int], m: int) -> List[int]:\n    \"\"\"\n\tWrite a function to rotate a given list by specified number of items to the right direction. https://www.geeksforgeeks.org/python-program-right-rotate-list-n/\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3) == [8, 9, 10, 1, 2, 3, 4, 5, 6, 7]\n    assert candidate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 2) == [9, 10, 1, 2, 3, 4, 5, 6, 7, 8]\n    assert candidate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 5) == [6, 7, 8, 9, 10, 1, 2, 3, 4, 5]\n\ndef test_check():\n    check(rotate_right)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_743_rotate_right.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef rotate_right(list: List[int], m: int) -> List[int]:\n    \"\"\"\n\tWrite a function to rotate a given list by specified number of items to the right direction. https://www.geeksforgeeks.org/python-program-right-rotate-list-n/\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3) == [8, 9, 10, 1, 2, 3, 4, 5, 6, 7]\n    assert candidate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 2) == [9, 10, 1, 2, 3, 4, 5, 6, 7, 8]\n    assert candidate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 5) == [6, 7, 8, 9, 10, 1, 2, 3, 4, 5]\n\ndef test_check():\n    check(rotate_right)\n\n"
+ }
+}

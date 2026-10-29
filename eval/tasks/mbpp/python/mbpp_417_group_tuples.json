@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_417_group_tuples",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_417_group_tuples",
+ "entry_point": "group_tuples",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef group_tuples(Input: List[List[str]]) -> List[List[str]]:\n    \"\"\"\n\tWrite a function to find common first element in given list of lists.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([['x', 'y'], ['x', 'z'], ['w', 't']]) == [['x', 'y', 'z'], ['w', 't']]\n    assert candidate([['a', 'b'], ['a', 'c'], ['d', 'e']]) == [['a', 'b', 'c'], ['d', 'e']]\n    assert candidate([['f', 'g'], ['f', 'g'], ['h', 'i']]) == [['f', 'g', 'g'], ['h', 'i']]\n\ndef test_check():\n    check(group_tuples)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_417_group_tuples.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef group_tuples(Input: List[List[str]]) -> List[List[str]]:\n    \"\"\"\n\tWrite a function to find common first element in given list of lists.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([['x', 'y'], ['x', 'z'], ['w', 't']]) == [['x', 'y', 'z'], ['w', 't']]\n    assert candidate([['a', 'b'], ['a', 'c'], ['d', 'e']]) == [['a', 'b', 'c'], ['d', 'e']]\n    assert candidate([['f', 'g'], ['f', 'g'], ['h', 'i']]) == [['f', 'g', 'g'], ['h', 'i']]\n\ndef test_check():\n    check(group_tuples)\n\n"
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_168_frequency",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_168_frequency",
+ "entry_point": "frequency",
+ "prompt": "/// Write a function to count the number of occurrences of a number in a given vector.\nfn frequency(a: Vec<isize>, x: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = frequency;\n    assert_eq!(candidate(vec![1, 2, 3], 4), 0);\n    assert_eq!(candidate(vec![1, 2, 2, 3, 3, 3, 4], 3), 3);\n    assert_eq!(candidate(vec![0, 1, 2, 3, 1, 2], 1), 2);\n}\n",
+ "raw": {
+  "name": "mbpp_168_frequency",
+  "language": "rs",
+  "prompt": "/// Write a function to count the number of occurrences of a number in a given vector.\nfn frequency(a: Vec<isize>, x: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_168_frequency.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = frequency;\n    assert_eq!(candidate(vec![1, 2, 3], 4), 0);\n    assert_eq!(candidate(vec![1, 2, 2, 3, 3, 3, 4], 3), 3);\n    assert_eq!(candidate(vec![0, 1, 2, 3, 1, 2], 1), 2);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

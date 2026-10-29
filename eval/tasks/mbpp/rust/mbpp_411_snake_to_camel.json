@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_411_snake_to_camel",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_411_snake_to_camel",
+ "entry_point": "snake_to_camel",
+ "prompt": "/// Write a function to convert the given snake case string to camel case string.\nfn snake_to_camel(word: String) -> String {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = snake_to_camel;\n    assert_eq!(candidate(String::from(\"android_tv\")), String::from(\"AndroidTv\"));\n    assert_eq!(candidate(String::from(\"google_pixel\")), String::from(\"GooglePixel\"));\n    assert_eq!(candidate(String::from(\"apple_watch\")), String::from(\"AppleWatch\"));\n}\n",
+ "raw": {
+  "name": "mbpp_411_snake_to_camel",
+  "language": "rs",
+  "prompt": "/// Write a function to convert the given snake case string to camel case string.\nfn snake_to_camel(word: String) -> String {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_411_snake_to_camel.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = snake_to_camel;\n    assert_eq!(candidate(String::from(\"android_tv\")), String::from(\"AndroidTv\"));\n    assert_eq!(candidate(String::from(\"google_pixel\")), String::from(\"GooglePixel\"));\n    assert_eq!(candidate(String::from(\"apple_watch\")), String::from(\"AppleWatch\"));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_249_intersection_array",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_249_intersection_array",
+ "entry_point": "intersection_array",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef intersection_array(array_nums1: List[int], array_nums2: List[int]) -> List[int]:\n    \"\"\"\n\tWrite a function to find the intersection of two arrays.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3, 5, 7, 8, 9, 10], [1, 2, 4, 8, 9]) == [1, 2, 8, 9]\n    assert candidate([1, 2, 3, 5, 7, 8, 9, 10], [3, 5, 7, 9]) == [3, 5, 7, 9]\n    assert candidate([1, 2, 3, 5, 7, 8, 9, 10], [10, 20, 30, 40]) == [10]\n\ndef test_check():\n    check(intersection_array)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_249_intersection_array.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef intersection_array(array_nums1: List[int], array_nums2: List[int]) -> List[int]:\n    \"\"\"\n\tWrite a function to find the intersection of two arrays.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3, 5, 7, 8, 9, 10], [1, 2, 4, 8, 9]) == [1, 2, 8, 9]\n    assert candidate([1, 2, 3, 5, 7, 8, 9, 10], [3, 5, 7, 9]) == [3, 5, 7, 9]\n    assert candidate([1, 2, 3, 5, 7, 8, 9, 10], [10, 20, 30, 40]) == [10]\n\ndef test_check():\n    check(intersection_array)\n\n"
+ }
+}

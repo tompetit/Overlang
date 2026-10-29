@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_796_return_sum",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_796_return_sum",
+ "entry_point": "return_sum",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef return_sum(dict: Dict[str, int]) -> int:\n    \"\"\"\n\tWrite function to find the sum of all items in the given dictionary.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate({'a': 100, 'b': 200, 'c': 300}) == 600\n    assert candidate({'a': 25, 'b': 18, 'c': 45}) == 88\n    assert candidate({'a': 36, 'b': 39, 'c': 49}) == 124\n\ndef test_check():\n    check(return_sum)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_796_return_sum.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef return_sum(dict: Dict[str, int]) -> int:\n    \"\"\"\n\tWrite function to find the sum of all items in the given dictionary.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate({'a': 100, 'b': 200, 'c': 300}) == 600\n    assert candidate({'a': 25, 'b': 18, 'c': 45}) == 88\n    assert candidate({'a': 36, 'b': 39, 'c': 49}) == 124\n\ndef test_check():\n    check(return_sum)\n\n"
+ }
+}

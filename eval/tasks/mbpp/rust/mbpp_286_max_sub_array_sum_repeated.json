@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_286_max_sub_array_sum_repeated",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_286_max_sub_array_sum_repeated",
+ "entry_point": "max_sub_array_sum_repeated",
+ "prompt": "/// Write a function to find the largest sum of a contiguous vector in the modified vector which is formed by repeating the given vector k times.\nfn max_sub_array_sum_repeated(a: Vec<isize>, n: isize, k: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = max_sub_array_sum_repeated;\n    assert_eq!(candidate(vec![10, 20, -30, -1], 4, 3), 30);\n    assert_eq!(candidate(vec![-1, 10, 20], 3, 2), 59);\n    assert_eq!(candidate(vec![-1, -2, -3], 3, 3), -1);\n}\n",
+ "raw": {
+  "name": "mbpp_286_max_sub_array_sum_repeated",
+  "language": "rs",
+  "prompt": "/// Write a function to find the largest sum of a contiguous vector in the modified vector which is formed by repeating the given vector k times.\nfn max_sub_array_sum_repeated(a: Vec<isize>, n: isize, k: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_286_max_sub_array_sum_repeated.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = max_sub_array_sum_repeated;\n    assert_eq!(candidate(vec![10, 20, -30, -1], 4, 3), 30);\n    assert_eq!(candidate(vec![-1, 10, 20], 3, 2), 59);\n    assert_eq!(candidate(vec![-1, -2, -3], 3, 3), -1);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

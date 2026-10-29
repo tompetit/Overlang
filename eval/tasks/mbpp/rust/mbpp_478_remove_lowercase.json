@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_478_remove_lowercase",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_478_remove_lowercase",
+ "entry_point": "remove_lowercase",
+ "prompt": "/// Write a function to remove lowercase substrings from a given string.\nfn remove_lowercase(str1: String) -> String {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = remove_lowercase;\n    assert_eq!(candidate(String::from(\"PYTHon\")), String::from(\"PYTH\"));\n    assert_eq!(candidate(String::from(\"FInD\")), String::from(\"FID\"));\n    assert_eq!(candidate(String::from(\"STRinG\")), String::from(\"STRG\"));\n}\n",
+ "raw": {
+  "name": "mbpp_478_remove_lowercase",
+  "language": "rs",
+  "prompt": "/// Write a function to remove lowercase substrings from a given string.\nfn remove_lowercase(str1: String) -> String {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_478_remove_lowercase.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = remove_lowercase;\n    assert_eq!(candidate(String::from(\"PYTHon\")), String::from(\"PYTH\"));\n    assert_eq!(candidate(String::from(\"FInD\")), String::from(\"FID\"));\n    assert_eq!(candidate(String::from(\"STRinG\")), String::from(\"STRG\"));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_228_all_Bits_Set_In_The_Given_Range",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_228_all_Bits_Set_In_The_Given_Range",
+ "entry_point": "all_Bits_Set_In_The_Given_Range",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef all_Bits_Set_In_The_Given_Range(n: int, l: int, r: int) -> bool:\n    \"\"\"\n\tWrite a python function to check whether all the bits are unset in the given range or not.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(4, 1, 2) == True\n    assert candidate(17, 2, 4) == True\n    assert candidate(39, 4, 6) == False\n\ndef test_check():\n    check(all_Bits_Set_In_The_Given_Range)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_228_all_Bits_Set_In_The_Given_Range.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef all_Bits_Set_In_The_Given_Range(n: int, l: int, r: int) -> bool:\n    \"\"\"\n\tWrite a python function to check whether all the bits are unset in the given range or not.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(4, 1, 2) == True\n    assert candidate(17, 2, 4) == True\n    assert candidate(39, 4, 6) == False\n\ndef test_check():\n    check(all_Bits_Set_In_The_Given_Range)\n\n"
+ }
+}

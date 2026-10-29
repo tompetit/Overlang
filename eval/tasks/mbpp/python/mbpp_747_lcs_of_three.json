@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_747_lcs_of_three",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_747_lcs_of_three",
+ "entry_point": "lcs_of_three",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef lcs_of_three(X: str, Y: str, Z: str) -> int:\n    \"\"\"\n\tWrite a function to find the longest common subsequence for the given three string sequence. https://www.geeksforgeeks.org/lcs-longest-common-subsequence-three-strings/\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('AGGT12', '12TXAYB', '12XBA') == 2\n    assert candidate('Reels', 'Reelsfor', 'ReelsforReels') == 5\n    assert candidate('abcd1e2', 'bc12ea', 'bd1ea') == 3\n\ndef test_check():\n    check(lcs_of_three)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_747_lcs_of_three.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef lcs_of_three(X: str, Y: str, Z: str) -> int:\n    \"\"\"\n\tWrite a function to find the longest common subsequence for the given three string sequence. https://www.geeksforgeeks.org/lcs-longest-common-subsequence-three-strings/\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('AGGT12', '12TXAYB', '12XBA') == 2\n    assert candidate('Reels', 'Reelsfor', 'ReelsforReels') == 5\n    assert candidate('abcd1e2', 'bc12ea', 'bd1ea') == 3\n\ndef test_check():\n    check(lcs_of_three)\n\n"
+ }
+}

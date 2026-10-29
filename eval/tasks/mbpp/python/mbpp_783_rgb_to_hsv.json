@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_783_rgb_to_hsv",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_783_rgb_to_hsv",
+ "entry_point": "rgb_to_hsv",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef rgb_to_hsv(r: int, g: int, b: int) -> List[float]:\n    \"\"\"\n\tWrite a function to convert rgb color to hsv color. https://www.geeksforgeeks.org/program-change-rgb-color-model-hsv-color-model/\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(255, 255, 255) == [0.0, 0.0, 100.0]\n    assert candidate(0, 215, 0) == [120.0, 100.0, 84.31372549019608]\n    assert candidate(10, 215, 110) == [149.26829268292684, 95.34883720930233, 84.31372549019608]\n\ndef test_check():\n    check(rgb_to_hsv)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_783_rgb_to_hsv.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef rgb_to_hsv(r: int, g: int, b: int) -> List[float]:\n    \"\"\"\n\tWrite a function to convert rgb color to hsv color. https://www.geeksforgeeks.org/program-change-rgb-color-model-hsv-color-model/\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(255, 255, 255) == [0.0, 0.0, 100.0]\n    assert candidate(0, 215, 0) == [120.0, 100.0, 84.31372549019608]\n    assert candidate(10, 215, 110) == [149.26829268292684, 95.34883720930233, 84.31372549019608]\n\ndef test_check():\n    check(rgb_to_hsv)\n\n"
+ }
+}

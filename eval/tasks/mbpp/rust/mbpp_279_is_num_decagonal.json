@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_279_is_num_decagonal",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_279_is_num_decagonal",
+ "entry_point": "is_num_decagonal",
+ "prompt": "/// Write a function to find the nth decagonal number.\nfn is_num_decagonal(n: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = is_num_decagonal;\n    assert_eq!(candidate(3), 27);\n    assert_eq!(candidate(7), 175);\n    assert_eq!(candidate(10), 370);\n}\n",
+ "raw": {
+  "name": "mbpp_279_is_num_decagonal",
+  "language": "rs",
+  "prompt": "/// Write a function to find the nth decagonal number.\nfn is_num_decagonal(n: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_279_is_num_decagonal.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = is_num_decagonal;\n    assert_eq!(candidate(3), 27);\n    assert_eq!(candidate(7), 175);\n    assert_eq!(candidate(10), 370);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

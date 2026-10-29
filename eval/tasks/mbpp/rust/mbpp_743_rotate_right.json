@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_743_rotate_right",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_743_rotate_right",
+ "entry_point": "rotate_right",
+ "prompt": "/// Write a function to rotate a given vector by specified number of items to the right direction. https://www.geeksforgeeks.org/rsthon-program-right-rotate-vector-n/\nfn rotate_right(list: Vec<isize>, m: isize) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = rotate_right;\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3), vec![8, 9, 10, 1, 2, 3, 4, 5, 6, 7]);\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 2), vec![9, 10, 1, 2, 3, 4, 5, 6, 7, 8]);\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 5), vec![6, 7, 8, 9, 10, 1, 2, 3, 4, 5]);\n}\n",
+ "raw": {
+  "name": "mbpp_743_rotate_right",
+  "language": "rs",
+  "prompt": "/// Write a function to rotate a given vector by specified number of items to the right direction. https://www.geeksforgeeks.org/rsthon-program-right-rotate-vector-n/\nfn rotate_right(list: Vec<isize>, m: isize) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_743_rotate_right.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = rotate_right;\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3), vec![8, 9, 10, 1, 2, 3, 4, 5, 6, 7]);\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 2), vec![9, 10, 1, 2, 3, 4, 5, 6, 7, 8]);\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 5), vec![6, 7, 8, 9, 10, 1, 2, 3, 4, 5]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_442_positive_count",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_442_positive_count",
+ "entry_point": "positive_count",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef positive_count(nums: List[int]) -> float:\n    \"\"\"\n\tWrite a function to find the ration of positive numbers in an array of integers.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([0, 1, 2, -1, -5, 6, 0, -3, -2, 3, 4, 6, 8]) == 0.54\n    assert candidate([2, 1, 2, -1, -5, 6, 4, -3, -2, 3, 4, 6, 8]) == 0.69\n    assert candidate([2, 4, -6, -9, 11, -12, 14, -5, 17]) == 0.56\n\ndef test_check():\n    check(positive_count)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_442_positive_count.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef positive_count(nums: List[int]) -> float:\n    \"\"\"\n\tWrite a function to find the ration of positive numbers in an array of integers.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([0, 1, 2, -1, -5, 6, 0, -3, -2, 3, 4, 6, 8]) == 0.54\n    assert candidate([2, 1, 2, -1, -5, 6, 4, -3, -2, 3, 4, 6, 8]) == 0.69\n    assert candidate([2, 4, -6, -9, 11, -12, 14, -5, 17]) == 0.56\n\ndef test_check():\n    check(positive_count)\n\n"
+ }
+}

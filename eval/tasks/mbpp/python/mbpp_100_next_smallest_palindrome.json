@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_100_next_smallest_palindrome",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_100_next_smallest_palindrome",
+ "entry_point": "next_smallest_palindrome",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef next_smallest_palindrome(num: int) -> int:\n    \"\"\"\n\tWrite a function to find the next smallest palindrome of a specified integer, returned as an integer.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(99) == 101\n    assert candidate(1221) == 1331\n    assert candidate(120) == 121\n\ndef test_check():\n    check(next_smallest_palindrome)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_100_next_smallest_palindrome.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef next_smallest_palindrome(num: int) -> int:\n    \"\"\"\n\tWrite a function to find the next smallest palindrome of a specified integer, returned as an integer.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(99) == 101\n    assert candidate(1221) == 1331\n    assert candidate(120) == 121\n\ndef test_check():\n    check(next_smallest_palindrome)\n\n"
+ }
+}

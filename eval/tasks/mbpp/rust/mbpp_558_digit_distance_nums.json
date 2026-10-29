@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_558_digit_distance_nums",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_558_digit_distance_nums",
+ "entry_point": "digit_distance_nums",
+ "prompt": "/// Write a rsthon function to find the sum of the per-digit difference between two integers.\nfn digit_distance_nums(n1: isize, n2: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = digit_distance_nums;\n    assert_eq!(candidate(1, 2), 1);\n    assert_eq!(candidate(23, 56), 6);\n    assert_eq!(candidate(123, 256), 7);\n}\n",
+ "raw": {
+  "name": "mbpp_558_digit_distance_nums",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to find the sum of the per-digit difference between two integers.\nfn digit_distance_nums(n1: isize, n2: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_558_digit_distance_nums.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = digit_distance_nums;\n    assert_eq!(candidate(1, 2), 1);\n    assert_eq!(candidate(23, 56), 6);\n    assert_eq!(candidate(123, 256), 7);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

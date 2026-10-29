@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_249_intersection_array",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_249_intersection_array",
+ "entry_point": "intersection_array",
+ "prompt": "/// Write a function to find the intersection of two vectors.\nfn intersection_array(array_nums1: Vec<isize>, array_nums2: Vec<isize>) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = intersection_array;\n    assert_eq!(candidate(vec![1, 2, 3, 5, 7, 8, 9, 10], vec![1, 2, 4, 8, 9]), vec![1, 2, 8, 9]);\n    assert_eq!(candidate(vec![1, 2, 3, 5, 7, 8, 9, 10], vec![3, 5, 7, 9]), vec![3, 5, 7, 9]);\n    assert_eq!(candidate(vec![1, 2, 3, 5, 7, 8, 9, 10], vec![10, 20, 30, 40]), vec![10]);\n}\n",
+ "raw": {
+  "name": "mbpp_249_intersection_array",
+  "language": "rs",
+  "prompt": "/// Write a function to find the intersection of two vectors.\nfn intersection_array(array_nums1: Vec<isize>, array_nums2: Vec<isize>) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_249_intersection_array.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = intersection_array;\n    assert_eq!(candidate(vec![1, 2, 3, 5, 7, 8, 9, 10], vec![1, 2, 4, 8, 9]), vec![1, 2, 8, 9]);\n    assert_eq!(candidate(vec![1, 2, 3, 5, 7, 8, 9, 10], vec![3, 5, 7, 9]), vec![3, 5, 7, 9]);\n    assert_eq!(candidate(vec![1, 2, 3, 5, 7, 8, 9, 10], vec![10, 20, 30, 40]), vec![10]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

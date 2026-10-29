@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_430_parabola_directrix",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_430_parabola_directrix",
+ "entry_point": "parabola_directrix",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef parabola_directrix(a: int, b: int, c: int) -> int:\n    \"\"\"\n\tWrite a function to find the directrix of a parabola.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(5, 3, 2) == -198\n    assert candidate(9, 8, 4) == -2336\n    assert candidate(2, 4, 6) == -130\n\ndef test_check():\n    check(parabola_directrix)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_430_parabola_directrix.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef parabola_directrix(a: int, b: int, c: int) -> int:\n    \"\"\"\n\tWrite a function to find the directrix of a parabola.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(5, 3, 2) == -198\n    assert candidate(9, 8, 4) == -2336\n    assert candidate(2, 4, 6) == -130\n\ndef test_check():\n    check(parabola_directrix)\n\n"
+ }
+}

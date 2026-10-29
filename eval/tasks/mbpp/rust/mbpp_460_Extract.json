@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_460_Extract",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_460_Extract",
+ "entry_point": "Extract",
+ "prompt": "/// Write a rsthon function to get the first element of each subvector.\nfn Extract(lst: Vec<Vec<isize>>) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = Extract;\n    assert_eq!(candidate(vec![vec![1, 2], vec![3, 4, 5], vec![6, 7, 8, 9]]), vec![1, 3, 6]);\n    assert_eq!(candidate(vec![vec![1, 2, 3], vec![4, 5]]), vec![1, 4]);\n    assert_eq!(candidate(vec![vec![9, 8, 1], vec![1, 2]]), vec![9, 1]);\n}\n",
+ "raw": {
+  "name": "mbpp_460_Extract",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to get the first element of each subvector.\nfn Extract(lst: Vec<Vec<isize>>) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_460_Extract.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = Extract;\n    assert_eq!(candidate(vec![vec![1, 2], vec![3, 4, 5], vec![6, 7, 8, 9]]), vec![1, 3, 6]);\n    assert_eq!(candidate(vec![vec![1, 2, 3], vec![4, 5]]), vec![1, 4]);\n    assert_eq!(candidate(vec![vec![9, 8, 1], vec![1, 2]]), vec![9, 1]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_427_change_date_format",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_427_change_date_format",
+ "entry_point": "change_date_format",
+ "prompt": "/// Write a function to convert a date of yyyy-mm-dd format to dd-mm-yyyy format.\nfn change_date_format(dt: String) -> String {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = change_date_format;\n    assert_eq!(candidate(String::from(\"2026-01-02\")), String::from(\"02-01-2026\"));\n    assert_eq!(candidate(String::from(\"2020-11-13\")), String::from(\"13-11-2020\"));\n    assert_eq!(candidate(String::from(\"2021-04-26\")), String::from(\"26-04-2021\"));\n}\n",
+ "raw": {
+  "name": "mbpp_427_change_date_format",
+  "language": "rs",
+  "prompt": "/// Write a function to convert a date of yyyy-mm-dd format to dd-mm-yyyy format.\nfn change_date_format(dt: String) -> String {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_427_change_date_format.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = change_date_format;\n    assert_eq!(candidate(String::from(\"2026-01-02\")), String::from(\"02-01-2026\"));\n    assert_eq!(candidate(String::from(\"2020-11-13\")), String::from(\"13-11-2020\"));\n    assert_eq!(candidate(String::from(\"2021-04-26\")), String::from(\"26-04-2021\"));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

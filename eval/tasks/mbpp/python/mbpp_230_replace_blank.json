@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_230_replace_blank",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_230_replace_blank",
+ "entry_point": "replace_blank",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef replace_blank(str1: str, char: str) -> str:\n    \"\"\"\n\tWrite a function that takes in a string and character, replaces blank spaces in the string with the character, and returns the string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('hello people', '@') == 'hello@people'\n    assert candidate('python program language', '$') == 'python$program$language'\n    assert candidate('blank space', '-') == 'blank-space'\n\ndef test_check():\n    check(replace_blank)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_230_replace_blank.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef replace_blank(str1: str, char: str) -> str:\n    \"\"\"\n\tWrite a function that takes in a string and character, replaces blank spaces in the string with the character, and returns the string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('hello people', '@') == 'hello@people'\n    assert candidate('python program language', '$') == 'python$program$language'\n    assert candidate('blank space', '-') == 'blank-space'\n\ndef test_check():\n    check(replace_blank)\n\n"
+ }
+}

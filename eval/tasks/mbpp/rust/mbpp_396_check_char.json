@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_396_check_char",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_396_check_char",
+ "entry_point": "check_char",
+ "prompt": "/// Write a function to check whether the given string starts and ends with the same character or not.\nfn check_char(string: String) -> String {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = check_char;\n    assert_eq!(candidate(String::from(\"abba\")), String::from(\"Valid\"));\n    assert_eq!(candidate(String::from(\"a\")), String::from(\"Valid\"));\n    assert_eq!(candidate(String::from(\"abcd\")), String::from(\"Invalid\"));\n}\n",
+ "raw": {
+  "name": "mbpp_396_check_char",
+  "language": "rs",
+  "prompt": "/// Write a function to check whether the given string starts and ends with the same character or not.\nfn check_char(string: String) -> String {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_396_check_char.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = check_char;\n    assert_eq!(candidate(String::from(\"abba\")), String::from(\"Valid\"));\n    assert_eq!(candidate(String::from(\"a\")), String::from(\"Valid\"));\n    assert_eq!(candidate(String::from(\"abcd\")), String::from(\"Invalid\"));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

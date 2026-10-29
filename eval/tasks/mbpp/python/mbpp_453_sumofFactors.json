@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_453_sumofFactors",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_453_sumofFactors",
+ "entry_point": "sumofFactors",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef sumofFactors(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the sum of even factors of a number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(18) == 26\n    assert candidate(30) == 48\n    assert candidate(6) == 8\n\ndef test_check():\n    check(sumofFactors)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_453_sumofFactors.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef sumofFactors(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the sum of even factors of a number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(18) == 26\n    assert candidate(30) == 48\n    assert candidate(6) == 8\n\ndef test_check():\n    check(sumofFactors)\n\n"
+ }
+}

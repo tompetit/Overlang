@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_746_sector_area",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_746_sector_area",
+ "entry_point": "sector_area",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef sector_area(r: int, a: int) -> Optional[float]:\n    \"\"\"\n\tWrite a function to find area of a sector. The function takes the radius and angle as inputs. Function should return None if the angle is larger than 360 degrees.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(4, 45) == 6.283185307179586\n    assert candidate(9, 45) == 31.808625617596654\n    assert candidate(9, 361) == None\n\ndef test_check():\n    check(sector_area)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_746_sector_area.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef sector_area(r: int, a: int) -> Optional[float]:\n    \"\"\"\n\tWrite a function to find area of a sector. The function takes the radius and angle as inputs. Function should return None if the angle is larger than 360 degrees.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(4, 45) == 6.283185307179586\n    assert candidate(9, 45) == 31.808625617596654\n    assert candidate(9, 361) == None\n\ndef test_check():\n    check(sector_area)\n\n"
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_750_add_tuple",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_750_add_tuple",
+ "entry_point": "add_tuple",
+ "prompt": "/// Write a function to add the given tuple to the given vector.\nfn add_tuple(test_list: Vec<isize>, test_tup: (isize, isize)) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = add_tuple;\n    assert_eq!(candidate(vec![5, 6, 7], (9, 10)), vec![5, 6, 7, 9, 10]);\n    assert_eq!(candidate(vec![6, 7, 8], (10, 11)), vec![6, 7, 8, 10, 11]);\n    assert_eq!(candidate(vec![7, 8, 9], (11, 12)), vec![7, 8, 9, 11, 12]);\n}\n",
+ "raw": {
+  "name": "mbpp_750_add_tuple",
+  "language": "rs",
+  "prompt": "/// Write a function to add the given tuple to the given vector.\nfn add_tuple(test_list: Vec<isize>, test_tup: (isize, isize)) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_750_add_tuple.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = add_tuple;\n    assert_eq!(candidate(vec![5, 6, 7], (9, 10)), vec![5, 6, 7, 9, 10]);\n    assert_eq!(candidate(vec![6, 7, 8], (10, 11)), vec![6, 7, 8, 10, 11]);\n    assert_eq!(candidate(vec![7, 8, 9], (11, 12)), vec![7, 8, 9, 11, 12]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

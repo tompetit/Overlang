@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_406_find_Parity",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_406_find_Parity",
+ "entry_point": "find_Parity",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef find_Parity(x: int) -> bool:\n    \"\"\"\n\tWrite a python function to find whether the parity of a given number is odd.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(12) == False\n    assert candidate(7) == True\n    assert candidate(10) == False\n\ndef test_check():\n    check(find_Parity)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_406_find_Parity.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef find_Parity(x: int) -> bool:\n    \"\"\"\n\tWrite a python function to find whether the parity of a given number is odd.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(12) == False\n    assert candidate(7) == True\n    assert candidate(10) == False\n\ndef test_check():\n    check(find_Parity)\n\n"
+ }
+}

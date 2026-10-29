@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_420_cube_Sum",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_420_cube_Sum",
+ "entry_point": "cube_Sum",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef cube_Sum(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the cube sum of first n even natural numbers.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(2) == 72\n    assert candidate(3) == 288\n    assert candidate(4) == 800\n\ndef test_check():\n    check(cube_Sum)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_420_cube_Sum.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef cube_Sum(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the cube sum of first n even natural numbers.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(2) == 72\n    assert candidate(3) == 288\n    assert candidate(4) == 800\n\ndef test_check():\n    check(cube_Sum)\n\n"
+ }
+}

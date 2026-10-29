@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_61_count_Substrings",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_61_count_Substrings",
+ "entry_point": "count_Substrings",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef count_Substrings(s: str) -> int:\n    \"\"\"\n\tWrite a python function to count the number of substrings with the sum of digits equal to their length.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('112112') == 6\n    assert candidate('111') == 6\n    assert candidate('1101112') == 12\n\ndef test_check():\n    check(count_Substrings)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_61_count_Substrings.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef count_Substrings(s: str) -> int:\n    \"\"\"\n\tWrite a python function to count the number of substrings with the sum of digits equal to their length.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('112112') == 6\n    assert candidate('111') == 6\n    assert candidate('1101112') == 12\n\ndef test_check():\n    check(count_Substrings)\n\n"
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_89_closest_num",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_89_closest_num",
+ "entry_point": "closest_num",
+ "prompt": "/// Write a function to find the closest smaller number than n.\nfn closest_num(N: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = closest_num;\n    assert_eq!(candidate(11), 10);\n    assert_eq!(candidate(7), 6);\n    assert_eq!(candidate(12), 11);\n}\n",
+ "raw": {
+  "name": "mbpp_89_closest_num",
+  "language": "rs",
+  "prompt": "/// Write a function to find the closest smaller number than n.\nfn closest_num(N: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_89_closest_num.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = closest_num;\n    assert_eq!(candidate(11), 10);\n    assert_eq!(candidate(7), 6);\n    assert_eq!(candidate(12), 11);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

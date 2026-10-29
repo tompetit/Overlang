@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_128_long_words",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_128_long_words",
+ "entry_point": "long_words",
+ "prompt": "/// Write a function to find words that are longer than n characters from a given vector of words.\nfn long_words(n: isize, str: String) -> Vec<String> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = long_words;\n    assert_eq!(candidate(3, String::from(\"python is a programming language\")), vec![String::from(\"python\"), String::from(\"programming\"), String::from(\"language\")]);\n    assert_eq!(candidate(2, String::from(\"writing a program\")), vec![String::from(\"writing\"), String::from(\"program\")]);\n    assert_eq!(candidate(5, String::from(\"sorting list\")), vec![String::from(\"sorting\")]);\n}\n",
+ "raw": {
+  "name": "mbpp_128_long_words",
+  "language": "rs",
+  "prompt": "/// Write a function to find words that are longer than n characters from a given vector of words.\nfn long_words(n: isize, str: String) -> Vec<String> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_128_long_words.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = long_words;\n    assert_eq!(candidate(3, String::from(\"python is a programming language\")), vec![String::from(\"python\"), String::from(\"programming\"), String::from(\"language\")]);\n    assert_eq!(candidate(2, String::from(\"writing a program\")), vec![String::from(\"writing\"), String::from(\"program\")]);\n    assert_eq!(candidate(5, String::from(\"sorting list\")), vec![String::from(\"sorting\")]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

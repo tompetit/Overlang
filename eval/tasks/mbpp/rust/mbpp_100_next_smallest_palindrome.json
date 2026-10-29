@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_100_next_smallest_palindrome",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_100_next_smallest_palindrome",
+ "entry_point": "next_smallest_palindrome",
+ "prompt": "/// Write a function to find the next smallest palindrome of a specified integer, returned as an integer.\nfn next_smallest_palindrome(num: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = next_smallest_palindrome;\n    assert_eq!(candidate(99), 101);\n    assert_eq!(candidate(1221), 1331);\n    assert_eq!(candidate(120), 121);\n}\n",
+ "raw": {
+  "name": "mbpp_100_next_smallest_palindrome",
+  "language": "rs",
+  "prompt": "/// Write a function to find the next smallest palindrome of a specified integer, returned as an integer.\nfn next_smallest_palindrome(num: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_100_next_smallest_palindrome.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = next_smallest_palindrome;\n    assert_eq!(candidate(99), 101);\n    assert_eq!(candidate(1221), 1331);\n    assert_eq!(candidate(120), 121);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

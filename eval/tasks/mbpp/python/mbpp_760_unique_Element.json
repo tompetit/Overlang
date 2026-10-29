@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_760_unique_Element",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_760_unique_Element",
+ "entry_point": "unique_Element",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef unique_Element(arr: List[int]) -> bool:\n    \"\"\"\n\tWrite a python function to check whether a list of numbers contains only one distinct element or not.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 1, 1]) == True\n    assert candidate([1, 2, 1, 2]) == False\n    assert candidate([1, 2, 3, 4, 5]) == False\n\ndef test_check():\n    check(unique_Element)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_760_unique_Element.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef unique_Element(arr: List[int]) -> bool:\n    \"\"\"\n\tWrite a python function to check whether a list of numbers contains only one distinct element or not.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 1, 1]) == True\n    assert candidate([1, 2, 1, 2]) == False\n    assert candidate([1, 2, 3, 4, 5]) == False\n\ndef test_check():\n    check(unique_Element)\n\n"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_734_sum_Of_Subarray_Prod",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_734_sum_Of_Subarray_Prod",
+ "entry_point": "sum_Of_Subarray_Prod",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef sum_Of_Subarray_Prod(arr: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find sum of products of all possible sublists of a given list. https://www.geeksforgeeks.org/sum-of-products-of-all-possible-subarrays/\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3]) == 20\n    assert candidate([1, 2]) == 5\n    assert candidate([1, 2, 3, 4]) == 84\n\ndef test_check():\n    check(sum_Of_Subarray_Prod)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_734_sum_Of_Subarray_Prod.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef sum_Of_Subarray_Prod(arr: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find sum of products of all possible sublists of a given list. https://www.geeksforgeeks.org/sum-of-products-of-all-possible-subarrays/\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3]) == 20\n    assert candidate([1, 2]) == 5\n    assert candidate([1, 2, 3, 4]) == 84\n\ndef test_check():\n    check(sum_Of_Subarray_Prod)\n\n"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_732_replace_specialchar",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_732_replace_specialchar",
+ "entry_point": "replace_specialchar",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef replace_specialchar(text: str) -> str:\n    \"\"\"\n\tWrite a function to replace all occurrences of spaces, commas, or dots with a colon.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('Python language, Programming language.') == 'Python:language::Programming:language:'\n    assert candidate('a b c,d e f') == 'a:b:c:d:e:f'\n    assert candidate('ram reshma,ram rahim') == 'ram:reshma:ram:rahim'\n\ndef test_check():\n    check(replace_specialchar)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_732_replace_specialchar.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef replace_specialchar(text: str) -> str:\n    \"\"\"\n\tWrite a function to replace all occurrences of spaces, commas, or dots with a colon.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('Python language, Programming language.') == 'Python:language::Programming:language:'\n    assert candidate('a b c,d e f') == 'a:b:c:d:e:f'\n    assert candidate('ram reshma,ram rahim') == 'ram:reshma:ram:rahim'\n\ndef test_check():\n    check(replace_specialchar)\n\n"
+ }
+}

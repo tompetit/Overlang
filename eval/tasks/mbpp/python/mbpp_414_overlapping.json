@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_414_overlapping",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_414_overlapping",
+ "entry_point": "overlapping",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef overlapping(list1: List[int], list2: List[int]) -> bool:\n    \"\"\"\n\tWrite a python function to check whether any value in a sequence exists in a sequence or not.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3, 4, 5], [6, 7, 8, 9]) == False\n    assert candidate([1, 2, 3], [4, 5, 6]) == False\n    assert candidate([1, 4, 5], [1, 4, 5]) == True\n\ndef test_check():\n    check(overlapping)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_414_overlapping.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef overlapping(list1: List[int], list2: List[int]) -> bool:\n    \"\"\"\n\tWrite a python function to check whether any value in a sequence exists in a sequence or not.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3, 4, 5], [6, 7, 8, 9]) == False\n    assert candidate([1, 2, 3], [4, 5, 6]) == False\n    assert candidate([1, 4, 5], [1, 4, 5]) == True\n\ndef test_check():\n    check(overlapping)\n\n"
+ }
+}

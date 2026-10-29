@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_295_sum_div",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_295_sum_div",
+ "entry_point": "sum_div",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef sum_div(number: int) -> int:\n    \"\"\"\n\tWrite a function to return the sum of all divisors of a number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(8) == 7\n    assert candidate(12) == 16\n    assert candidate(7) == 1\n\ndef test_check():\n    check(sum_div)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_295_sum_div.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef sum_div(number: int) -> int:\n    \"\"\"\n\tWrite a function to return the sum of all divisors of a number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(8) == 7\n    assert candidate(12) == 16\n    assert candidate(7) == 1\n\ndef test_check():\n    check(sum_div)\n\n"
+ }
+}

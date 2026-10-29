@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_804_is_product_even",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_804_is_product_even",
+ "entry_point": "is_product_even",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef is_product_even(arr: List[int]) -> bool:\n    \"\"\"\n\tWrite a function to check whether the product of numbers in a list is even or not.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3]) == True\n    assert candidate([1, 2, 1, 4]) == True\n    assert candidate([1, 1]) == False\n\ndef test_check():\n    check(is_product_even)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_804_is_product_even.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef is_product_even(arr: List[int]) -> bool:\n    \"\"\"\n\tWrite a function to check whether the product of numbers in a list is even or not.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3]) == True\n    assert candidate([1, 2, 1, 4]) == True\n    assert candidate([1, 1]) == False\n\ndef test_check():\n    check(is_product_even)\n\n"
+ }
+}

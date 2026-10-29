@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_605_prime_num",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_605_prime_num",
+ "entry_point": "prime_num",
+ "prompt": "/// Write a function to check if the given integer is a prime number.\nfn prime_num(num: isize) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = prime_num;\n    assert_eq!(candidate(13), true);\n    assert_eq!(candidate(7), true);\n    assert_eq!(candidate(-1010), false);\n}\n",
+ "raw": {
+  "name": "mbpp_605_prime_num",
+  "language": "rs",
+  "prompt": "/// Write a function to check if the given integer is a prime number.\nfn prime_num(num: isize) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_605_prime_num.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = prime_num;\n    assert_eq!(candidate(13), true);\n    assert_eq!(candidate(7), true);\n    assert_eq!(candidate(-1010), false);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "HumanEval_24_largest_divisor",
+ "benchmark": "humaneval",
+ "lang": "rust",
+ "name": "HumanEval_24_largest_divisor",
+ "entry_point": "largest_divisor",
+ "prompt": "/// For a given number n, find the largest number that divides n evenly, smaller than n\n/// >>> largest_divisor(15)\n/// 5\nfn largest_divisor(n: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = largest_divisor;\n    assert_eq!(candidate(3), 1);\n    assert_eq!(candidate(7), 1);\n    assert_eq!(candidate(10), 5);\n    assert_eq!(candidate(100), 50);\n    assert_eq!(candidate(49), 7);\n}\n",
+ "raw": {
+  "name": "HumanEval_24_largest_divisor",
+  "language": "rs",
+  "prompt": "/// For a given number n, find the largest number that divides n evenly, smaller than n\n/// >>> largest_divisor(15)\n/// 5\nfn largest_divisor(n: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/work/arjunguha-research-group/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_24_largest_divisor.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = largest_divisor;\n    assert_eq!(candidate(3), 1);\n    assert_eq!(candidate(7), 1);\n    assert_eq!(candidate(10), 5);\n    assert_eq!(candidate(100), 50);\n    assert_eq!(candidate(49), 7);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

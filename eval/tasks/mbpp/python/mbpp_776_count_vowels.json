@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_776_count_vowels",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_776_count_vowels",
+ "entry_point": "count_vowels",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef count_vowels(test_str: str) -> int:\n    \"\"\"\n\tWrite a function to count those characters which have vowels as their neighbors in the given string.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('bestinstareels') == 7\n    assert candidate('partofthejourneyistheend') == 12\n    assert candidate('amazonprime') == 5\n\ndef test_check():\n    check(count_vowels)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_776_count_vowels.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef count_vowels(test_str: str) -> int:\n    \"\"\"\n\tWrite a function to count those characters which have vowels as their neighbors in the given string.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('bestinstareels') == 7\n    assert candidate('partofthejourneyistheend') == 12\n    assert candidate('amazonprime') == 5\n\ndef test_check():\n    check(count_vowels)\n\n"
+ }
+}

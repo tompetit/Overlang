@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_234_volume_cube",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_234_volume_cube",
+ "entry_point": "volume_cube",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef volume_cube(l: int) -> int:\n    \"\"\"\n\tWrite a function to find the volume of a cube given its side length.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(3) == 27\n    assert candidate(2) == 8\n    assert candidate(5) == 125\n\ndef test_check():\n    check(volume_cube)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_234_volume_cube.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef volume_cube(l: int) -> int:\n    \"\"\"\n\tWrite a function to find the volume of a cube given its side length.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(3) == 27\n    assert candidate(2) == 8\n    assert candidate(5) == 125\n\ndef test_check():\n    check(volume_cube)\n\n"
+ }
+}

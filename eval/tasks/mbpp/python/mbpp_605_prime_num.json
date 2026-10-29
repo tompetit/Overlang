@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_605_prime_num",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_605_prime_num",
+ "entry_point": "prime_num",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef prime_num(num: int) -> bool:\n    \"\"\"\n\tWrite a function to check if the given integer is a prime number.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(13) == True\n    assert candidate(7) == True\n    assert candidate(-1010) == False\n\ndef test_check():\n    check(prime_num)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_605_prime_num.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef prime_num(num: int) -> bool:\n    \"\"\"\n\tWrite a function to check if the given integer is a prime number.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(13) == True\n    assert candidate(7) == True\n    assert candidate(-1010) == False\n\ndef test_check():\n    check(prime_num)\n\n"
+ }
+}

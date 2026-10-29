@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_470_add_pairwise",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_470_add_pairwise",
+ "entry_point": "add_pairwise",
+ "prompt": "/// Write a function to find the pairwise addition of the neighboring elements of the given tuple.\nfn add_pairwise(test_tup: (isize, isize, isize, isize, isize)) -> (isize, isize, isize, isize) {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = add_pairwise;\n    assert_eq!(candidate((1, 5, 7, 8, 10)), (6, 12, 15, 18));\n    assert_eq!(candidate((2, 6, 8, 9, 11)), (8, 14, 17, 20));\n    assert_eq!(candidate((3, 7, 9, 10, 12)), (10, 16, 19, 22));\n}\n",
+ "raw": {
+  "name": "mbpp_470_add_pairwise",
+  "language": "rs",
+  "prompt": "/// Write a function to find the pairwise addition of the neighboring elements of the given tuple.\nfn add_pairwise(test_tup: (isize, isize, isize, isize, isize)) -> (isize, isize, isize, isize) {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_470_add_pairwise.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = add_pairwise;\n    assert_eq!(candidate((1, 5, 7, 8, 10)), (6, 12, 15, 18));\n    assert_eq!(candidate((2, 6, 8, 9, 11)), (8, 14, 17, 20));\n    assert_eq!(candidate((3, 7, 9, 10, 12)), (10, 16, 19, 22));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

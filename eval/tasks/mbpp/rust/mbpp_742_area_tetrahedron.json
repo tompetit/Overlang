@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_742_area_tetrahedron",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_742_area_tetrahedron",
+ "entry_point": "area_tetrahedron",
+ "prompt": "/// Write a function to caluclate the area of a tetrahedron.\nfn area_tetrahedron(side: isize) -> f64 {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = area_tetrahedron;\n    assert_eq!(candidate(3), 15.588457268119894);\n    assert_eq!(candidate(20), 692.8203230275509);\n    assert_eq!(candidate(10), 173.20508075688772);\n}\n",
+ "raw": {
+  "name": "mbpp_742_area_tetrahedron",
+  "language": "rs",
+  "prompt": "/// Write a function to caluclate the area of a tetrahedron.\nfn area_tetrahedron(side: isize) -> f64 {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_742_area_tetrahedron.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = area_tetrahedron;\n    assert_eq!(candidate(3), 15.588457268119894);\n    assert_eq!(candidate(20), 692.8203230275509);\n    assert_eq!(candidate(10), 173.20508075688772);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

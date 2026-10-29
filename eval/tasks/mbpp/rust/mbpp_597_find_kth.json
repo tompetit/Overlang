@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_597_find_kth",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_597_find_kth",
+ "entry_point": "find_kth",
+ "prompt": "/// Write a function to find kth element from the given two sorted vectors.\nfn find_kth(arr1: Vec<isize>, arr2: Vec<isize>, k: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = find_kth;\n    assert_eq!(candidate(vec![2, 3, 6, 7, 9], vec![1, 4, 8, 10], 5), 6);\n    assert_eq!(candidate(vec![100, 112, 256, 349, 770], vec![72, 86, 113, 119, 265, 445, 892], 7), 256);\n    assert_eq!(candidate(vec![3, 4, 7, 8, 10], vec![2, 5, 9, 11], 6), 8);\n}\n",
+ "raw": {
+  "name": "mbpp_597_find_kth",
+  "language": "rs",
+  "prompt": "/// Write a function to find kth element from the given two sorted vectors.\nfn find_kth(arr1: Vec<isize>, arr2: Vec<isize>, k: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_597_find_kth.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = find_kth;\n    assert_eq!(candidate(vec![2, 3, 6, 7, 9], vec![1, 4, 8, 10], 5), 6);\n    assert_eq!(candidate(vec![100, 112, 256, 349, 770], vec![72, 86, 113, 119, 265, 445, 892], 7), 256);\n    assert_eq!(candidate(vec![3, 4, 7, 8, 10], vec![2, 5, 9, 11], 6), 8);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

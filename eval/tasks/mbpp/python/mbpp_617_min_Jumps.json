@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_617_min_Jumps",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_617_min_Jumps",
+ "entry_point": "min_Jumps",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef min_Jumps(steps: Tuple[int, int], d: int) -> float:\n    \"\"\"\n\tWrite a function to check for the number of jumps required of given length to reach a point of form (d, 0) from origin in a 2d plane.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate((3, 4), 11) == 3.5\n    assert candidate((3, 4), 0) == 0\n    assert candidate((11, 14), 11) == 1\n\ndef test_check():\n    check(min_Jumps)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_617_min_Jumps.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef min_Jumps(steps: Tuple[int, int], d: int) -> float:\n    \"\"\"\n\tWrite a function to check for the number of jumps required of given length to reach a point of form (d, 0) from origin in a 2d plane.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate((3, 4), 11) == 3.5\n    assert candidate((3, 4), 0) == 0\n    assert candidate((11, 14), 11) == 1\n\ndef test_check():\n    check(min_Jumps)\n\n"
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_123_amicable_numbers_sum",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_123_amicable_numbers_sum",
+ "entry_point": "amicable_numbers_sum",
+ "prompt": "/// Write a function to sum all amicable numbers from 1 to a specified number.\nfn amicable_numbers_sum(limit: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = amicable_numbers_sum;\n    assert_eq!(candidate(999), 504);\n    assert_eq!(candidate(9999), 31626);\n    assert_eq!(candidate(99), 0);\n}\n",
+ "raw": {
+  "name": "mbpp_123_amicable_numbers_sum",
+  "language": "rs",
+  "prompt": "/// Write a function to sum all amicable numbers from 1 to a specified number.\nfn amicable_numbers_sum(limit: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_123_amicable_numbers_sum.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = amicable_numbers_sum;\n    assert_eq!(candidate(999), 504);\n    assert_eq!(candidate(9999), 31626);\n    assert_eq!(candidate(99), 0);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

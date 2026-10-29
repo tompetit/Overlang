@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_617_min_Jumps",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_617_min_Jumps",
+ "entry_point": "min_Jumps",
+ "prompt": "/// Write a function to check for the number of jumps required of given length to reach a point of form (d, 0) from origin in a 2d plane.\nfn min_Jumps(steps: (isize, isize), d: isize) -> f64 {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = min_Jumps;\n    assert_eq!(candidate((3, 4), 11), 3.5);\n    assert_eq!(candidate((3, 4), 0), 0.0);\n    assert_eq!(candidate((11, 14), 11), 1.0);\n}\n",
+ "raw": {
+  "name": "mbpp_617_min_Jumps",
+  "language": "rs",
+  "prompt": "/// Write a function to check for the number of jumps required of given length to reach a point of form (d, 0) from origin in a 2d plane.\nfn min_Jumps(steps: (isize, isize), d: isize) -> f64 {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_617_min_Jumps.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = min_Jumps;\n    assert_eq!(candidate((3, 4), 11), 3.5);\n    assert_eq!(candidate((3, 4), 0), 0.0);\n    assert_eq!(candidate((11, 14), 11), 1.0);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

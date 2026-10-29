@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_120_max_product_tuple",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_120_max_product_tuple",
+ "entry_point": "max_product_tuple",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef max_product_tuple(list1: List[Tuple[int, int]]) -> int:\n    \"\"\"\n\tWrite a function to find the maximum absolute product between numbers in pairs of tuples within a given list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([(2, 7), (2, 6), (1, 8), (4, 9)]) == 36\n    assert candidate([(10, 20), (15, 2), (5, 10)]) == 200\n    assert candidate([(11, 44), (10, 15), (20, 5), (12, 9)]) == 484\n\ndef test_check():\n    check(max_product_tuple)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_120_max_product_tuple.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef max_product_tuple(list1: List[Tuple[int, int]]) -> int:\n    \"\"\"\n\tWrite a function to find the maximum absolute product between numbers in pairs of tuples within a given list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([(2, 7), (2, 6), (1, 8), (4, 9)]) == 36\n    assert candidate([(10, 20), (15, 2), (5, 10)]) == 200\n    assert candidate([(11, 44), (10, 15), (20, 5), (12, 9)]) == 484\n\ndef test_check():\n    check(max_product_tuple)\n\n"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_762_check_monthnumber_number",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_762_check_monthnumber_number",
+ "entry_point": "check_monthnumber_number",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef check_monthnumber_number(monthnum3: int) -> bool:\n    \"\"\"\n\tWrite a function to check whether the given month number contains 30 days or not. Months are given as number from 1 to 12.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(6) == True\n    assert candidate(2) == False\n    assert candidate(12) == False\n\ndef test_check():\n    check(check_monthnumber_number)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_762_check_monthnumber_number.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef check_monthnumber_number(monthnum3: int) -> bool:\n    \"\"\"\n\tWrite a function to check whether the given month number contains 30 days or not. Months are given as number from 1 to 12.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(6) == True\n    assert candidate(2) == False\n    assert candidate(12) == False\n\ndef test_check():\n    check(check_monthnumber_number)\n\n"
+ }
+}

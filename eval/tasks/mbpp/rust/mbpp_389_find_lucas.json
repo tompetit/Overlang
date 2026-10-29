@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_389_find_lucas",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_389_find_lucas",
+ "entry_point": "find_lucas",
+ "prompt": "/// Write a function to find the n'th lucas number.\nfn find_lucas(n: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = find_lucas;\n    assert_eq!(candidate(9), 76);\n    assert_eq!(candidate(4), 7);\n    assert_eq!(candidate(3), 4);\n}\n",
+ "raw": {
+  "name": "mbpp_389_find_lucas",
+  "language": "rs",
+  "prompt": "/// Write a function to find the n'th lucas number.\nfn find_lucas(n: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_389_find_lucas.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = find_lucas;\n    assert_eq!(candidate(9), 76);\n    assert_eq!(candidate(4), 7);\n    assert_eq!(candidate(3), 4);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

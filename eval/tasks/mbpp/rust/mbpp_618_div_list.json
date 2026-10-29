@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_618_div_list",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_618_div_list",
+ "entry_point": "div_list",
+ "prompt": "/// Write a function to divide two vectors element wise.\nfn div_list(nums1: Vec<isize>, nums2: Vec<isize>) -> Vec<f64> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = div_list;\n    assert_eq!(candidate(vec![4, 5, 6], vec![1, 2, 3]), vec![4.0, 2.5, 2.0]);\n    assert_eq!(candidate(vec![3, 2], vec![1, 4]), vec![3.0, 0.5]);\n    assert_eq!(candidate(vec![90, 120], vec![50, 70]), vec![1.8, 1.7142857142857142]);\n}\n",
+ "raw": {
+  "name": "mbpp_618_div_list",
+  "language": "rs",
+  "prompt": "/// Write a function to divide two vectors element wise.\nfn div_list(nums1: Vec<isize>, nums2: Vec<isize>) -> Vec<f64> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_618_div_list.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = div_list;\n    assert_eq!(candidate(vec![4, 5, 6], vec![1, 2, 3]), vec![4.0, 2.5, 2.0]);\n    assert_eq!(candidate(vec![3, 2], vec![1, 4]), vec![3.0, 0.5]);\n    assert_eq!(candidate(vec![90, 120], vec![50, 70]), vec![1.8, 1.7142857142857142]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

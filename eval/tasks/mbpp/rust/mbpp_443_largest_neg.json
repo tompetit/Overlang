@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_443_largest_neg",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_443_largest_neg",
+ "entry_point": "largest_neg",
+ "prompt": "/// Write a rsthon function to find the largest negative number from the given vector.\nfn largest_neg(list1: Vec<isize>) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = largest_neg;\n    assert_eq!(candidate(vec![1, 2, 3, -4, -6]), -6);\n    assert_eq!(candidate(vec![1, 2, 3, -8, -9]), -9);\n    assert_eq!(candidate(vec![1, 2, 3, 4, -1]), -1);\n}\n",
+ "raw": {
+  "name": "mbpp_443_largest_neg",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to find the largest negative number from the given vector.\nfn largest_neg(list1: Vec<isize>) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_443_largest_neg.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = largest_neg;\n    assert_eq!(candidate(vec![1, 2, 3, -4, -6]), -6);\n    assert_eq!(candidate(vec![1, 2, 3, -8, -9]), -9);\n    assert_eq!(candidate(vec![1, 2, 3, 4, -1]), -1);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

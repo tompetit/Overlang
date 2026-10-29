@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_790_even_position",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_790_even_position",
+ "entry_point": "even_position",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef even_position(nums: List[int]) -> bool:\n    \"\"\"\n\tWrite a python function to check whether every even index contains even numbers of a given list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([3, 2, 1]) == False\n    assert candidate([1, 2, 3]) == False\n    assert candidate([2, 1, 4]) == True\n\ndef test_check():\n    check(even_position)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_790_even_position.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef even_position(nums: List[int]) -> bool:\n    \"\"\"\n\tWrite a python function to check whether every even index contains even numbers of a given list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([3, 2, 1]) == False\n    assert candidate([1, 2, 3]) == False\n    assert candidate([2, 1, 4]) == True\n\ndef test_check():\n    check(even_position)\n\n"
+ }
+}

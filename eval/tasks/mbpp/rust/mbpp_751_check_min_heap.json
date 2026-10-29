@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_751_check_min_heap",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_751_check_min_heap",
+ "entry_point": "check_min_heap",
+ "prompt": "/// Write a function to check if the given vector represents min heap or not. https://www.geeksforgeeks.org/how-to-check-if-a-given-vector-represents-a-binary-heap/\nfn check_min_heap(arr: Vec<isize>) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = check_min_heap;\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5, 6]), true);\n    assert_eq!(candidate(vec![2, 3, 4, 5, 10, 15]), true);\n    assert_eq!(candidate(vec![2, 10, 4, 5, 3, 15]), false);\n}\n",
+ "raw": {
+  "name": "mbpp_751_check_min_heap",
+  "language": "rs",
+  "prompt": "/// Write a function to check if the given vector represents min heap or not. https://www.geeksforgeeks.org/how-to-check-if-a-given-vector-represents-a-binary-heap/\nfn check_min_heap(arr: Vec<isize>) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_751_check_min_heap.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = check_min_heap;\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5, 6]), true);\n    assert_eq!(candidate(vec![2, 3, 4, 5, 10, 15]), true);\n    assert_eq!(candidate(vec![2, 10, 4, 5, 3, 15]), false);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

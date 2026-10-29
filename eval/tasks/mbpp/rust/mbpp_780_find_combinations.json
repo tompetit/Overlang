@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_780_find_combinations",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_780_find_combinations",
+ "entry_point": "find_combinations",
+ "prompt": "/// Write a function to find the combinations of sums with tuples in the given tuple vector. https://www.geeksforgeeks.org/rsthon-combinations-of-sum-with-tuples-in-tuple-vector/\nfn find_combinations(test_list: Vec<(isize, isize)>) -> Vec<(isize, isize)> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = find_combinations;\n    assert_eq!(candidate(vec![(2, 4), (6, 7), (5, 1), (6, 10)]), vec![(8, 11), (7, 5), (8, 14), (11, 8), (12, 17), (11, 11)]);\n    assert_eq!(candidate(vec![(3, 5), (7, 8), (6, 2), (7, 11)]), vec![(10, 13), (9, 7), (10, 16), (13, 10), (14, 19), (13, 13)]);\n    assert_eq!(candidate(vec![(4, 6), (8, 9), (7, 3), (8, 12)]), vec![(12, 15), (11, 9), (12, 18), (15, 12), (16, 21), (15, 15)]);\n}\n",
+ "raw": {
+  "name": "mbpp_780_find_combinations",
+  "language": "rs",
+  "prompt": "/// Write a function to find the combinations of sums with tuples in the given tuple vector. https://www.geeksforgeeks.org/rsthon-combinations-of-sum-with-tuples-in-tuple-vector/\nfn find_combinations(test_list: Vec<(isize, isize)>) -> Vec<(isize, isize)> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_780_find_combinations.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = find_combinations;\n    assert_eq!(candidate(vec![(2, 4), (6, 7), (5, 1), (6, 10)]), vec![(8, 11), (7, 5), (8, 14), (11, 8), (12, 17), (11, 11)]);\n    assert_eq!(candidate(vec![(3, 5), (7, 8), (6, 2), (7, 11)]), vec![(10, 13), (9, 7), (10, 16), (13, 10), (14, 19), (13, 13)]);\n    assert_eq!(candidate(vec![(4, 6), (8, 9), (7, 3), (8, 12)]), vec![(12, 15), (11, 9), (12, 18), (15, 12), (16, 21), (15, 15)]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "HumanEval_80_is_happy",
+ "benchmark": "humaneval",
+ "lang": "rust",
+ "name": "HumanEval_80_is_happy",
+ "entry_point": "is_happy",
+ "prompt": "/// You are given a string s.\n/// Your task is to check if the string is haprs or not.\n/// A string is haprs if its length is at least 3 and every 3 consecutive letters are distinct\n/// For example:\n/// >>> is_happy(String::from(\"a\"))\n/// false\n/// >>> is_happy(String::from(\"aa\"))\n/// false\n/// >>> is_happy(String::from(\"abcd\"))\n/// true\n/// >>> is_happy(String::from(\"aabb\"))\n/// false\n/// >>> is_happy(String::from(\"adb\"))\n/// true\n/// >>> is_happy(String::from(\"xyy\"))\n/// false\nfn is_happy(s: String) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = is_happy;\n    assert_eq!(candidate(String::from(\"a\")), false);\n    assert_eq!(candidate(String::from(\"aa\")), false);\n    assert_eq!(candidate(String::from(\"abcd\")), true);\n    assert_eq!(candidate(String::from(\"aabb\")), false);\n    assert_eq!(candidate(String::from(\"adb\")), true);\n    assert_eq!(candidate(String::from(\"xyy\")), false);\n    assert_eq!(candidate(String::from(\"iopaxpoi\")), true);\n    assert_eq!(candidate(String::from(\"iopaxioi\")), false);\n}\n",
+ "raw": {
+  "name": "HumanEval_80_is_happy",
+  "language": "rs",
+  "prompt": "/// You are given a string s.\n/// Your task is to check if the string is haprs or not.\n/// A string is haprs if its length is at least 3 and every 3 consecutive letters are distinct\n/// For example:\n/// >>> is_happy(String::from(\"a\"))\n/// false\n/// >>> is_happy(String::from(\"aa\"))\n/// false\n/// >>> is_happy(String::from(\"abcd\"))\n/// true\n/// >>> is_happy(String::from(\"aabb\"))\n/// false\n/// >>> is_happy(String::from(\"adb\"))\n/// true\n/// >>> is_happy(String::from(\"xyy\"))\n/// false\nfn is_happy(s: String) -> bool {\n",
+  "doctests": "transform",
+  "original": "/work/arjunguha-research-group/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_80_is_happy.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = is_happy;\n    assert_eq!(candidate(String::from(\"a\")), false);\n    assert_eq!(candidate(String::from(\"aa\")), false);\n    assert_eq!(candidate(String::from(\"abcd\")), true);\n    assert_eq!(candidate(String::from(\"aabb\")), false);\n    assert_eq!(candidate(String::from(\"adb\")), true);\n    assert_eq!(candidate(String::from(\"xyy\")), false);\n    assert_eq!(candidate(String::from(\"iopaxpoi\")), true);\n    assert_eq!(candidate(String::from(\"iopaxioi\")), false);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

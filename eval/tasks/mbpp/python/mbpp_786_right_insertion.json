@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_786_right_insertion",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_786_right_insertion",
+ "entry_point": "right_insertion",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef right_insertion(a: List[int], x: int) -> int:\n    \"\"\"\n\tWrite a function to locate the right insertion point for a specified value in sorted order.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 4, 5], 6) == 4\n    assert candidate([1, 2, 4, 5], 3) == 2\n    assert candidate([1, 2, 4, 5], 7) == 4\n\ndef test_check():\n    check(right_insertion)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_786_right_insertion.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef right_insertion(a: List[int], x: int) -> int:\n    \"\"\"\n\tWrite a function to locate the right insertion point for a specified value in sorted order.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 4, 5], 6) == 4\n    assert candidate([1, 2, 4, 5], 3) == 2\n    assert candidate([1, 2, 4, 5], 7) == 4\n\ndef test_check():\n    check(right_insertion)\n\n"
+ }
+}

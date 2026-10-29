@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_6_differ_At_One_Bit_Pos",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_6_differ_At_One_Bit_Pos",
+ "entry_point": "differ_At_One_Bit_Pos",
+ "prompt": "/// Write a rsthon function to check whether the two numbers differ at one bit position only or not.\nfn differ_At_One_Bit_Pos(a: isize, b: isize) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = differ_At_One_Bit_Pos;\n    assert_eq!(candidate(13, 9), true);\n    assert_eq!(candidate(15, 8), false);\n    assert_eq!(candidate(2, 4), false);\n    assert_eq!(candidate(2, 3), true);\n    assert_eq!(candidate(5, 1), true);\n    assert_eq!(candidate(1, 5), true);\n}\n",
+ "raw": {
+  "name": "mbpp_6_differ_At_One_Bit_Pos",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to check whether the two numbers differ at one bit position only or not.\nfn differ_At_One_Bit_Pos(a: isize, b: isize) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_6_differ_At_One_Bit_Pos.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = differ_At_One_Bit_Pos;\n    assert_eq!(candidate(13, 9), true);\n    assert_eq!(candidate(15, 8), false);\n    assert_eq!(candidate(2, 4), false);\n    assert_eq!(candidate(2, 3), true);\n    assert_eq!(candidate(5, 1), true);\n    assert_eq!(candidate(1, 5), true);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_629_Split",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_629_Split",
+ "entry_point": "Split",
+ "prompt": "/// Write a rsthon function to find even numbers from a vector of numbers.\nfn Split(list: Vec<isize>) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = Split;\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5]), vec![2, 4]);\n    assert_eq!(candidate(vec![4, 5, 6, 7, 8, 0, 1]), vec![4, 6, 8, 0]);\n    assert_eq!(candidate(vec![8, 12, 15, 19]), vec![8, 12]);\n}\n",
+ "raw": {
+  "name": "mbpp_629_Split",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to find even numbers from a vector of numbers.\nfn Split(list: Vec<isize>) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_629_Split.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = Split;\n    assert_eq!(candidate(vec![1, 2, 3, 4, 5]), vec![2, 4]);\n    assert_eq!(candidate(vec![4, 5, 6, 7, 8, 0, 1]), vec![4, 6, 8, 0]);\n    assert_eq!(candidate(vec![8, 12, 15, 19]), vec![8, 12]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

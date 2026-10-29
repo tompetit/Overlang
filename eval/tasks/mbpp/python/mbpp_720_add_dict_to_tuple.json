@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_720_add_dict_to_tuple",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_720_add_dict_to_tuple",
+ "entry_point": "add_dict_to_tuple",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef add_dict_to_tuple(test_tup: Tuple[int, int, int], test_dict: Dict[str, int]) -> Tuple[int, int, int, Dict[str, int]]:\n    \"\"\"\n\tWrite a function to add a dictionary to the tuple. The output should be a tuple.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate((4, 5, 6), {'MSAM': 1, 'is': 2, 'best': 3}) == (4, 5, 6, {'MSAM': 1, 'is': 2, 'best': 3})\n    assert candidate((1, 2, 3), {'UTS': 2, 'is': 3, 'Worst': 4}) == (1, 2, 3, {'UTS': 2, 'is': 3, 'Worst': 4})\n    assert candidate((8, 9, 10), {'POS': 3, 'is': 4, 'Okay': 5}) == (8, 9, 10, {'POS': 3, 'is': 4, 'Okay': 5})\n\ndef test_check():\n    check(add_dict_to_tuple)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_720_add_dict_to_tuple.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef add_dict_to_tuple(test_tup: Tuple[int, int, int], test_dict: Dict[str, int]) -> Tuple[int, int, int, Dict[str, int]]:\n    \"\"\"\n\tWrite a function to add a dictionary to the tuple. The output should be a tuple.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate((4, 5, 6), {'MSAM': 1, 'is': 2, 'best': 3}) == (4, 5, 6, {'MSAM': 1, 'is': 2, 'best': 3})\n    assert candidate((1, 2, 3), {'UTS': 2, 'is': 3, 'Worst': 4}) == (1, 2, 3, {'UTS': 2, 'is': 3, 'Worst': 4})\n    assert candidate((8, 9, 10), {'POS': 3, 'is': 4, 'Okay': 5}) == (8, 9, 10, {'POS': 3, 'is': 4, 'Okay': 5})\n\ndef test_check():\n    check(add_dict_to_tuple)\n\n"
+ }
+}

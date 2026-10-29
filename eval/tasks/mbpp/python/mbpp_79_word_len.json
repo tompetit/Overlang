@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_79_word_len",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_79_word_len",
+ "entry_point": "word_len",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef word_len(s: str) -> bool:\n    \"\"\"\n\tWrite a python function to check whether the length of the word is odd or not.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate('Hadoop') == False\n    assert candidate('great') == True\n    assert candidate('structure') == True\n\ndef test_check():\n    check(word_len)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_79_word_len.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef word_len(s: str) -> bool:\n    \"\"\"\n\tWrite a python function to check whether the length of the word is odd or not.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate('Hadoop') == False\n    assert candidate('great') == True\n    assert candidate('structure') == True\n\ndef test_check():\n    check(word_len)\n\n"
+ }
+}

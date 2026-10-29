@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_461_upper_ctr",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_461_upper_ctr",
+ "entry_point": "upper_ctr",
+ "prompt": "/// Write a rsthon function to count the upper case characters in a given string.\nfn upper_ctr(str: String) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = upper_ctr;\n    assert_eq!(candidate(String::from(\"PYthon\")), 1);\n    assert_eq!(candidate(String::from(\"BigData\")), 1);\n    assert_eq!(candidate(String::from(\"program\")), 0);\n}\n",
+ "raw": {
+  "name": "mbpp_461_upper_ctr",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to count the upper case characters in a given string.\nfn upper_ctr(str: String) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_461_upper_ctr.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = upper_ctr;\n    assert_eq!(candidate(String::from(\"PYthon\")), 1);\n    assert_eq!(candidate(String::from(\"BigData\")), 1);\n    assert_eq!(candidate(String::from(\"program\")), 0);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

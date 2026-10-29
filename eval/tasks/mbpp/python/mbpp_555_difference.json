@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_555_difference",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_555_difference",
+ "entry_point": "difference",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef difference(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the difference between the sum of cubes of the first n natural numbers and the sum of the first n natural numbers.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(3) == 30\n    assert candidate(5) == 210\n    assert candidate(2) == 6\n\ndef test_check():\n    check(difference)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_555_difference.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef difference(n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the difference between the sum of cubes of the first n natural numbers and the sum of the first n natural numbers.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(3) == 30\n    assert candidate(5) == 210\n    assert candidate(2) == 6\n\ndef test_check():\n    check(difference)\n\n"
+ }
+}

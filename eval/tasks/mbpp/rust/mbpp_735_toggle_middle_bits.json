@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_735_toggle_middle_bits",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_735_toggle_middle_bits",
+ "entry_point": "toggle_middle_bits",
+ "prompt": "/// Write a rsthon function to toggle bits of the number except the first and the last bit. https://www.geeksforgeeks.org/toggle-bits-number-expect-first-last-bits/\nfn toggle_middle_bits(n: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = toggle_middle_bits;\n    assert_eq!(candidate(9), 15);\n    assert_eq!(candidate(10), 12);\n    assert_eq!(candidate(11), 13);\n    assert_eq!(candidate(65), 127);\n    assert_eq!(candidate(77), 115);\n}\n",
+ "raw": {
+  "name": "mbpp_735_toggle_middle_bits",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to toggle bits of the number except the first and the last bit. https://www.geeksforgeeks.org/toggle-bits-number-expect-first-last-bits/\nfn toggle_middle_bits(n: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_735_toggle_middle_bits.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = toggle_middle_bits;\n    assert_eq!(candidate(9), 15);\n    assert_eq!(candidate(10), 12);\n    assert_eq!(candidate(11), 13);\n    assert_eq!(candidate(65), 127);\n    assert_eq!(candidate(77), 115);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

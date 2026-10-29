@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_588_big_diff",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_588_big_diff",
+ "entry_point": "big_diff",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef big_diff(nums: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find the difference between largest and smallest value in a given list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3, 4]) == 3\n    assert candidate([4, 5, 12]) == 8\n    assert candidate([9, 2, 3]) == 7\n\ndef test_check():\n    check(big_diff)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_588_big_diff.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef big_diff(nums: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find the difference between largest and smallest value in a given list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3, 4]) == 3\n    assert candidate([4, 5, 12]) == 8\n    assert candidate([9, 2, 3]) == 7\n\ndef test_check():\n    check(big_diff)\n\n"
+ }
+}

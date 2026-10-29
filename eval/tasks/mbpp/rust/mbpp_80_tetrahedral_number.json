@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_80_tetrahedral_number",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_80_tetrahedral_number",
+ "entry_point": "tetrahedral_number",
+ "prompt": "/// Write a function to find the nth tetrahedral number.\nfn tetrahedral_number(n: isize) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = tetrahedral_number;\n    assert_eq!(candidate(5), 35);\n    assert_eq!(candidate(6), 56);\n    assert_eq!(candidate(7), 84);\n}\n",
+ "raw": {
+  "name": "mbpp_80_tetrahedral_number",
+  "language": "rs",
+  "prompt": "/// Write a function to find the nth tetrahedral number.\nfn tetrahedral_number(n: isize) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_80_tetrahedral_number.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = tetrahedral_number;\n    assert_eq!(candidate(5), 35);\n    assert_eq!(candidate(6), 56);\n    assert_eq!(candidate(7), 84);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

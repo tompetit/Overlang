@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_228_all_Bits_Set_In_The_Given_Range",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_228_all_Bits_Set_In_The_Given_Range",
+ "entry_point": "all_Bits_Set_In_The_Given_Range",
+ "prompt": "/// Write a rsthon function to check whether all the bits are unset in the given range or not.\nfn all_Bits_Set_In_The_Given_Range(n: isize, l: isize, r: isize) -> bool {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = all_Bits_Set_In_The_Given_Range;\n    assert_eq!(candidate(4, 1, 2), true);\n    assert_eq!(candidate(17, 2, 4), true);\n    assert_eq!(candidate(39, 4, 6), false);\n}\n",
+ "raw": {
+  "name": "mbpp_228_all_Bits_Set_In_The_Given_Range",
+  "language": "rs",
+  "prompt": "/// Write a rsthon function to check whether all the bits are unset in the given range or not.\nfn all_Bits_Set_In_The_Given_Range(n: isize, l: isize, r: isize) -> bool {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_228_all_Bits_Set_In_The_Given_Range.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = all_Bits_Set_In_The_Given_Range;\n    assert_eq!(candidate(4, 1, 2), true);\n    assert_eq!(candidate(17, 2, 4), true);\n    assert_eq!(candidate(39, 4, 6), false);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

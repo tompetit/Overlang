@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_432_median_trapezium",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_432_median_trapezium",
+ "entry_point": "median_trapezium",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef median_trapezium(base1: int, base2: int, height: int) -> float:\n    \"\"\"\n\tWrite a function to find the median length of a trapezium.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(15, 25, 35) == 20\n    assert candidate(10, 20, 30) == 15\n    assert candidate(6, 9, 4) == 7.5\n\ndef test_check():\n    check(median_trapezium)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_432_median_trapezium.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef median_trapezium(base1: int, base2: int, height: int) -> float:\n    \"\"\"\n\tWrite a function to find the median length of a trapezium.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(15, 25, 35) == 20\n    assert candidate(10, 20, 30) == 15\n    assert candidate(6, 9, 4) == 7.5\n\ndef test_check():\n    check(median_trapezium)\n\n"
+ }
+}

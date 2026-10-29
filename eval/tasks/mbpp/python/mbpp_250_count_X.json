@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_250_count_X",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_250_count_X",
+ "entry_point": "count_X",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef count_X(tup: List[int], x: int) -> int:\n    \"\"\"\n\tWrite a python function that takes in a tuple and an element and counts the occcurences of the element in the list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([10, 8, 5, 2, 10, 15, 10, 8, 5, 8, 8, 2], 4) == 0\n    assert candidate([10, 8, 5, 2, 10, 15, 10, 8, 5, 8, 8, 2], 10) == 3\n    assert candidate([10, 8, 5, 2, 10, 15, 10, 8, 5, 8, 8, 2], 8) == 4\n\ndef test_check():\n    check(count_X)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_250_count_X.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef count_X(tup: List[int], x: int) -> int:\n    \"\"\"\n\tWrite a python function that takes in a tuple and an element and counts the occcurences of the element in the list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([10, 8, 5, 2, 10, 15, 10, 8, 5, 8, 8, 2], 4) == 0\n    assert candidate([10, 8, 5, 2, 10, 15, 10, 8, 5, 8, 8, 2], 10) == 3\n    assert candidate([10, 8, 5, 2, 10, 15, 10, 8, 5, 8, 8, 2], 8) == 4\n\ndef test_check():\n    check(count_X)\n\n"
+ }
+}

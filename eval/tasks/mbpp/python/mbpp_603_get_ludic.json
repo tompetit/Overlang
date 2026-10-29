@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_603_get_ludic",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_603_get_ludic",
+ "entry_point": "get_ludic",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef get_ludic(n: int) -> List[int]:\n    \"\"\"\n\tWrite a function to get all lucid numbers smaller than or equal to a given integer.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(10) == [1, 2, 3, 5, 7]\n    assert candidate(25) == [1, 2, 3, 5, 7, 11, 13, 17, 23, 25]\n    assert candidate(45) == [1, 2, 3, 5, 7, 11, 13, 17, 23, 25, 29, 37, 41, 43]\n\ndef test_check():\n    check(get_ludic)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_603_get_ludic.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef get_ludic(n: int) -> List[int]:\n    \"\"\"\n\tWrite a function to get all lucid numbers smaller than or equal to a given integer.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(10) == [1, 2, 3, 5, 7]\n    assert candidate(25) == [1, 2, 3, 5, 7, 11, 13, 17, 23, 25]\n    assert candidate(45) == [1, 2, 3, 5, 7, 11, 13, 17, 23, 25, 29, 37, 41, 43]\n\ndef test_check():\n    check(get_ludic)\n\n"
+ }
+}

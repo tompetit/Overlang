@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_471_find_remainder",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_471_find_remainder",
+ "entry_point": "find_remainder",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef find_remainder(arr: List[int], n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the product of the array multiplication modulo n.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([100, 10, 5, 25, 35, 14], 11) == 9\n    assert candidate([1, 1, 1], 1) == 0\n    assert candidate([1, 2, 1], 2) == 0\n\ndef test_check():\n    check(find_remainder)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_471_find_remainder.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef find_remainder(arr: List[int], n: int) -> int:\n    \"\"\"\n\tWrite a python function to find the product of the array multiplication modulo n.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([100, 10, 5, 25, 35, 14], 11) == 9\n    assert candidate([1, 1, 1], 1) == 0\n    assert candidate([1, 2, 1], 2) == 0\n\ndef test_check():\n    check(find_remainder)\n\n"
+ }
+}

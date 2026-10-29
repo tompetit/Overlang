@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_270_sum_even_and_even_index",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_270_sum_even_and_even_index",
+ "entry_point": "sum_even_and_even_index",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef sum_even_and_even_index(arr: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find the sum of even numbers at even positions of a list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([5, 6, 12, 1, 18, 8]) == 30\n    assert candidate([3, 20, 17, 9, 2, 10, 18, 13, 6, 18]) == 26\n    assert candidate([5, 6, 12, 1]) == 12\n\ndef test_check():\n    check(sum_even_and_even_index)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_270_sum_even_and_even_index.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef sum_even_and_even_index(arr: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find the sum of even numbers at even positions of a list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([5, 6, 12, 1, 18, 8]) == 30\n    assert candidate([3, 20, 17, 9, 2, 10, 18, 13, 6, 18]) == 26\n    assert candidate([5, 6, 12, 1]) == 12\n\ndef test_check():\n    check(sum_even_and_even_index)\n\n"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_458_rectangle_area",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_458_rectangle_area",
+ "entry_point": "rectangle_area",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef rectangle_area(l: int, b: int) -> int:\n    \"\"\"\n\tWrite a function to find the area of a rectangle.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate(10, 20) == 200\n    assert candidate(10, 5) == 50\n    assert candidate(4, 2) == 8\n\ndef test_check():\n    check(rectangle_area)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_458_rectangle_area.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef rectangle_area(l: int, b: int) -> int:\n    \"\"\"\n\tWrite a function to find the area of a rectangle.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate(10, 20) == 200\n    assert candidate(10, 5) == 50\n    assert candidate(4, 2) == 8\n\ndef test_check():\n    check(rectangle_area)\n\n"
+ }
+}

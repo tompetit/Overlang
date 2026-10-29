@@ -1,0 +1,21 @@
+{
+ "id": "HumanEval_66_digitSum",
+ "benchmark": "humaneval",
+ "lang": "rust",
+ "name": "HumanEval_66_digitSum",
+ "entry_point": "digitSum",
+ "prompt": "/// Task\n/// Write a function that takes a string as input and returns the sum of the upper characters only'\n/// ASCII codes.\n/// Examples:\n/// >>> digitSum(String::from(\"\"))\n/// 0\n/// >>> digitSum(String::from(\"abAB\"))\n/// 131\n/// >>> digitSum(String::from(\"abcCd\"))\n/// 67\n/// >>> digitSum(String::from(\"helloE\"))\n/// 69\n/// >>> digitSum(String::from(\"woArBld\"))\n/// 131\n/// >>> digitSum(String::from(\"aAaaaXa\"))\n/// 153\nfn digitSum(s: String) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = digitSum;\n    assert_eq!(candidate(String::from(\"\")), 0);\n    assert_eq!(candidate(String::from(\"abAB\")), 131);\n    assert_eq!(candidate(String::from(\"abcCd\")), 67);\n    assert_eq!(candidate(String::from(\"helloE\")), 69);\n    assert_eq!(candidate(String::from(\"woArBld\")), 131);\n    assert_eq!(candidate(String::from(\"aAaaaXa\")), 153);\n    assert_eq!(candidate(String::from(\" How are yOu?\")), 151);\n    assert_eq!(candidate(String::from(\"You arE Very Smart\")), 327);\n}\n",
+ "raw": {
+  "name": "HumanEval_66_digitSum",
+  "language": "rs",
+  "prompt": "/// Task\n/// Write a function that takes a string as input and returns the sum of the upper characters only'\n/// ASCII codes.\n/// Examples:\n/// >>> digitSum(String::from(\"\"))\n/// 0\n/// >>> digitSum(String::from(\"abAB\"))\n/// 131\n/// >>> digitSum(String::from(\"abcCd\"))\n/// 67\n/// >>> digitSum(String::from(\"helloE\"))\n/// 69\n/// >>> digitSum(String::from(\"woArBld\"))\n/// 131\n/// >>> digitSum(String::from(\"aAaaaXa\"))\n/// 153\nfn digitSum(s: String) -> isize {\n",
+  "doctests": "transform",
+  "original": "/work/arjunguha-research-group/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_66_digitSum.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = digitSum;\n    assert_eq!(candidate(String::from(\"\")), 0);\n    assert_eq!(candidate(String::from(\"abAB\")), 131);\n    assert_eq!(candidate(String::from(\"abcCd\")), 67);\n    assert_eq!(candidate(String::from(\"helloE\")), 69);\n    assert_eq!(candidate(String::from(\"woArBld\")), 131);\n    assert_eq!(candidate(String::from(\"aAaaaXa\")), 153);\n    assert_eq!(candidate(String::from(\" How are yOu?\")), 151);\n    assert_eq!(candidate(String::from(\"You arE Very Smart\")), 327);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_616_tuple_modulo",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_616_tuple_modulo",
+ "entry_point": "tuple_modulo",
+ "prompt": "/// Write a function which takes two tuples of the same length and performs the element wise modulo.\nfn tuple_modulo(test_tup1: (isize, isize, isize, isize), test_tup2: (isize, isize, isize, isize)) -> (isize, isize, isize, isize) {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = tuple_modulo;\n    assert_eq!(candidate((10, 4, 5, 6), (5, 6, 7, 5)), (0, 4, 5, 1));\n    assert_eq!(candidate((11, 5, 6, 7), (6, 7, 8, 6)), (5, 5, 6, 1));\n    assert_eq!(candidate((12, 6, 7, 8), (7, 8, 9, 7)), (5, 6, 7, 1));\n}\n",
+ "raw": {
+  "name": "mbpp_616_tuple_modulo",
+  "language": "rs",
+  "prompt": "/// Write a function which takes two tuples of the same length and performs the element wise modulo.\nfn tuple_modulo(test_tup1: (isize, isize, isize, isize), test_tup2: (isize, isize, isize, isize)) -> (isize, isize, isize, isize) {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_616_tuple_modulo.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = tuple_modulo;\n    assert_eq!(candidate((10, 4, 5, 6), (5, 6, 7, 5)), (0, 4, 5, 1));\n    assert_eq!(candidate((11, 5, 6, 7), (6, 7, 8, 6)), (5, 5, 6, 1));\n    assert_eq!(candidate((12, 6, 7, 8), (7, 8, 9, 7)), (5, 6, 7, 1));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

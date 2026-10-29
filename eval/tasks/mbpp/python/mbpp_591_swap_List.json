@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_591_swap_List",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_591_swap_List",
+ "entry_point": "swap_List",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef swap_List(newList: List[int]) -> List[int]:\n    \"\"\"\n\tWrite a python function to interchange the first and last elements in a list.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([12, 35, 9, 56, 24]) == [24, 35, 9, 56, 12]\n    assert candidate([1, 2, 3]) == [3, 2, 1]\n    assert candidate([4, 5, 6]) == [6, 5, 4]\n\ndef test_check():\n    check(swap_List)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_591_swap_List.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef swap_List(newList: List[int]) -> List[int]:\n    \"\"\"\n\tWrite a python function to interchange the first and last elements in a list.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([12, 35, 9, 56, 24]) == [24, 35, 9, 56, 12]\n    assert candidate([1, 2, 3]) == [3, 2, 1]\n    assert candidate([4, 5, 6]) == [6, 5, 4]\n\ndef test_check():\n    check(swap_List)\n\n"
+ }
+}

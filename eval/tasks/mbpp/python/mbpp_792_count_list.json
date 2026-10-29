@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_792_count_list",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_792_count_list",
+ "entry_point": "count_list",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef count_list(input_list: List[List[int]]) -> int:\n    \"\"\"\n\tWrite a python function to count the number of lists in a given number of lists.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([[1, 3], [5, 7], [9, 11], [13, 15, 17]]) == 4\n    assert candidate([[1, 2], [2, 3], [4, 5]]) == 3\n    assert candidate([[1, 0], [2, 0]]) == 2\n\ndef test_check():\n    check(count_list)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_792_count_list.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef count_list(input_list: List[List[int]]) -> int:\n    \"\"\"\n\tWrite a python function to count the number of lists in a given number of lists.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([[1, 3], [5, 7], [9, 11], [13, 15, 17]]) == 4\n    assert candidate([[1, 2], [2, 3], [4, 5]]) == 3\n    assert candidate([[1, 0], [2, 0]]) == 2\n\ndef test_check():\n    check(count_list)\n\n"
+ }
+}

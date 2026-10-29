@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_629_Split",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_629_Split",
+ "entry_point": "Split",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef Split(list: List[int]) -> List[int]:\n    \"\"\"\n\tWrite a python function to find even numbers from a list of numbers.\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 3, 4, 5]) == [2, 4]\n    assert candidate([4, 5, 6, 7, 8, 0, 1]) == [4, 6, 8, 0]\n    assert candidate([8, 12, 15, 19]) == [8, 12]\n\ndef test_check():\n    check(Split)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_629_Split.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef Split(list: List[int]) -> List[int]:\n    \"\"\"\n\tWrite a python function to find even numbers from a list of numbers.\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 3, 4, 5]) == [2, 4]\n    assert candidate([4, 5, 6, 7, 8, 0, 1]) == [4, 6, 8, 0]\n    assert candidate([8, 12, 15, 19]) == [8, 12]\n\ndef test_check():\n    check(Split)\n\n"
+ }
+}

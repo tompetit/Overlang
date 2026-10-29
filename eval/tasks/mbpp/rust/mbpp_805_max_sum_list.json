@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_805_max_sum_list",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_805_max_sum_list",
+ "entry_point": "max_sum_list",
+ "prompt": "/// Write a function that returns the vector in a vector of vectors whose sum of elements is the highest.\nfn max_sum_list(lists: Vec<Vec<isize>>) -> Vec<isize> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = max_sum_list;\n    assert_eq!(candidate(vec![vec![1, 2, 3], vec![4, 5, 6], vec![10, 11, 12], vec![7, 8, 9]]), vec![10, 11, 12]);\n    assert_eq!(candidate(vec![vec![3, 2, 1], vec![6, 5, 4], vec![12, 11, 10]]), vec![12, 11, 10]);\n    assert_eq!(candidate(vec![vec![2, 3, 1]]), vec![2, 3, 1]);\n}\n",
+ "raw": {
+  "name": "mbpp_805_max_sum_list",
+  "language": "rs",
+  "prompt": "/// Write a function that returns the vector in a vector of vectors whose sum of elements is the highest.\nfn max_sum_list(lists: Vec<Vec<isize>>) -> Vec<isize> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_805_max_sum_list.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = max_sum_list;\n    assert_eq!(candidate(vec![vec![1, 2, 3], vec![4, 5, 6], vec![10, 11, 12], vec![7, 8, 9]]), vec![10, 11, 12]);\n    assert_eq!(candidate(vec![vec![3, 2, 1], vec![6, 5, 4], vec![12, 11, 10]]), vec![12, 11, 10]);\n    assert_eq!(candidate(vec![vec![2, 3, 1]]), vec![2, 3, 1]);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

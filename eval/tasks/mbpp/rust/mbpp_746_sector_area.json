@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_746_sector_area",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_746_sector_area",
+ "entry_point": "sector_area",
+ "prompt": "/// Write a function to find area of a sector. The function takes the radius and angle as inputs. Function should return None if the angle is larger than 360 degrees.\nfn sector_area(r: isize, a: isize) -> Option<f64> {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = sector_area;\n    assert_eq!(candidate(4, 45), Some(6.283185307179586));\n    assert_eq!(candidate(9, 45), Some(31.808625617596654));\n    assert_eq!(candidate(9, 361), None);\n}\n",
+ "raw": {
+  "name": "mbpp_746_sector_area",
+  "language": "rs",
+  "prompt": "/// Write a function to find area of a sector. The function takes the radius and angle as inputs. Function should return None if the angle is larger than 360 degrees.\nfn sector_area(r: isize, a: isize) -> Option<f64> {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_746_sector_area.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = sector_area;\n    assert_eq!(candidate(4, 45), Some(6.283185307179586));\n    assert_eq!(candidate(9, 45), Some(31.808625617596654));\n    assert_eq!(candidate(9, 361), None);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

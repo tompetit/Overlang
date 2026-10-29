@@ -1,0 +1,14 @@
+{
+ "id": "mbpp_782_odd_length_sum",
+ "benchmark": "mbpp",
+ "lang": "python",
+ "name": "mbpp_782_odd_length_sum",
+ "entry_point": "odd_length_sum",
+ "prompt": "from typing import List, Dict, Tuple\n\ndef odd_length_sum(arr: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find the sum of all odd length subarrays. https://www.geeksforgeeks.org/sum-of-all-odd-length-subarrays/\n\t\"\"\"\n",
+ "tests": "def check(candidate):\n    assert candidate([1, 2, 4]) == 14\n    assert candidate([1, 2, 1, 2]) == 15\n    assert candidate([1, 7]) == 8\n\ndef test_check():\n    check(odd_length_sum)\n\n",
+ "solution": null,
+ "raw": {
+  "source_url": "https://raw.githubusercontent.com/nuprl/MultiPL-E/main/datasets/mbpp-typed/mbpp_782_odd_length_sum.py",
+  "text": "from typing import List, Dict, Tuple\n\ndef odd_length_sum(arr: List[int]) -> int:\n    \"\"\"\n\tWrite a python function to find the sum of all odd length subarrays. https://www.geeksforgeeks.org/sum-of-all-odd-length-subarrays/\n\t\"\"\"\n    ### Canonical solution below ###\n    pass\n\n### Unit tests below ###\ndef check(candidate):\n    assert candidate([1, 2, 4]) == 14\n    assert candidate([1, 2, 1, 2]) == 15\n    assert candidate([1, 7]) == 8\n\ndef test_check():\n    check(odd_length_sum)\n\n"
+ }
+}

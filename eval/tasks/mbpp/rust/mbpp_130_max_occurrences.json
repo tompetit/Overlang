@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_130_max_occurrences",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_130_max_occurrences",
+ "entry_point": "max_occurrences",
+ "prompt": "/// Write a function to find the item with maximum frequency in a given vector.\nfn max_occurrences(nums: Vec<isize>) -> isize {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = max_occurrences;\n    assert_eq!(candidate(vec![2, 3, 8, 4, 7, 9, 8, 2, 6, 5, 1, 6, 1, 2, 3, 2, 4, 6, 9, 1, 2]), 2);\n    assert_eq!(candidate(vec![2, 3, 8, 4, 7, 9, 8, 7, 9, 15, 14, 10, 12, 13, 16, 18]), 8);\n    assert_eq!(candidate(vec![10, 20, 20, 30, 40, 90, 80, 50, 30, 20, 50, 10]), 20);\n}\n",
+ "raw": {
+  "name": "mbpp_130_max_occurrences",
+  "language": "rs",
+  "prompt": "/// Write a function to find the item with maximum frequency in a given vector.\nfn max_occurrences(nums: Vec<isize>) -> isize {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_130_max_occurrences.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = max_occurrences;\n    assert_eq!(candidate(vec![2, 3, 8, 4, 7, 9, 8, 2, 6, 5, 1, 6, 1, 2, 3, 2, 4, 6, 9, 1, 2]), 2);\n    assert_eq!(candidate(vec![2, 3, 8, 4, 7, 9, 8, 7, 9, 15, 14, 10, 12, 13, 16, 18]), 8);\n    assert_eq!(candidate(vec![10, 20, 20, 30, 40, 90, 80, 50, 30, 20, 50, 10]), 20);\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}

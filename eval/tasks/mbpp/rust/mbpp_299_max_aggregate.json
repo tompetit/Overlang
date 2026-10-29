@@ -1,0 +1,21 @@
+{
+ "id": "mbpp_299_max_aggregate",
+ "benchmark": "mbpp",
+ "lang": "rust",
+ "name": "mbpp_299_max_aggregate",
+ "entry_point": "max_aggregate",
+ "prompt": "/// Write a function to calculate the maximum aggregate from the vector of tuples.\nfn max_aggregate(stdata: Vec<(String, isize)>) -> (String, isize) {\n",
+ "tests": "}\n\nfn main() {\n    let candidate = max_aggregate;\n    assert_eq!(candidate(vec![(String::from(\"Juan Whelan\"), 90), (String::from(\"Sabah Colley\"), 88), (String::from(\"Peter Nichols\"), 7), (String::from(\"Juan Whelan\"), 122), (String::from(\"Sabah Colley\"), 84)]), (String::from(\"Juan Whelan\"), 212));\n    assert_eq!(candidate(vec![(String::from(\"Juan Whelan\"), 50), (String::from(\"Sabah Colley\"), 48), (String::from(\"Peter Nichols\"), 37), (String::from(\"Juan Whelan\"), 22), (String::from(\"Sabah Colley\"), 14)]), (String::from(\"Juan Whelan\"), 72));\n    assert_eq!(candidate(vec![(String::from(\"Juan Whelan\"), 10), (String::from(\"Sabah Colley\"), 20), (String::from(\"Peter Nichols\"), 30), (String::from(\"Juan Whelan\"), 40), (String::from(\"Sabah Colley\"), 50)]), (String::from(\"Sabah Colley\"), 70));\n}\n",
+ "raw": {
+  "name": "mbpp_299_max_aggregate",
+  "language": "rs",
+  "prompt": "/// Write a function to calculate the maximum aggregate from the vector of tuples.\nfn max_aggregate(stdata: Vec<(String, isize)>) -> (String, isize) {\n",
+  "doctests": "transform",
+  "original": "/Users/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/mbpp-typed/mbpp_299_max_aggregate.py",
+  "prompt_terminology": "reworded",
+  "tests": "}\n\nfn main() {\n    let candidate = max_aggregate;\n    assert_eq!(candidate(vec![(String::from(\"Juan Whelan\"), 90), (String::from(\"Sabah Colley\"), 88), (String::from(\"Peter Nichols\"), 7), (String::from(\"Juan Whelan\"), 122), (String::from(\"Sabah Colley\"), 84)]), (String::from(\"Juan Whelan\"), 212));\n    assert_eq!(candidate(vec![(String::from(\"Juan Whelan\"), 50), (String::from(\"Sabah Colley\"), 48), (String::from(\"Peter Nichols\"), 37), (String::from(\"Juan Whelan\"), 22), (String::from(\"Sabah Colley\"), 14)]), (String::from(\"Juan Whelan\"), 72));\n    assert_eq!(candidate(vec![(String::from(\"Juan Whelan\"), 10), (String::from(\"Sabah Colley\"), 20), (String::from(\"Peter Nichols\"), 30), (String::from(\"Juan Whelan\"), 40), (String::from(\"Sabah Colley\"), 50)]), (String::from(\"Sabah Colley\"), 70));\n}\n",
+  "stop_tokens": [
+   "\n}"
+  ]
+ }
+}
