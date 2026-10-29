@@ -456,3 +456,20 @@ impl Printer {
         ps.iter().map(|p| self.pat(p)).collect::<Vec<_>>().join(", ")
     }
 }
+
+// ---------------------------------------------------------------- signatures
+//
+// Used by the store (`ov ctx`): a definition's signature without its body.
+
+/// The signature of a `fn`, `declare` or `foreign` item: the `fn` line with
+/// generics, parameters, return type and effects, then its `requires` and
+/// `ensures` clauses. `None` for other items. (Prelude `intrinsic` items
+/// have no body, so their stored text already is their signature.)
+pub fn print_signature(item: &Item) -> Option<String> {
+    let p = Printer { records: HashMap::new() };
+    match item {
+        Item::Fn(f) => Some(p.signature("", &f.sig, "") + &p.contracts(&f.requires, &f.ensures)),
+        Item::Declare(_) | Item::Foreign(_) => Some(p.item(item)),
+        Item::Type(_) | Item::Test(_) | Item::Comment(_) => None,
+    }
+}

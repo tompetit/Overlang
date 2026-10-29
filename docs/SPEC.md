@@ -288,13 +288,19 @@ truth; this list is the required set.
 
 ## 10. The store
 
-Code is stored in `.ovstore/store.sqlite` in the project root.
+Code is stored in `.ovstore/store.sqlite` in the project root (the current
+directory of the `ov` command), created on first use.
 
 Tables:
 
-- `defs(hash TEXT PRIMARY KEY, kind TEXT, ast TEXT, created_at INTEGER)`.
+- `defs(hash TEXT PRIMARY KEY, kind TEXT, ast TEXT, source TEXT, created_at INTEGER)`.
   `ast` is the canonical JSON serialization (section 10.1). `kind` is
-  `fn`, `type`, `declare`, `foreign` or `test`.
+  `fn`, `type`, `declare`, `foreign` or `test`, or `intrinsic` for prelude
+  bindings. `source` is the canonical text (section 10.3) with the
+  definition's name, which is what `ov view` prints; re-adding a definition
+  with the same hash replaces it (so a rename shows the new name) without
+  adding a row. Every prelude definition is in `defs`, unbound in `names`;
+  prelude names resolve without being bound.
 - `names(name TEXT PRIMARY KEY, hash TEXT, updated_at INTEGER)`.
 - `history(name TEXT, hash TEXT, at INTEGER)`. Append-only.
 - `deps(hash TEXT, dep_hash TEXT)`. Direct dependencies.
@@ -311,7 +317,8 @@ canonical form is the AST serialized as JSON with:
 - every reference to another top-level definition replaced by that
   definition's hash;
 - every reference to a type replaced by that type's hash (built-in types
-  hash to their name);
+  hash to their name; for hashing, `Option` and `Result` count as built-in,
+  and their constructors are `("Option", 0)` for `Some` and so on);
 - constructor references replaced by `(type hash, constructor index)`;
 - record field names kept (they are part of the type's identity);
 - type parameter names replaced by position;
@@ -324,7 +331,9 @@ Mutually recursive definitions form a cycle. The cycle's canonical form is the
 list of its members' canonical forms, each member referring to the others by
 position in the cycle, ordered by the lexicographic order of their canonical
 forms before cycle references are resolved. The cycle hash is the SHA-256 of
-that list, and member `i` has hash `<cycle hash>.<i>`.
+that list, and member `i` has hash `<cycle hash>.<i>`. A definition that
+refers only to itself is a cycle of one: the self-reference is position 0,
+and its hash is the plain SHA-256 of that form, with no suffix.
 
 Short hash prefixes are accepted anywhere a hash is expected when they are
 unambiguous.
@@ -410,6 +419,7 @@ Codes:
 | E0113 | `?` outside a compatible function | `expected` return type |
 | E0114 | Invalid foreign signature | which type |
 | E0115 | Recursive type without indirection through a constructor | |
+| E0116 | Ambiguous hash prefix | `actual`: the matching hashes |
 | W0001 | Unimplemented `declare` | |
 | W0002 | Unused variable | `fixes`: rename to `_x` |
 | W0003 | Unreachable match arm | |
