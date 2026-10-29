@@ -1,0 +1,282 @@
+// Overlang prelude. This file is the source of truth for prelude signatures
+// (SPEC section 9). `intrinsic` binds a signature to a runtime C symbol or to
+// a compiler-generated instance; it is legal only in this file.
+
+type Option[T] = Some(value: T) | None
+type Result[T, E] = Ok(value: T) | Err(error: E)
+
+// ---- List primitives (runtime) ----
+intrinsic fn len[T](xs: List[T]) -> Int = "ov_list_len"
+intrinsic fn get[T](xs: List[T], i: Int) -> Option[T] = "ov_list_try_get"
+intrinsic fn push[T](xs: List[T], x: T) -> List[T] = "ov_list_push"
+intrinsic fn concat[T](xs: List[T], ys: List[T]) -> List[T] = "ov_list_concat"
+intrinsic fn slice[T](xs: List[T], from: Int, to: Int) -> List[T] = "ov_list_slice"
+intrinsic fn reverse[T](xs: List[T]) -> List[T] = "ov_list_reverse"
+intrinsic fn take[T](xs: List[T], n: Int) -> List[T] = "ov_list_take"
+intrinsic fn drop[T](xs: List[T], n: Int) -> List[T] = "ov_list_drop"
+// sort is generated per element type (Int, Float, Str only; E0101 otherwise).
+intrinsic fn sort[T](xs: List[T]) -> List[T] = "@sort"
+intrinsic fn sort_by[T](xs: List[T], key: fn(T) -> Int) -> List[T] = "@sort_by"
+intrinsic fn unique[T](xs: List[T]) -> List[T] = "@unique"
+intrinsic fn min_of[T](xs: List[T]) -> Option[T] = "@min_of"
+intrinsic fn max_of[T](xs: List[T]) -> Option[T] = "@max_of"
+
+// ---- List functions (Overlang) ----
+fn is_empty[T](xs: List[T]) -> Bool { len(xs) == 0 }
+
+fn head[T](xs: List[T]) -> Option[T] { get(xs, 0) }
+
+fn last[T](xs: List[T]) -> Option[T] { get(xs, len(xs) - 1) }
+
+fn tail[T](xs: List[T]) -> List[T] { drop(xs, 1) }
+
+fn map[T, U, !e](xs: List[T], f: fn(T) -> U !e) -> List[U] !e {
+  let mut out = [];
+  for x in xs {
+    out = push(out, f(x));
+  }
+  out
+}
+
+fn filter[T, !e](xs: List[T], p: fn(T) -> Bool !e) -> List[T] !e {
+  let mut out = [];
+  for x in xs {
+    if p(x) {
+      out = push(out, x);
+    }
+  }
+  out
+}
+
+fn fold[T, A, !e](xs: List[T], init: A, f: fn(A, T) -> A !e) -> A !e {
+  let mut acc = init;
+  for x in xs {
+    acc = f(acc, x);
+  }
+  acc
+}
+
+fn for_each[T, !e](xs: List[T], f: fn(T) -> Unit !e) -> Unit !e {
+  for x in xs {
+    f(x);
+  }
+}
+
+fn any[T, !e](xs: List[T], p: fn(T) -> Bool !e) -> Bool !e {
+  for x in xs {
+    if p(x) {
+      return true;
+    }
+  }
+  false
+}
+
+fn all[T, !e](xs: List[T], p: fn(T) -> Bool !e) -> Bool !e {
+  for x in xs {
+    if !p(x) {
+      return false;
+    }
+  }
+  true
+}
+
+fn flat_map[T, U, !e](xs: List[T], f: fn(T) -> List[U] !e) -> List[U] !e {
+  let mut out = [];
+  for x in xs {
+    out = concat(out, f(x));
+  }
+  out
+}
+
+fn flatten[T](xss: List[List[T]]) -> List[T] {
+  flat_map(xss, |xs| xs)
+}
+
+fn sum(xs: List[Int]) -> Int { fold(xs, 0, |a, x| a + x) }
+
+fn sum_float(xs: List[Float]) -> Float { fold(xs, 0.0, |a, x| a + x) }
+
+fn range(from: Int, to: Int) -> List[Int]
+  ensures len(result) == max(0, to - from)
+{
+  let mut out = [];
+  let mut i = from;
+  while i < to {
+    out = push(out, i);
+    i = i + 1;
+  }
+  out
+}
+
+fn zip[A, B](xs: List[A], ys: List[B]) -> List[(A, B)] {
+  let n = min(len(xs), len(ys));
+  let mut out = [];
+  for i in range(0, n) {
+    out = push(out, (xs[i], ys[i]));
+  }
+  out
+}
+
+fn enumerate[T](xs: List[T]) -> List[(Int, T)] { zip(range(0, len(xs)), xs) }
+
+fn contains[T](xs: List[T], x: T) -> Bool { any(xs, |y| y == x) }
+
+fn index_of[T](xs: List[T], x: T) -> Option[Int] {
+  for i in range(0, len(xs)) {
+    if xs[i] == x {
+      return Some(i);
+    }
+  }
+  None
+}
+
+// ---- Str primitives (runtime) ----
+intrinsic fn str_len(s: Str) -> Int = "ov_str_len_cps"
+intrinsic fn chars(s: Str) -> List[Str] = "ov_str_chars"
+intrinsic fn split(s: Str, sep: Str) -> List[Str] = "ov_str_split"
+intrinsic fn trim(s: Str) -> Str = "ov_str_trim"
+intrinsic fn to_upper(s: Str) -> Str = "ov_str_to_upper"
+intrinsic fn to_lower(s: Str) -> Str = "ov_str_to_lower"
+intrinsic fn starts_with(s: Str, prefix: Str) -> Bool = "ov_str_starts_with"
+intrinsic fn ends_with(s: Str, suffix: Str) -> Bool = "ov_str_ends_with"
+intrinsic fn str_contains(s: Str, needle: Str) -> Bool = "ov_str_contains"
+intrinsic fn replace(s: Str, from: Str, to: Str) -> Str = "ov_str_replace"
+intrinsic fn substr(s: Str, from: Int, to: Int) -> Str = "ov_str_substr"
+intrinsic fn repeat(s: Str, n: Int) -> Str = "ov_str_repeat"
+intrinsic fn char_at(s: Str, i: Int) -> Option[Str] = "ov_str_char_at"
+intrinsic fn join(parts: List[Str], sep: Str) -> Str = "ov_str_join"
+intrinsic fn code_point(s: Str) -> Option[Int] = "ov_str_code_point"
+intrinsic fn from_code_point(cp: Int) -> Str = "ov_str_from_code_point"
+intrinsic fn parse_int(s: Str) -> Option[Int] = "ov_parse_int"
+intrinsic fn parse_float(s: Str) -> Option[Float] = "ov_parse_float"
+// show is generated per monomorphized type.
+intrinsic fn show[T](x: T) -> Str = "@show"
+
+// ---- Map and Set (runtime; K restricted to Int, Str, Bool) ----
+intrinsic fn map_new[K, V]() -> Map[K, V] = "ov_map_new"
+intrinsic fn map_get[K, V](m: Map[K, V], k: K) -> Option[V] = "ov_map_get"
+intrinsic fn map_set[K, V](m: Map[K, V], k: K, v: V) -> Map[K, V] = "ov_map_set"
+intrinsic fn map_remove[K, V](m: Map[K, V], k: K) -> Map[K, V] = "ov_map_remove"
+intrinsic fn map_contains[K, V](m: Map[K, V], k: K) -> Bool = "ov_map_contains"
+intrinsic fn map_keys[K, V](m: Map[K, V]) -> List[K] = "ov_map_keys"
+intrinsic fn map_values[K, V](m: Map[K, V]) -> List[V] = "ov_map_values"
+intrinsic fn map_len[K, V](m: Map[K, V]) -> Int = "ov_map_len"
+intrinsic fn set_new[T]() -> Set[T] = "ov_set_new"
+intrinsic fn set_add[T](s: Set[T], x: T) -> Set[T] = "ov_set_add"
+intrinsic fn set_remove[T](s: Set[T], x: T) -> Set[T] = "ov_set_remove"
+intrinsic fn set_contains[T](s: Set[T], x: T) -> Bool = "ov_set_contains"
+intrinsic fn set_len[T](s: Set[T]) -> Int = "ov_set_len"
+intrinsic fn set_to_list[T](s: Set[T]) -> List[T] = "ov_set_to_list"
+
+fn map_from_list[K, V](kvs: List[(K, V)]) -> Map[K, V] {
+  fold(kvs, map_new(), |m, kv| map_set(m, kv.0, kv.1))
+}
+
+fn map_to_list[K, V](m: Map[K, V]) -> List[(K, V)] {
+  zip(map_keys(m), map_values(m))
+}
+
+fn set_from_list[T](xs: List[T]) -> Set[T] {
+  fold(xs, set_new(), |s, x| set_add(s, x))
+}
+
+// ---- Option and Result (Overlang) ----
+fn unwrap_or[T](o: Option[T], default: T) -> T {
+  match o {
+    Some(v) => v,
+    None => default,
+  }
+}
+
+fn is_some[T](o: Option[T]) -> Bool {
+  match o {
+    Some(_) => true,
+    None => false,
+  }
+}
+
+fn is_none[T](o: Option[T]) -> Bool { !is_some(o) }
+
+fn is_ok[T, E](r: Result[T, E]) -> Bool {
+  match r {
+    Ok(_) => true,
+    Err(_) => false,
+  }
+}
+
+fn is_err[T, E](r: Result[T, E]) -> Bool { !is_ok(r) }
+
+fn ok_or[T, E](o: Option[T], e: E) -> Result[T, E] {
+  match o {
+    Some(v) => Ok(v),
+    None => Err(e),
+  }
+}
+
+fn option_map[T, U, !e](o: Option[T], f: fn(T) -> U !e) -> Option[U] !e {
+  match o {
+    Some(v) => Some(f(v)),
+    None => None,
+  }
+}
+
+fn result_map[T, U, E, !e](r: Result[T, E], f: fn(T) -> U !e) -> Result[U, E] !e {
+  match r {
+    Ok(v) => Ok(f(v)),
+    Err(e) => Err(e),
+  }
+}
+
+// ---- Math ----
+fn abs(x: Int) -> Int
+  ensures result >= 0
+{
+  if x < 0 { 0 - x } else { x }
+}
+
+fn min(a: Int, b: Int) -> Int { if a < b { a } else { b } }
+
+fn max(a: Int, b: Int) -> Int { if a > b { a } else { b } }
+
+fn pow(base: Int, exp: Int) -> Int
+  requires exp >= 0
+{
+  let mut r = 1;
+  let mut i = 0;
+  while i < exp {
+    r = r * base;
+    i = i + 1;
+  }
+  r
+}
+
+fn fabs(x: Float) -> Float { if x < 0.0 { 0.0 - x } else { x } }
+
+fn fmin(a: Float, b: Float) -> Float { if a < b { a } else { b } }
+
+fn fmax(a: Float, b: Float) -> Float { if a > b { a } else { b } }
+
+intrinsic fn fpow(base: Float, exp: Float) -> Float = "pow"
+intrinsic fn sqrt(x: Float) -> Float = "sqrt"
+intrinsic fn floor(x: Float) -> Float = "floor"
+intrinsic fn ceil(x: Float) -> Float = "ceil"
+intrinsic fn round(x: Float) -> Float = "round"
+intrinsic fn to_float(x: Int) -> Float = "@to_float"
+intrinsic fn to_int(x: Float) -> Int = "@to_int"
+intrinsic fn div_floor(a: Int, b: Int) -> Int = "ov_div_floor"
+intrinsic fn mod_floor(a: Int, b: Int) -> Int = "ov_mod_floor"
+
+// ---- IO and environment ----
+intrinsic fn print(s: Str) -> Unit !io = "ov_print"
+intrinsic fn println(s: Str) -> Unit !io = "ov_println"
+intrinsic fn read_line() -> Option[Str] !io = "ov_read_line"
+intrinsic fn read_all() -> Str !io = "ov_read_all"
+intrinsic fn args() -> List[Str] !io = "ov_args"
+intrinsic fn exit(code: Int) -> Unit !exit = "ov_exit"
+intrinsic fn now_millis() -> Int !time = "ov_now_millis"
+intrinsic fn random_int(lo: Int, hi: Int) -> Int !rand = "ov_random_int"
+
+// ---- Testing ----
+intrinsic fn assert(cond: Bool) -> Unit = "@assert"
+intrinsic fn assert_eq[T](a: T, b: T) -> Unit = "@assert_eq"
+intrinsic fn todo[T]() -> T = "@todo"
