@@ -311,7 +311,10 @@ Tables:
 A definition's hash is the SHA-256 of its canonical form, hex-encoded. The
 canonical form is the AST serialized as JSON with:
 
-- the definition's own name removed;
+- for `fn`, `declare`, `foreign`, `intrinsic` and `test` definitions, the
+  definition's own name removed. For `type` definitions the name is kept:
+  types are nominal, so two structurally identical record types with
+  different names are different types and have different hashes;
 - every local variable replaced by its de Bruijn index;
 - every reference to another top-level definition replaced by that
   definition's hash;
@@ -333,6 +336,31 @@ that list, and member `i` has hash `<cycle hash>.<i>`.
 
 Short hash prefixes are accepted anywhere a hash is expected when they are
 unambiguous.
+
+### 10.1a Propagation
+
+A definition references its dependencies by hash, so when a dependency is
+edited, every definition that referenced the old hash still does. `ov add`
+and `ov edit` therefore propagate: after storing the new definition and
+rebinding its name, every transitive dependent (through `deps`) is re-hashed
+with the new dependency hash, stored, and its name rebound, newest first in
+`history`. The command's output lists every rebound name with old and new
+hash. Propagation never changes a dependent's named AST, only the hashes it
+resolves to, so a dependent's text does not change.
+
+A `type` edit propagates the same way to every definition that mentions the
+type.
+
+### 10.1b Named AST and rendering
+
+`defs.ast` holds the *named* AST of the definition (spans and comments
+stripped, local and global names kept). The canonical form of section 10.1 is
+derived from it for hashing and is not stored. `ov view` and `ov ctx` render
+from the named AST, replacing each global reference by the name currently
+bound to the referenced hash (falling back to the name the definition was
+written with if the hash has no binding), so a renamed dependency shows its
+current name in every caller. Comments are kept in `defs.source`, the text as
+last written, which `ov view --raw` prints.
 
 ### 10.2 Commands
 
