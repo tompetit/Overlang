@@ -24,6 +24,7 @@
 use crate::ast::*;
 use crate::mono::{self, Def, Defs, Instance};
 use crate::printer::Printer;
+use crate::store::Store;
 use crate::types::{Callee, Checked, FnKind, Ty, TypeShape, TypedProgram, VarRef};
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fmt::Write;
@@ -44,7 +45,24 @@ pub enum Mode<'s> {
     Test,
 }
 
-pub fn emit(c: &Checked, defs: &Defs, insts: &[Instance], mode: Mode) -> Output {
+/// The emitter's own source: part of every C cache key, so a changed
+/// compiler never reuses C emitted by an older one.
+const EMITTER_SRC: &str = concat!(include_str!("emit.rs"), include_str!("mono.rs"), include_str!("types.rs"));
+
+/// One instance's emitted C as cached in the store (`cache` row
+/// `(hash, "c", c_name)`): the text plus the types and helpers it needs in
+/// `ov_types.h` and `ov_support.c`.
+#[derive(serde::Serialize, serde::Deserialize)]
+struct CachedC {
+    key: String,
+    c: String,
+    types: Vec<Ty>,
+    helpers: Vec<(Helper, Ty)>,
+}
+
+/// With `cache`, an instance whose definition and C name are unchanged is
+/// read from the store instead of being emitted again.
+pub fn emit(c: &Checked, defs: &Defs, insts: &[Instance], mode: Mode, cache: Option<&Store>) -> Output {
     let mut em = Emitter {
         tp: &c.typed,
         defs,
@@ -59,10 +77,16 @@ pub fn emit(c: &Checked, defs: &Defs, insts: &[Instance], mode: Mode) -> Output 
         tmp: 0,
         cur: String::new(),
         fx: FnCx::new("", Ty::Unit, HashMap::new()),
+        used_types: BTreeMap::new(),
+        used_helpers: BTreeMap::new(),
     };
+    let salt = format!("{:016x}", mono::fnv64(EMITTER_SRC));
     let mut files = vec![];
     for inst in insts {
-        let text = em.instance(inst);
+        let text = match cache {
+            Some(store) => em.cached_instance(store, inst, &salt),
+            None => em.instance(inst),
+        };
         files.push((format!("{}.c", inst.c_name), text));
     }
     let main = em.main_file(&mode, insts);
@@ -72,7 +96,7 @@ pub fn emit(c: &Checked, defs: &Defs, insts: &[Instance], mode: Mode) -> Output 
     Output { files, links: em.links.into_iter().collect(), headers: em.headers.into_iter().collect() }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, serde::Serialize, serde::Deserialize)]
 enum Helper {
     Show,
     Eq,
@@ -123,6 +147,9 @@ struct Emitter<'a> {
     /// C name of the instance being emitted (prefix for lifted functions).
     cur: String,
     fx: FnCx,
+    /// Every struct and helper the current instance asked for, for the C cache.
+    used_types: BTreeMap<String, Ty>,
+    used_helpers: BTreeMap<String, (Helper, Ty)>,
 }
 
 // ---------------------------------------------------------------- literals
@@ -267,8 +294,9 @@ impl<'a> Emitter<'a> {
         }
     }
 
+    /// The `fn, hash` arguments of a trap: the definition's name and store hash.
     fn fn_lit(&self) -> String {
-        c_str(&self.fx.def)
+        format!("{}, {}", c_str(&self.fx.def), c_str(self.defs.hash(&self.fx.def)))
     }
 
     fn ty(&self, id: NodeId) -> Ty {
@@ -336,6 +364,7 @@ impl<'a> Emitter<'a> {
     /// types of its fields) for `ov_types.h`.
     fn reg(&mut self, t: &Ty) -> String {
         let name = format!("ovt_{}", self.tkey(t));
+        self.used_types.insert(name.clone(), t.clone());
         if !self.structs.contains_key(&name) {
             self.structs.insert(name.clone(), t.clone());
             for (_, fs) in self.layout(t) {
@@ -489,7 +518,7 @@ impl<'a> Emitter<'a> {
                 let f = self.fn_lit();
                 match &bt {
                     Ty::List(el) => {
-                        let v = self.unbox(el, &format!("ov_list_get({b}, {i}, {f}, \"\")"));
+                        let v = self.unbox(el, &format!("ov_list_get({b}, {i}, {f})"));
                         self.bind_tmp(&t, v)
                     }
                     Ty::Map(k, v) => {
@@ -505,7 +534,7 @@ impl<'a> Emitter<'a> {
                 let a = self.expr(expr);
                 let f = self.fn_lit();
                 let x = match (op, &t) {
-                    (UnOp::Neg, Ty::Int) => format!("ov_neg({a}, {f}, \"\")"),
+                    (UnOp::Neg, Ty::Int) => format!("ov_neg({a}, {f})"),
                     (UnOp::Neg, _) => format!("(-{a})"),
                     (UnOp::Not, _) => format!("(!{a})"),
                 };
@@ -672,7 +701,7 @@ impl<'a> Emitter<'a> {
                     Div => "ov_div",
                     _ => "ov_mod",
                 };
-                format!("{name}({a}, {b}, {f}, \"\")")
+                format!("{name}({a}, {b}, {f})")
             }
             Rem => format!("fmod({a}, {b})"),
             _ => {
@@ -737,7 +766,7 @@ impl<'a> Emitter<'a> {
 
     /// Declare the instance `name[targs]` in the current file; its C name.
     fn proto(&mut self, name: &str, targs: &[Ty]) -> String {
-        let cn = mono::instance_name(name, targs);
+        let cn = self.defs.instance_name(name, targs);
         let sig = &self.tp.fns[name];
         let map: HashMap<String, Ty> = sig.type_params.iter().cloned().zip(targs.iter().cloned()).collect();
         let ps: Vec<Ty> = sig.params.iter().map(|(_, t)| mono::subst(t, &map)).collect();
@@ -756,7 +785,7 @@ impl<'a> Emitter<'a> {
     fn fn_value(&mut self, name: &str, targs: &[Ty], t: &Ty) -> String {
         let Ty::Fn(ps, r, _) = t else { panic!("internal: function value of type {t}") };
         let intrinsic = matches!(self.tp.fns[name].kind, FnKind::Intrinsic { .. });
-        let w = format!("ovw_{}", mono::instance_name(name, targs));
+        let w = format!("ovw_{}", self.defs.instance_name(name, targs));
         if self.wrappers.insert(w.clone()) {
             let cx = FnCx::new(&self.fx.def, (**r).clone(), self.fx.map.clone());
             let saved = std::mem::replace(&mut self.fx, cx);
@@ -916,7 +945,7 @@ impl<'a> Emitter<'a> {
             "fpow" => format!("pow({}, {})", a[0], a[1]),
             "to_float" => format!("((double){})", a[0]),
             "to_int" => format!("ovsup_to_int({}, {f})", a[0]),
-            "div_floor" | "mod_floor" => format!("ov_{name}({}, {}, {f}, \"\")", a[0], a[1]),
+            "div_floor" | "mod_floor" => format!("ov_{name}({}, {}, {f})", a[0], a[1]),
             "print" | "println" | "exit" => {
                 self.line(format!("ov_{name}({});", a[0]));
                 return "0".into();
@@ -924,7 +953,7 @@ impl<'a> Emitter<'a> {
             "assert" => {
                 let text = args.map_or("assert".to_string(), |xs| format!("assert({})", printed(&xs[0])));
                 let detail = c_str(&json_string(&format!("assertion failed: {text}")));
-                self.line(format!("if (!{}) ov_trap(\"assert\", {f}, \"\", {detail});", a[0]));
+                self.line(format!("if (!{}) ov_trap(\"assert\", {f}, {detail});", a[0]));
                 return "0".into();
             }
             "assert_eq" => {
@@ -935,7 +964,7 @@ impl<'a> Emitter<'a> {
                 return "0".into();
             }
             "todo" => {
-                self.line(format!("ov_trap(\"todo\", {f}, \"\", \"\\\"not yet implemented\\\"\");"));
+                self.line(format!("ov_trap(\"todo\", {f}, \"\\\"not yet implemented\\\"\");"));
                 "0".into()
             }
             _ => {
@@ -1144,6 +1173,8 @@ impl<'a> Emitter<'a> {
         self.lifted.clear();
         self.wrappers.clear();
         self.includes.clear();
+        self.used_types.clear();
+        self.used_helpers.clear();
         self.tmp = 0;
         self.cur = inst.c_name.clone();
         let (proto, body) = if inst.is_test {
@@ -1192,7 +1223,7 @@ impl<'a> Emitter<'a> {
                         self.contract("requires", r, &ps, None);
                     }
                     let detail = c_str(&json_string(&format!("`{}` is declared but not implemented", inst.name)));
-                    self.line(format!("ov_trap(\"unimplemented\", {}, \"\", {detail});", self.fn_lit()));
+                    self.line(format!("ov_trap(\"unimplemented\", {}, {detail});", self.fn_lit()));
                 }
                 Def::Foreign(f) => self.foreign(f, &ps, &ret),
             }
@@ -1222,6 +1253,43 @@ impl<'a> Emitter<'a> {
         s
     }
 
+    /// `instance`, or its C from the store when the definition's text and the
+    /// compiler are unchanged; a miss is emitted and cached.
+    fn cached_instance(&mut self, store: &Store, inst: &Instance, salt: &str) -> String {
+        let p = Printer { records: HashMap::new() };
+        let def = match self.defs.fns.get(&inst.name) {
+            _ if inst.is_test => self.defs.tests.iter().find(|(t, _)| t.name == inst.name).map(|(t, _)| p.item(&Item::Test((*t).clone()))),
+            Some((Def::Fn(f), _)) => Some(p.item(&Item::Fn((*f).clone()))),
+            Some((Def::Declare(d), _)) => Some(p.item(&Item::Declare((*d).clone()))),
+            Some((Def::Foreign(f), _)) => Some(p.item(&Item::Foreign((*f).clone()))),
+            None => None,
+        };
+        // The hash does not cover names (locals, callees' current names), which the C text shows.
+        let key = format!("{salt}{:016x}", mono::fnv64(&format!("{}\0{}", inst.c_name, def.unwrap_or_default())));
+        let hash = self.defs.hash(&inst.name).to_string();
+        if let Ok(Some(blob)) = store.cache_get(&hash, "c", &inst.c_name)
+            && let Ok(hit) = serde_json::from_slice::<CachedC>(&blob)
+            && hit.key == key
+        {
+            for t in &hit.types {
+                self.reg(t);
+            }
+            for (h, t) in &hit.helpers {
+                self.helper(*h, t);
+            }
+            if let (false, Some((Def::Foreign(f), _))) = (inst.is_test, self.defs.fns.get(&inst.name)) {
+                self.headers.insert(f.header.clone());
+                self.links.extend(f.link.clone());
+            }
+            return hit.c;
+        }
+        let c = self.instance(inst);
+        let entry = CachedC { key, c: c.clone(), types: self.used_types.values().cloned().collect(), helpers: self.used_helpers.values().cloned().collect() };
+        // A failed cache write only means the instance is emitted again next time.
+        let _ = store.cache_put(&hash, "c", &inst.c_name, serde_json::to_string(&entry).expect("cache entry serializes").as_bytes());
+        c
+    }
+
     /// A `requires`/`ensures` check: trap with the clause text and `show`n arguments.
     fn contract(&mut self, kind: &str, clause: &Expr, ps: &[(String, Ty)], result: Option<&Ty>) {
         let a = self.expr(clause);
@@ -1240,7 +1308,7 @@ impl<'a> Emitter<'a> {
         }
         self.line("ov_sb_push_cstr(ovsb, \"}\");");
         let f = self.fn_lit();
-        self.line(format!("ov_trap_contract({}, {f}, \"\", {}, ov_sb_finish(ovsb)->data);", c_str(kind), c_str(&printed(clause))));
+        self.line(format!("ov_trap_contract({}, {f}, {}, ov_sb_finish(ovsb)->data);", c_str(kind), c_str(&printed(clause))));
         self.close();
     }
 
@@ -1255,7 +1323,7 @@ impl<'a> Emitter<'a> {
         let args: Vec<String> = ps.iter().enumerate().map(|(i, (_, t))| if *t == Ty::Str { format!("p{i}->data") } else { format!("p{i}") }).collect();
         let call = format!("{sym}({})", args.join(", "));
         let fl = self.fn_lit();
-        let null_trap = format!("ov_trap(\"foreign_null\", {fl}, \"\", {})", c_str(&json_string(&format!("`{sym}` returned NULL"))));
+        let null_trap = format!("ov_trap(\"foreign_null\", {fl}, {})", c_str(&json_string(&format!("`{sym}` returned NULL"))));
         match ret {
             Ty::Unit => {
                 self.line(format!("{call};"));
@@ -1286,6 +1354,7 @@ impl<'a> Emitter<'a> {
         self.cty(t);
         let name = format!("{prefix}_{}", self.tkey(t));
         self.helpers.entry(name.clone()).or_insert((h, t.clone()));
+        self.used_helpers.insert(name.clone(), (h, t.clone()));
         name
     }
 
@@ -1637,11 +1706,11 @@ ov_value ovsup_extreme(ov_list* xs, int (*cmp)(ov_value, ov_value), int sign);
 /* Stable sort of xs by keys[i]. */
 ov_list* ovsup_sort_by_keys(ov_list* xs, int64_t* keys);
 /* m[k], trapping "bounds" if absent. */
-ov_value ovsup_map_index(ov_map* m, ov_value k, const char* fn);
+ov_value ovsup_map_index(ov_map* m, ov_value k, const char* fn, const char* hash);
 /* Truncate, trapping "overflow" outside the Int range (and on NaN). */
-int64_t ovsup_to_int(double x, const char* fn);
+int64_t ovsup_to_int(double x, const char* fn, const char* hash);
 /* Trap "assert" with both values shown. */
-_Noreturn void ovsup_assert_eq_fail(const char* fn, ov_str* a, ov_str* b);
+_Noreturn void ovsup_assert_eq_fail(const char* fn, const char* hash, ov_str* a, ov_str* b);
 "#;
 
 const SUPPORT_C: &str = r#"ov_str* ovsup_json_str(ov_str* s) {
@@ -1729,19 +1798,19 @@ ov_list* ovsup_sort_by_keys(ov_list* xs, int64_t* keys) {
   return r;
 }
 
-ov_value ovsup_map_index(ov_map* m, ov_value k, const char* fn) {
+ov_value ovsup_map_index(ov_map* m, ov_value k, const char* fn, const char* hash) {
   ov_value v = {0};
-  if (!ov_map_get(m, k, &v)) ov_trap("bounds", fn, "", "\"key not found\"");
+  if (!ov_map_get(m, k, &v)) ov_trap("bounds", fn, hash, "\"key not found\"");
   return v;
 }
 
-int64_t ovsup_to_int(double x, const char* fn) {
-  if (!(x >= -9223372036854775808.0 && x < 9223372036854775808.0)) ov_trap("overflow", fn, "", "\"Float out of Int range\"");
+int64_t ovsup_to_int(double x, const char* fn, const char* hash) {
+  if (!(x >= -9223372036854775808.0 && x < 9223372036854775808.0)) ov_trap("overflow", fn, hash, "\"Float out of Int range\"");
   return (int64_t)x;
 }
 
-void ovsup_assert_eq_fail(const char* fn, ov_str* a, ov_str* b) {
+void ovsup_assert_eq_fail(const char* fn, const char* hash, ov_str* a, ov_str* b) {
   ov_str* msg = ov_str_concat(ov_str_concat(ov_str_lit("assert_eq failed: "), a), ov_str_concat(ov_str_lit(" != "), b));
-  ov_trap("assert", fn, "", ovsup_json_str(msg)->data);
+  ov_trap("assert", fn, hash, ovsup_json_str(msg)->data);
 }
 "#;

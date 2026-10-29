@@ -13,7 +13,7 @@ use crate::diag::{Diag, Fix};
 use crate::printer::Printer;
 use std::collections::{BTreeSet, HashMap};
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Serialize, serde::Deserialize)]
 pub enum Eff {
     /// `!io`, `!db`: any name that is not the signature's effect parameter.
     Label(String),

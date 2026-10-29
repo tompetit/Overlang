@@ -55,7 +55,7 @@ use crate::printer::Printer;
 use std::collections::{HashMap, HashSet};
 use std::fmt;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub enum Ty {
     Int,
     Float,
@@ -1046,9 +1046,11 @@ impl<'a> Checker<'a> {
     }
 
     /// E0107 with a fix pointing at the binding or lambda parameter to annotate.
+    /// A patch is given only when it is a complete annotation: an open type
+    /// prints as `_`, which is not valid syntax.
     fn cannot_infer(&mut self, id: NodeId, t: &Ty, span: Span) {
-        let fix = if let Some(name) = self.let_names.get(&id) {
-            Fix { rank: 1, description: format!("annotate the binding: `let {name}: {t} = ...;`"), patch: format!("let {name}: {t} = ") }
+        let mut fix = if let Some(name) = self.let_names.get(&id) {
+            Fix { rank: 1, description: format!("annotate the binding: `let {name}: {t} = ...;`, with `_` replaced by the type you mean"), patch: format!("let {name}: {t} = ") }
         } else if let Some(params) = self.lambda_exprs.get(&id) {
             let Ty::Fn(ps, _, _) = t else { unreachable!("a lambda has a function type") };
             let text: Vec<String> = params.iter().zip(ps).map(|(p, t)| format!("{}: {t}", p.name)).collect();
@@ -1058,9 +1060,14 @@ impl<'a> Checker<'a> {
             Fix {
                 rank: 1,
                 description: "annotate the enclosing binding (`let x: T = e;`) or a lambda parameter (`|x: T| ...`)".into(),
-                patch: format!("let x: {t} = "),
+                patch: String::new(),
             }
         };
+        let mut open = Vec::new();
+        self.open_vars(t, &mut open);
+        if !open.is_empty() {
+            fix.patch.clear();
+        }
         let d = self.diag("E0107", span, format!("cannot infer the type of this expression: {t}"));
         d.fixes = Some(vec![fix]);
     }
@@ -1544,7 +1551,7 @@ impl<'a> Checker<'a> {
         d.fixes = Some(vec![Fix {
             rank: 1,
             description: "annotate the binding (`let x: T = e;`) or the lambda parameter (`|x: T| ...`) it comes from".into(),
-            patch: "|x: T|".into(),
+            patch: String::new(),
         }]);
         self.unify(t, &Ty::Error);
         Ty::Error

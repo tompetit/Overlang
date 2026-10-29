@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS defs(hash TEXT PRIMARY KEY, kind TEXT, ast TEXT, sour
 CREATE TABLE IF NOT EXISTS names(name TEXT PRIMARY KEY, hash TEXT, updated_at INTEGER);
 CREATE TABLE IF NOT EXISTS history(name TEXT, hash TEXT, at INTEGER);
 CREATE TABLE IF NOT EXISTS deps(hash TEXT, dep_hash TEXT, PRIMARY KEY(hash, dep_hash));
-CREATE TABLE IF NOT EXISTS cache(hash TEXT, kind TEXT, blob BLOB, at INTEGER, PRIMARY KEY(hash, kind));
+CREATE TABLE IF NOT EXISTS cache(hash TEXT, kind TEXT, instance TEXT, blob BLOB, at INTEGER, PRIMARY KEY(hash, kind, instance));
 CREATE INDEX IF NOT EXISTS deps_by_dep ON deps(dep_hash);
 ";
 
@@ -41,6 +41,10 @@ impl Store {
         std::fs::create_dir_all(&dir).map_err(|e| format!("cannot create {}: {e}", dir.display()))?;
         let conn = Connection::open(dir.join("store.sqlite")).map_err(|e| e.to_string())?;
         conn.execute_batch(SCHEMA).map_err(|e| e.to_string())?;
+        // A cache table from before the `instance` column is only a cache: drop it.
+        if conn.prepare("SELECT instance FROM cache LIMIT 0").is_err() {
+            conn.execute_batch("DROP TABLE cache;").and_then(|_| conn.execute_batch(SCHEMA)).map_err(|e| e.to_string())?;
+        }
         Ok(Store { conn })
     }
 
@@ -151,12 +155,19 @@ impl Store {
         stmt.query_map(params![name], |r| Ok((r.get(0)?, r.get(1)?)))?.collect()
     }
 
-    pub fn cache_get(&self, hash: &str, kind: &str) -> R<Option<Vec<u8>>> {
-        self.conn.query_row("SELECT blob FROM cache WHERE hash = ?1 AND kind = ?2", params![hash, kind], |r| r.get(0)).optional()
+    /// A cached artifact of `hash`: `kind` says what it is (`c` for emitted
+    /// C), `instance` which one (the C instance name; "" when there is one).
+    pub fn cache_get(&self, hash: &str, kind: &str, instance: &str) -> R<Option<Vec<u8>>> {
+        self.conn
+            .query_row("SELECT blob FROM cache WHERE hash = ?1 AND kind = ?2 AND instance = ?3", params![hash, kind, instance], |r| r.get(0))
+            .optional()
     }
 
-    pub fn cache_put(&self, hash: &str, kind: &str, blob: &[u8]) -> R<()> {
-        self.conn.execute("INSERT OR REPLACE INTO cache(hash, kind, blob, at) VALUES (?1, ?2, ?3, ?4)", params![hash, kind, blob, now()])?;
+    pub fn cache_put(&self, hash: &str, kind: &str, instance: &str, blob: &[u8]) -> R<()> {
+        self.conn.execute(
+            "INSERT OR REPLACE INTO cache(hash, kind, instance, blob, at) VALUES (?1, ?2, ?3, ?4, ?5)",
+            params![hash, kind, instance, blob, now()],
+        )?;
         Ok(())
     }
 
@@ -189,8 +200,9 @@ mod tests {
         assert_eq!(s.by_prefix("b").unwrap(), ["bb"]);
         assert_eq!(s.unbind("a").unwrap().as_deref(), Some("bb"));
         assert_eq!(s.hash_of_name("a").unwrap(), None);
-        s.cache_put("aa", "c", b"x").unwrap();
-        assert_eq!(s.cache_get("aa", "c").unwrap().as_deref(), Some(&b"x"[..]));
+        s.cache_put("aa", "c", "i", b"x").unwrap();
+        assert_eq!(s.cache_get("aa", "c", "i").unwrap().as_deref(), Some(&b"x"[..]));
+        assert_eq!(s.cache_get("aa", "c", "j").unwrap(), None);
         std::fs::remove_dir_all(&dir).unwrap();
     }
 }

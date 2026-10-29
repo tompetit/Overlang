@@ -4,7 +4,7 @@
 use crate::ast::{Program, Span};
 use crate::diag::Diag;
 use crate::diag::Severity;
-use crate::{build, parser, printer, types};
+use crate::{build, parser, printer, store_cli, types};
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
@@ -24,13 +24,11 @@ enum Command {
         #[arg(long)]
         write: bool,
     },
-    /// Typecheck, effect-check and exhaustiveness-check files as one program.
+    /// Typecheck, effect-check and exhaustiveness-check files as one program,
+    /// or a stored name (or the whole store) when `.ovstore` exists.
     /// Prints one JSON diagnostic per line; exit 1 if any is an error.
-    Check {
-        #[arg(required = true)]
-        files: Vec<PathBuf>,
-    },
-    /// Compile files to a native executable (`./<entry>` unless `-o`).
+    Check { files: Vec<PathBuf> },
+    /// Compile files, or a stored name, to a native executable (`./<entry>` unless `-o`).
     Build {
         #[arg(required = true)]
         files: Vec<PathBuf>,
@@ -45,12 +43,12 @@ enum Command {
         files: Vec<PathBuf>,
         #[arg(long, default_value = "main")]
         entry: String,
+        /// Arguments for the program, after `--`.
+        #[arg(last = true)]
+        args: Vec<String>,
     },
     /// Build and run every test block in order: `ok <name>` per passing block.
-    Test {
-        #[arg(required = true)]
-        files: Vec<PathBuf>,
-    },
+    Test { files: Vec<PathBuf> },
     /// Parse a file and dump its AST.
     Parse {
         file: PathBuf,
@@ -94,34 +92,54 @@ pub fn run() -> i32 {
             }
         }
         Command::Check { files } => {
-            let mut sources = Vec::new();
-            for f in &files {
-                match std::fs::read_to_string(f) {
-                    Ok(src) => sources.push((f.display().to_string(), src)),
-                    Err(e) => return report(&[driver_error(format!("cannot read file: {e}"), Some(f))]),
-                }
-            }
-            let (_, diags) = types::check_sources(&sources);
+            let diags = match stored_name(&files) {
+                Some(name) => store_cli::check(name),
+                None if files.is_empty() => Err(vec![driver_error("no files given and no store in the current directory".into(), None)]),
+                None => build::read_sources(&files).map(|sources| types::check_sources(&sources).1),
+            };
+            let diags = match diags {
+                Ok(d) => d,
+                Err(d) => return report(&d),
+            };
             for d in &diags {
                 println!("{}", d.to_json());
             }
             i32::from(diags.iter().any(|d| d.severity == Severity::Error))
         }
         Command::Build { files, entry, output } => {
-            let out = output.unwrap_or_else(|| PathBuf::from(&entry));
-            match build::build(&files, build::Target::Entry(&entry), Some(&out)) {
+            let name = stored_name(&files).flatten();
+            let entry = name.unwrap_or(&entry);
+            let out = output.unwrap_or_else(|| PathBuf::from(entry));
+            let built = match name {
+                Some(n) => store_cli::build(build::Target::Entry(n), Some(&out)),
+                None => build::build(&files, build::Target::Entry(entry), Some(&out)),
+            };
+            match built {
                 Ok(_) => 0,
                 Err(diags) => report(&diags),
             }
         }
-        Command::Run { files, entry } => match build::build(&files, build::Target::Entry(&entry), None) {
-            Ok(exe) => execute(&exe),
-            Err(diags) => report(&diags),
-        },
-        Command::Test { files } => match build::build(&files, build::Target::Tests, None) {
-            Ok(exe) => execute(&exe),
-            Err(diags) => report(&diags),
-        },
+        Command::Run { files, entry, args } => {
+            let built = match stored_name(&files).flatten() {
+                Some(n) => store_cli::build(build::Target::Entry(n), None),
+                None => build::build(&files, build::Target::Entry(&entry), None),
+            };
+            match built {
+                Ok(exe) => execute(&exe, &args),
+                Err(diags) => report(&diags),
+            }
+        }
+        Command::Test { files } => {
+            let built = match stored_name(&files) {
+                Some(name) => store_cli::test_build(name),
+                None if files.is_empty() => Err(vec![driver_error("no files given and no store in the current directory".into(), None)]),
+                None => build::build(&files, build::Target::Tests, None),
+            };
+            match built {
+                Ok(exe) => execute(&exe, &[]),
+                Err(diags) => report(&diags),
+            }
+        }
         Command::Parse { file, json } => {
             let program = match load(&file) {
                 Ok(p) => p,
@@ -138,10 +156,25 @@ pub fn run() -> i32 {
     }
 }
 
-/// Run a built program with inherited stdio; its exit code (128 + signal if killed).
-fn execute(exe: &std::path::Path) -> i32 {
+/// Spec section 10.2: `ov check|build|run|test` take a stored name instead of
+/// files when `.ovstore/store.sqlite` exists here and the single argument is
+/// not an existing `.ov` file (`ov build main` leaves a file `main`).
+/// `Some(None)`: no argument, the whole store.
+fn stored_name(files: &[PathBuf]) -> Option<Option<&str>> {
+    if !std::path::Path::new(".ovstore/store.sqlite").is_file() {
+        return None;
+    }
+    match files {
+        [] => Some(None),
+        [f] if !(f.is_file() && f.extension().is_some_and(|e| e == "ov")) => f.to_str().map(Some),
+        _ => None,
+    }
+}
+
+/// Run a built program with inherited stdio and `args`; its exit code (128 + signal if killed).
+fn execute(exe: &std::path::Path, args: &[String]) -> i32 {
     use std::os::unix::process::ExitStatusExt;
-    match std::process::Command::new(exe).status() {
+    match std::process::Command::new(exe).args(args).status() {
         Ok(s) => s.code().unwrap_or_else(|| 128 + s.signal().unwrap_or(0)),
         Err(e) => report(&[driver_error(format!("cannot run {}: {e}", exe.display()), None)]),
     }

@@ -3,8 +3,9 @@
 //! failures are JSON diagnostics.
 
 use crate::ast::{Item, Span, TypeBody, TypeDef, TypeExpr, TypeKind};
+use crate::build::{self, Target};
 use crate::cli::{driver_error, load, report};
-use crate::diag::Diag;
+use crate::diag::{Diag, Severity};
 use crate::hash::{hash_items, item_name, nearest, prelude, tarjan, Scope};
 use crate::parser;
 use crate::printer::{print_signature, Printer};
@@ -291,14 +292,130 @@ fn store_scope(store: &Store) -> Result<Scope, Vec<Diag>> {
     Ok(scope)
 }
 
+// ---------------------------------------------------------------- checking and building from the store
+
+/// Checker source name of a stored definition: this prefix and its hash.
+const STORED: &str = "store:";
+/// Source name of definition text read from stdin.
+const STDIN: &str = "<stdin>";
+
+/// The prelude-free dependency closure of `roots` (roots included), each
+/// definition rendered with current names as its own checker source (so
+/// spans are relative to its canonical text), skipping definitions whose
+/// current name is in `skip`; and the current name of each to its hash.
+fn closure_sources(store: &Store, roots: &[String], skip: &HashSet<String>) -> Result<(Vec<(String, String)>, HashMap<String, String>), Vec<Diag>> {
+    let mut seen: HashSet<String> = prelude().defs.iter().map(|d| d.hash.clone()).collect();
+    let mut sources = Vec::new();
+    let mut hashes = HashMap::new();
+    for root in roots {
+        let closure = db(store.closure(root, false))?;
+        for h in std::iter::once(root.clone()).chain(closure.into_iter().map(|c| c.0)) {
+            if !seen.insert(h.clone()) {
+                continue;
+            }
+            let name = name_of(store, &h)?;
+            if skip.contains(&name) {
+                continue;
+            }
+            sources.push((format!("{STORED}{h}"), text(store, &def(store, &h)?)?));
+            hashes.insert(name, h);
+        }
+    }
+    Ok((sources, hashes))
+}
+
+/// Diagnostics in a stored definition carry its hash and no file.
+fn store_diags(mut diags: Vec<Diag>) -> Vec<Diag> {
+    for d in &mut diags {
+        if let Some(h) = d.file.as_deref().and_then(|f| f.strip_prefix(STORED)) {
+            d.hash = Some(h.to_string());
+            d.file = None;
+        } else if d.file.as_deref() == Some(STDIN) {
+            d.file = None;
+        }
+    }
+    diags
+}
+
+/// `ov check [name]` from the store: `name`'s closure, or every bound name's.
+pub fn check(name: Option<&str>) -> Result<Vec<Diag>, Vec<Diag>> {
+    let store = open()?;
+    let roots = match name {
+        Some(n) => vec![resolve(&store, n)?],
+        None => db(store.names(None))?.into_iter().map(|n| n.1).collect(),
+    };
+    let (sources, _) = closure_sources(&store, &roots, &HashSet::new())?;
+    Ok(store_diags(crate::types::check_sources(&sources).1))
+}
+
+/// `ov build|run <name>` from the store: render `name`'s closure and build it
+/// as one program, with store hashes and the store's C cache.
+pub fn build(target: Target, out: Option<&Path>) -> Result<PathBuf, Vec<Diag>> {
+    let store = open()?;
+    let roots = match target {
+        Target::Entry(n) => vec![resolve(&store, n)?],
+        Target::Tests => db(store.names(Some("test")))?.into_iter().map(|n| n.1).collect(),
+    };
+    build_roots(&store, &roots, target, out)
+}
+
+fn build_roots(store: &Store, roots: &[String], target: Target, out: Option<&Path>) -> Result<PathBuf, Vec<Diag>> {
+    let (sources, hashes) = closure_sources(store, roots, &HashSet::new())?;
+    // An entry given by hash runs under its current name.
+    let entry = match target {
+        Target::Entry(_) => name_of(store, &roots[0])?,
+        Target::Tests => String::new(),
+    };
+    let target = if entry.is_empty() { Target::Tests } else { Target::Entry(&entry) };
+    // Foreign headers of stored code are looked up in the project root.
+    let cwd = std::env::current_dir().map_err(|e| vec![driver_error(format!("no current directory: {e}"), None)])?;
+    build::build_sources(&sources, Some((store, hashes)), &[cwd], target, out).map_err(store_diags)
+}
+
+/// `ov test [name]` from the store: every bound test, or with `name`, the
+/// test `name` or every bound test that depends on `name`.
+pub fn test_build(name: Option<&str>) -> Result<PathBuf, Vec<Diag>> {
+    let store = open()?;
+    let mut tests: Vec<String> = db(store.names(Some("test")))?.into_iter().map(|n| n.1).collect();
+    if let Some(n) = name {
+        let h = resolve(&store, n)?;
+        let mut keep = Vec::new();
+        for t in tests {
+            if t == h || db(store.closure(&t, false))?.iter().any(|c| c.0 == h) {
+                keep.push(t);
+            }
+        }
+        tests = keep;
+    }
+    build_roots(&store, &tests, Target::Tests, None)
+}
+
 // ---------------------------------------------------------------- add, edit
 
-/// Hash `items`, then store and bind them all in one transaction.
-fn store_items(store: &Store, items: &[Item], file_of: &HashMap<String, String>, json: bool) -> Out {
-    // TODO(typecheck): typecheck `items` against `store_scope(store)` here and
-    // return its diagnostics before anything is hashed or stored.
+/// Hash and typecheck `items`, parsed from `sources` (file name, text), then
+/// store and bind them all in one transaction. Checker errors store nothing;
+/// warnings go to stderr, one JSON object per line.
+fn store_items(store: &Store, items: &[Item], sources: &[(String, String)], file_of: &HashMap<String, String>, json: bool) -> Out {
     let scope = store_scope(store)?;
-    let hashed = hash_items(items, &scope).map_err(|mut ds| {
+    let hashed = hash_items(items, &scope);
+    // Check the new definitions with the stored closure of what they reference
+    // (the whole store if a name does not resolve, so the checker reports every
+    // error); a stored definition they replace (by name) is left out.
+    let new_names: HashSet<String> = items.iter().filter_map(item_name).map(String::from).collect();
+    let roots: Vec<String> = match &hashed {
+        Ok(hs) => hs.iter().flat_map(|h| h.deps.iter()).filter(|d| !hs.iter().any(|h| &h.hash == *d)).cloned().collect(),
+        Err(_) => db(store.names(None))?.into_iter().map(|n| n.1).collect(),
+    };
+    let (mut checked, _) = closure_sources(store, &roots, &new_names)?;
+    checked.extend(sources.iter().cloned());
+    let (errors, warnings): (Vec<Diag>, Vec<Diag>) = store_diags(crate::types::check_sources(&checked).1).into_iter().partition(|d| d.severity == Severity::Error);
+    if !errors.is_empty() {
+        return Err(errors);
+    }
+    for w in &warnings {
+        eprintln!("{}", w.to_json());
+    }
+    let hashed = hashed.map_err(|mut ds| {
         for d in &mut ds {
             d.file = d.name.as_ref().and_then(|n| file_of.get(n)).cloned();
         }
@@ -401,6 +518,7 @@ fn add(store: &Store, files: &[PathBuf], json: bool) -> Out {
     let mut items = Vec::new();
     let mut file_of = HashMap::new();
     let mut diags = Vec::new();
+    let sources = build::read_sources(files)?;
     for f in files {
         match load(f) {
             Ok(p) => {
@@ -417,12 +535,12 @@ fn add(store: &Store, files: &[PathBuf], json: bool) -> Out {
     if !diags.is_empty() {
         return Err(diags);
     }
-    store_items(store, &items, &file_of, json)
+    store_items(store, &items, &sources, &file_of, json)
 }
 
 fn edit(store: &Store, name: &str, file: Option<&PathBuf>, json: bool) -> Out {
-    let (items, file_name) = match file {
-        Some(f) => (load(f)?.items, Some(f.display().to_string())),
+    let (items, file_name, sources) = match file {
+        Some(f) => (load(f)?.items, Some(f.display().to_string()), build::read_sources(std::slice::from_ref(f))?),
         None => {
             let mut src = String::new();
             std::io::stdin().read_to_string(&mut src).map_err(|e| vec![driver_error(format!("cannot read stdin: {e}"), None)])?;
@@ -430,7 +548,7 @@ fn edit(store: &Store, name: &str, file: Option<&PathBuf>, json: bool) -> Out {
             if !diags.is_empty() {
                 return Err(diags);
             }
-            (p.items, None)
+            (p.items, None, vec![(STDIN.to_string(), src)])
         }
     };
     let items: Vec<Item> = items.into_iter().filter(|i| !matches!(i, Item::Comment(_))).collect();
@@ -440,7 +558,7 @@ fn edit(store: &Store, name: &str, file: Option<&PathBuf>, json: bool) -> Out {
         return Err(vec![d]);
     }
     let file_of = file_name.map(|f| HashMap::from([(name.to_string(), f)])).unwrap_or_default();
-    store_items(store, &items, &file_of, json)
+    store_items(store, &items, &sources, &file_of, json)
 }
 
 // ---------------------------------------------------------------- view, rm, ls, history

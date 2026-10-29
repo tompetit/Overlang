@@ -177,7 +177,9 @@ fn unification_failures_are_mismatches() {
 #[test]
 fn unresolved_types_are_e0107_with_an_annotation_fix() {
     let d = only_error("fn f() -> Int { let xs = []; len(xs) }", "E0107");
-    assert!(d.fixes.unwrap()[0].patch.starts_with("let xs: List[_]"));
+    // `List[_]` is not an annotation: no patch, the description says what to write.
+    let fix = &d.fixes.unwrap()[0];
+    assert!(fix.patch.is_empty() && fix.description.contains("let xs: List[_]"), "{fix:?}");
     let d = only_error("fn f() -> Int { let g = |x| x; 1 }", "E0107");
     assert!(d.fixes.unwrap()[0].description.contains("let g"));
     // The annotation the fix asks for resolves it.

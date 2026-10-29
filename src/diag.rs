@@ -15,6 +15,9 @@ pub enum Severity {
 pub struct Fix {
     pub rank: u32,
     pub description: String,
+    /// Text to insert; empty (and omitted from the JSON) when no complete
+    /// text can be given and `description` says what to write.
+    #[serde(default, skip_serializing_if = "String::is_empty")]
     pub patch: String,
 }
 

@@ -70,9 +70,13 @@ fn every_fixture_can_be_added() {
         if path.extension().is_some_and(|e| e == "ov") {
             let dir = workdir("every_fixture");
             let (code, out) = ov_in(&dir, &["add", path.to_str().unwrap()], "");
-            // Unknown names are the one checker error hashing itself reports.
-            let expect_unknown = fs::read_to_string(path.with_extension("expect.diag")).is_ok_and(|d| d.lines().any(|l| l == "E0100"));
-            assert_eq!(code, expect_unknown as i32, "{}: {out}", path.display());
+            // `ov add` typechecks: a fixture with an expected error is refused, with that error.
+            let errors: Vec<String> = fs::read_to_string(path.with_extension("expect.diag")).unwrap_or_default().lines().filter(|l| l.starts_with('E')).map(String::from).collect();
+            assert_eq!(code, !errors.is_empty() as i32, "{}: {out}", path.display());
+            assert!(errors.iter().all(|e| out.contains(&format!("\"{e}\""))), "{}: {out}", path.display());
+            if code == 1 {
+                assert_eq!(ov(&dir, &["ls"]), "", "{}: nothing is stored", path.display());
+            }
         }
     }
 }
@@ -276,12 +280,12 @@ fn propagation_follows_chains_and_matches_a_fresh_add() {
 #[test]
 fn editing_a_type_rebinds_what_mentions_it() {
     let dir = workdir("propagate_type");
-    add_text(&dir, "p.ov", "type P = { x: Int }\nfn mk() -> P { P { x: 1 } }\nfn get(p: P) -> Int { p.x }\nfn other() -> Int { 3 }\n");
+    add_text(&dir, "p.ov", "type P = { x: Int }\nfn mk() -> P { P { x: 1 } }\nfn px(p: P) -> Int { p.x }\nfn other() -> Int { 3 }\n");
     let (code, out) = ov_in(&dir, &["edit", "P"], "type P = { x: Int, y: Int }\n");
     assert_eq!(code, 0, "{out}");
     let mut rebound: Vec<&str> = out.lines().skip(1).map(|l| l.split(' ').next().unwrap()).collect();
     rebound.sort();
-    assert_eq!(rebound, ["get", "mk"]);
+    assert_eq!(rebound, ["mk", "px"]);
 }
 
 #[test]

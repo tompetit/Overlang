@@ -51,17 +51,6 @@ pub fn subst(t: &Ty, map: &HashMap<String, Ty>) -> Ty {
     norm(&subst_ty(t, map, None))
 }
 
-/// `ov_<name>_<hash8>_<instance8>`.
-// shortcut: hash8 hashes the name, not the store hash; wire in the definition hash with the store
-pub fn instance_name(name: &str, type_args: &[Ty]) -> String {
-    let args: Vec<String> = type_args.iter().map(|t| t.to_string()).collect();
-    format!("ov_{name}_{}_{}", hash8(name), hash8(&format!("{name}[{}]", args.join(", "))))
-}
-
-pub fn test_name(name: &str) -> String {
-    format!("ov_test_{name}_{}", hash8(&format!("test {name}")))
-}
-
 // ---------------------------------------------------------------- definitions
 
 #[derive(Clone, Copy)]
@@ -75,11 +64,13 @@ pub enum Def<'a> {
 pub struct Defs<'a> {
     pub fns: HashMap<String, (Def<'a>, String)>,
     pub tests: Vec<(&'a TestDef, String)>,
+    /// Store hash (spec section 10.1) of every definition, by name.
+    pub hashes: HashMap<String, String>,
 }
 
 impl<'a> Defs<'a> {
-    pub fn new(c: &'a Checked) -> Defs<'a> {
-        let mut d = Defs { fns: HashMap::new(), tests: vec![] };
+    pub fn new(c: &'a Checked, hashes: HashMap<String, String>) -> Defs<'a> {
+        let mut d = Defs { fns: HashMap::new(), tests: vec![], hashes };
         let progs = std::iter::once((crate::prelude::FILE.to_string(), &c.prelude)).chain(c.files.iter().map(|(n, p)| (n.clone(), p)));
         for (file, prog) in progs {
             for item in &prog.items {
@@ -99,6 +90,26 @@ impl<'a> Defs<'a> {
             }
         }
         d
+    }
+
+    /// The store hash of `name`, or "" if it has none.
+    pub fn hash(&self, name: &str) -> &str {
+        self.hashes.get(name).map_or("", String::as_str)
+    }
+
+    /// `ov_<name>_<hash8>_<instance8>`: hash8 is the store hash's prefix.
+    pub fn instance_name(&self, name: &str, type_args: &[Ty]) -> String {
+        let args: Vec<String> = type_args.iter().map(|t| t.to_string()).collect();
+        format!("ov_{name}_{}_{}", self.hash8(name), hash8(&format!("{name}[{}]", args.join(", "))))
+    }
+
+    pub fn test_name(&self, name: &str) -> String {
+        format!("ov_test_{name}_{}", self.hash8(name))
+    }
+
+    fn hash8(&self, name: &str) -> &str {
+        let h = self.hash(name);
+        &h[..h.len().min(8)]
     }
 }
 
@@ -206,13 +217,13 @@ pub fn collect(c: &Checked, defs: &Defs, root: Root) -> Result<Vec<Instance>, Ve
     let mut work: Vec<(Instance, Option<Origin>)> = vec![];
     match root {
         Root::Entry(name) => {
-            let inst = Instance { name: name.to_string(), type_args: vec![], c_name: instance_name(name, &[]), is_test: false };
+            let inst = Instance { name: name.to_string(), type_args: vec![], c_name: defs.instance_name(name, &[]), is_test: false };
             seen.insert(inst.c_name.clone());
             work.push((inst, None));
         }
         Root::Tests => {
             for (t, _) in &defs.tests {
-                let inst = Instance { name: t.name.clone(), type_args: vec![], c_name: test_name(&t.name), is_test: true };
+                let inst = Instance { name: t.name.clone(), type_args: vec![], c_name: defs.test_name(&t.name), is_test: true };
                 seen.insert(inst.c_name.clone());
                 work.push((inst, None));
             }
@@ -276,7 +287,7 @@ pub fn collect(c: &Checked, defs: &Defs, root: Root) -> Result<Vec<Instance>, Ve
                     }
                     continue;
                 }
-                let cn = instance_name(&name, &targs);
+                let cn = defs.instance_name(&name, &targs);
                 if seen.insert(cn.clone()) {
                     let o = here(e.span);
                     work.push((Instance { name, type_args: targs, c_name: cn, is_test: false }, Some(o)));
