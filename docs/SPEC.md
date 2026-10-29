@@ -97,7 +97,12 @@ Generics: type parameters on types and functions. No bounds, no traits.
 Equality `==` and `!=` are structural and defined on every type except
 function types (E0101 if attempted). Ordering `< <= > >=` is defined on Int,
 Float and Str only. `show[T](x: T) -> Str` is defined structurally on every
-non-function type by monomorphization.
+non-function type by monomorphization. `show` prints Int as decimal, Float as
+the shortest decimal that round-trips with no trailing `.0` (`3.0` shows as
+`3`, `2.5` as `2.5`), Bool as `true`/`false`, Str quoted and escaped, Unit as
+`()`, lists as `[a, b]`, tuples as `(a, b)`, records as `Name { f: v }`, and
+constructors as `Ctor(a, b)` or `Ctor`. `print` and `println` take a Str and
+print it raw, so `println("x")` prints `x` without quotes.
 
 There is no subtyping and no implicit conversion. `to_float` and `to_int`
 convert explicitly.
