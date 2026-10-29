@@ -61,10 +61,15 @@ test name { Block }
   `ov check` reports it as warning W0001. If it is executed, the program traps
   with kind `unimplemented`.
 - `foreign c` binds a C function. The header is included verbatim; `link`
-  adds `-l<libname>`. Parameters and return must be Int, Float, Bool, Str or
-  Unit (**shortcut**: no struct marshalling). Str crosses as `const char*`
-  (NUL-terminated, UTF-8); a returned `const char*` is copied. Effects are
-  whatever the declaration says; the compiler trusts it.
+  is optional and adds `-l<libname>`. An optional `= "c_symbol"` names the C
+  function when it differs from the Overlang name:
+  `foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_open(path: Str) -> Int !fs = "ov_sqlite_open"`.
+  Parameters must be Int, Float, Bool, Str or Unit; the return may also be
+  `Option[Str]`, where a NULL `const char*` becomes `None` (**shortcut**: no
+  struct marshalling). Str crosses as `const char*` (NUL-terminated, UTF-8);
+  a returned `const char*` is copied. A NULL return for a plain `Str` traps
+  with kind `foreign_null`. Effects are whatever the declaration says; the
+  compiler trusts it.
 - `test name { ... }` is a test block. Its body has type Unit and may use any
   effects. `ov test` runs every test block.
 - `intrinsic fn name[T](params) -> Type !eff = "symbol"` binds a signature to
