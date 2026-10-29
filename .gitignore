@@ -1,0 +1,12 @@
+/target
+*.o
+*.ov.c
+.ovstore/
+/eval/runs/
+
+
+# Added by cargo
+#
+# already existing elements were commented out
+
+#/target
