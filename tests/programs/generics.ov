@@ -1,0 +1,19 @@
+type Pair[A, B] = { first: A, second: B }
+
+fn swap[A, B](p: Pair[A, B]) -> Pair[B, A] {
+  Pair { first: p.second, second: p.first }
+}
+
+fn apply_twice[T](f: fn(T) -> T, x: T) -> T {
+  f(f(x))
+}
+
+fn main() -> Unit !io {
+  let p = swap(Pair { first: 1, second: "one" });
+  println(p.first ++ " " ++ show(p.second));
+  println(show(apply_twice(|n| n * 2, 5)));
+  println(show(map([1, 2, 3], |n| show(n))));
+  let m = map_set(map_new(), "k", 42);
+  println(show(map_get(m, "k")));
+  println(show(map_get(m, "missing")));
+}

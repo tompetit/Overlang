@@ -1,0 +1,8 @@
+fn main() -> Unit !io {
+  let x = 1 + 2.0;
+  let y = unknown_fn(3);
+  let mut z = 1;
+  let w = 2;
+  w = 3;
+  println(show(x));
+}

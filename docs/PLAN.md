@@ -125,7 +125,7 @@ always sets it.
 | `ov deps <name>` / `ov dependents <name>` | Transitive dependency graph by hash. |
 | `ov ctx <name>` | **The key feature.** Emit the minimal context to work on a definition: its body, the full signatures (with effects and contracts) of everything it calls, and nothing else. |
 | `ov check [name]` | Typecheck, effect check, exhaustiveness, unimplemented declarations. JSON diagnostics with ranked fixes. |
-| `ov test [name]` | Run explicit tests plus Hypothesis fuzzing of every `requires` / `ensures` reachable from `name`. Cached by hash: unchanged definitions are not retested. |
+| `ov test [name]` | Run test blocks plus fuzzing of every `requires` / `ensures` reachable from `name`. Cached by hash: unchanged definitions are not retested. |
 | `ov build <name>` | Monomorphize, emit C, invoke the C compiler, link the runtime and GC. Emitted C is cached by hash, so an unchanged definition is never re-emitted. |
 | `ov run <name>` | `ov build` then execute. |
 | `ov diff <hash1> <hash2>` | Structural diff of two definitions. |

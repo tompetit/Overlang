@@ -1,0 +1,8 @@
+fn double(n: Int) -> Int { n * 2 }
+
+fn main() -> Unit !io {
+  let xs = range(1, 6).map(|n| n.double()).filter(|n| n > 4);
+  println(show(xs));
+  println(show(xs.len()));
+  println(show(xs.fold(0, |acc, n| acc + n)));
+}

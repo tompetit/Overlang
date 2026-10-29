@@ -1,0 +1,28 @@
+fn describe(xs: List[Int]) -> Str {
+  match xs {
+    [] => "empty",
+    [x] => "one: " ++ show(x),
+    [x, ..rest] if x == 0 => "starts with zero, then " ++ show(len(rest)),
+    [first, ..rest] => "first " ++ show(first) ++ " of " ++ show(len(xs)),
+  }
+}
+
+fn classify(p: (Int, Int)) -> Str {
+  match p {
+    (0, 0) => "origin",
+    (0, _) | (_, 0) => "axis",
+    (x, y) => show(x + y),
+  }
+}
+
+fn main() -> Unit !io {
+  println(describe([]));
+  println(describe([7]));
+  println(describe([0, 1, 2]));
+  println(describe([5, 1, 2]));
+  println(classify((0, 0)));
+  println(classify((0, 3)));
+  println(classify((2, 3)));
+  let (a, b) = (1, 2);
+  println(show(a + b));
+}

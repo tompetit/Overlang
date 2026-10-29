@@ -1,0 +1,5 @@
+fn main() -> Unit !io {
+  let big = 9_223_372_036_854_775_807;
+  println(show(big));
+  println(show(big + 1));
+}

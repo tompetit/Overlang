@@ -1,0 +1,10 @@
+fn safe_div(a: Int, b: Int) -> Int
+  requires b != 0
+{
+  a / b
+}
+
+fn main() -> Unit !io {
+  println(show(safe_div(10, 2)));
+  println(show(safe_div(1, 0)));
+}

@@ -1,0 +1,3 @@
+300
+true
+Order { id: 1, lines: [Line { sku: "a", qty: 2, unit_cents: 150 }], paid: false }

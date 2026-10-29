@@ -1,0 +1,7 @@
+fn greet(name: Str) -> Unit {
+  println("hi " ++ name);
+}
+
+fn main() -> Unit !io {
+  greet("x");
+}

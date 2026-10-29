@@ -1,0 +1,21 @@
+type Line = { sku: Str, qty: Int, unit_cents: Int }
+type Order = { id: Int, lines: List[Line], paid: Bool }
+
+fn total(o: Order) -> Int
+  requires all(o.lines, |l| l.qty > 0 && l.unit_cents >= 0)
+  ensures result >= 0
+{
+  sum(map(o.lines, |l| l.qty * l.unit_cents))
+}
+
+fn main() -> Unit !io {
+  let o = Order { id: 1, lines: [Line { sku: "a", qty: 2, unit_cents: 150 }], paid: false };
+  let paid = Order { ..o, paid: true };
+  println(show(total(o)));
+  println(show(paid.paid));
+  println(show(o));
+}
+
+test total_of_empty_order {
+  assert_eq(total(Order { id: 0, lines: [], paid: false }), 0);
+}

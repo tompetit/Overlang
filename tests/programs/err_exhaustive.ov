@@ -1,0 +1,12 @@
+type ChargeError = Declined(reason: Str) | Timeout | AlreadyPaid
+
+fn describe(e: ChargeError) -> Str {
+  match e {
+    Declined(reason) => "declined: " ++ reason,
+    Timeout => "timed out",
+  }
+}
+
+fn main() -> Unit !io {
+  println(describe(Timeout));
+}

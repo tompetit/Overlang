@@ -1,0 +1,5 @@
+fn main() -> Unit !io {
+  let lines = split(trim(read_all()), "\n");
+  let nums = map(lines, |l| unwrap_or(parse_int(trim(l)), 0));
+  println(show(sum(nums)));
+}

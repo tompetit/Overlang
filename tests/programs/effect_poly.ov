@@ -1,0 +1,8 @@
+fn each_twice[T, !e](xs: List[T], f: fn(T) -> Unit !e) -> Unit !e {
+  for_each(xs, f);
+  for_each(xs, f);
+}
+
+fn main() -> Unit !io {
+  each_twice([1, 2], |n| println(show(n)));
+}

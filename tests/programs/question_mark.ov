@@ -1,0 +1,23 @@
+type ParseError = Empty | NotANumber(text: Str)
+
+fn parse_pos(s: Str) -> Result[Int, ParseError] {
+  if str_len(s) == 0 {
+    return Err(Empty);
+  }
+  match parse_int(s) {
+    Some(n) => Ok(n),
+    None => Err(NotANumber(s)),
+  }
+}
+
+fn add_strings(a: Str, b: Str) -> Result[Int, ParseError] {
+  let x = parse_pos(a)?;
+  let y = parse_pos(b)?;
+  Ok(x + y)
+}
+
+fn main() -> Unit !io {
+  println(show(add_strings("2", "3")));
+  println(show(add_strings("2", "x")));
+  println(show(add_strings("", "3")));
+}

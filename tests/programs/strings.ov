@@ -1,0 +1,13 @@
+fn main() -> Unit !io {
+  let s = "  Hello, Wörld  ";
+  let t = trim(s);
+  println(t);
+  println(show(str_len(t)));
+  println(to_upper(t));
+  println(join(split("a,b,c", ","), "-"));
+  println(show(chars("héy")));
+  println(replace(t, "l", "L"));
+  println(show(starts_with(t, "Hell")));
+  println(show("abc" < "abd"));
+  println(substr("hello", 1, 3));
+}
