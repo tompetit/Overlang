@@ -127,7 +127,7 @@ All pure unless marked. Prelude names are always in scope.
 
 ## Toolchain
 
-Diagnostics are JSON, one object per line, on stdout. `ov check|build|run|test` take a `.ov` file (several are one program) or, when `.ovstore/` exists, a stored name; they do not take `--json`. Store commands take `--json`. `ov run` needs a no-parameter `main` (`--entry f` to pick another) returning `Unit` or `Result[Unit, E]`; `Err(e)` prints `{"kind":"error",...}` to stderr, exit 1. `ov run main -- a b` gives the program `args() == ["a", "b"]`. `ov test` runs `test` blocks in order, prints `ok <name>`, stops at the first failing block (exit 3), then fuzzes contracted functions.
+Diagnostics are JSON, one object per line, on stdout. `ov check|build|run|test` take a `.ov` file (several are one program) or, when `.ovstore/` exists, a stored name. `--json` is taken by `add view edit rm ls deps dependents ctx history diff` and `test`; not by `check` (always JSON), `build`, `run`, `fmt`, `export`. Exit codes: 0 ok; 1 errors (nothing stored or built); 2 `add`/`edit` stored the code but a dependent now has errors; 3 trap (in `ov test`, also a failed test or fuzz case). `ov edit` only replaces a bound name (else E0100: new definitions go through `ov add`). After `add`/`edit`, dependents are re-hashed and re-checked: their errors follow the output as JSON lines with the dependent's `name` and `hash` (with `--json`, in `dependents_diagnostics`); fix those next. `ov run` needs a no-parameter `main` (`--entry f` to pick another) returning `Unit` or `Result[Unit, E]`; `Err(e)` prints `{"kind":"error",...}` to stderr, exit 1. `ov run main -- a b` gives the program `args() == ["a", "b"]`. `ov test` runs `test` blocks in order, prints `ok <name>`, stops at the first failing block (exit 3), then fuzzes contracted functions.
 
 | Command | Use |
 |---|---|
@@ -137,7 +137,9 @@ Diagnostics are JSON, one object per line, on stdout. `ov check|build|run|test` 
 | `ov test [file.ov... \| name]` | test blocks, then fuzzing |
 | `ov fmt <file.ov> [--write]` | canonical formatting |
 | `ov add <file.ov>...` | typecheck and store definitions, bind names, print `name hash` |
-| `ov view <name>` `ov edit <name> [--file f]` `ov rm <name>` `ov ls` `ov history <name>` `ov diff <a> <b>` | show / replace / unbind / list / past hashes / diff |
+| `ov view <name> [--raw]` `ov edit <name> [--file f]` `ov rm <name>` `ov history <name>` `ov diff <a> <b>` | show (`--raw`: as written, with comments) / replace / unbind / past hashes / diff |
+| `ov ls [--kind k] [--sort name]` | bound names and hashes, in the order first added (`--sort name`: alphabetical) |
+| `ov export [file]` | every bound definition in `ov ls` order as one `.ov` file (no comments), to stdout or `file` |
 | `ov ctx <name>` | source of `name` plus signatures and types of what it calls (`--depth 1` adds bodies) |
 | `ov deps <name>` / `ov dependents <name>` | transitive dependencies / callers |
 
@@ -154,4 +156,4 @@ Diagnostics have `code`, `severity`, `name`, `span` (`line col end_line end_col`
 7. `while true { ... return x; }` as the last statement still needs a tail expression (`0`). `assert_eq(max_of([]), None)` is E0107: annotate one side. `test` and `type` are keywords, not names. `for (i, x) in enumerate(xs)` works.
 8. Missing match arm: E0104; paste the fix `patch`. Also: assigning to a non-`mut` binding is E0112; `parse_int(s)?` in a fn returning `Int` is E0113.
 
-<!-- token estimate: 3.3k by characters (chars / 3.7); code-heavy, so trust this over the word rule. -->
+<!-- token estimate: 3.5k by characters (chars / 3.7); code-heavy, so trust this over the word rule. -->

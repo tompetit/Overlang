@@ -23,7 +23,7 @@ pub struct Def {
 
 const SCHEMA: &str = "
 CREATE TABLE IF NOT EXISTS defs(hash TEXT PRIMARY KEY, kind TEXT, ast TEXT, source TEXT, created_at INTEGER);
-CREATE TABLE IF NOT EXISTS names(name TEXT PRIMARY KEY, hash TEXT, updated_at INTEGER);
+CREATE TABLE IF NOT EXISTS names(name TEXT PRIMARY KEY, hash TEXT, updated_at INTEGER, \"order\" INTEGER);
 CREATE TABLE IF NOT EXISTS history(name TEXT, hash TEXT, at INTEGER);
 CREATE TABLE IF NOT EXISTS deps(hash TEXT, dep_hash TEXT, PRIMARY KEY(hash, dep_hash));
 CREATE TABLE IF NOT EXISTS cache(hash TEXT, kind TEXT, instance TEXT, blob BLOB, at INTEGER, PRIMARY KEY(hash, kind, instance));
@@ -44,6 +44,10 @@ impl Store {
         // A cache table from before the `instance` column is only a cache: drop it.
         if conn.prepare("SELECT instance FROM cache LIMIT 0").is_err() {
             conn.execute_batch("DROP TABLE cache;").and_then(|_| conn.execute_batch(SCHEMA)).map_err(|e| e.to_string())?;
+        }
+        // A names table from before `order`: number the names by when they were last bound.
+        if conn.prepare("SELECT \"order\" FROM names LIMIT 0").is_err() {
+            conn.execute_batch("ALTER TABLE names ADD COLUMN \"order\" INTEGER; UPDATE names SET \"order\" = rowid;").map_err(|e| e.to_string())?;
         }
         Ok(Store { conn })
     }
@@ -74,12 +78,17 @@ impl Store {
     }
 
     /// Point `name` at `hash`, appending to its history when that changes it.
+    /// A name not bound yet takes the next `order`; a rebound name keeps its own.
     pub fn bind(&self, name: &str, hash: &str) -> R<()> {
         if self.hash_of_name(name)?.as_deref() == Some(hash) {
             return Ok(());
         }
         let at = now();
-        self.conn.execute("INSERT OR REPLACE INTO names(name, hash, updated_at) VALUES (?1, ?2, ?3)", params![name, hash, at])?;
+        self.conn.execute(
+            "INSERT INTO names(name, hash, updated_at, \"order\") VALUES (?1, ?2, ?3, (SELECT coalesce(max(\"order\"), 0) + 1 FROM names))
+             ON CONFLICT(name) DO UPDATE SET hash = excluded.hash, updated_at = excluded.updated_at",
+            params![name, hash, at],
+        )?;
         self.conn.execute("INSERT INTO history(name, hash, at) VALUES (?1, ?2, ?3)", params![name, hash, at])?;
         Ok(())
     }
@@ -114,12 +123,14 @@ impl Store {
         stmt.query_map(params![prefix], |r| r.get(0))?.collect()
     }
 
-    /// Bound names as (name, hash, kind), by name, optionally of one kind.
-    pub fn names(&self, kind: Option<&str>) -> R<Vec<(String, String, String)>> {
-        let mut stmt = self.conn.prepare(
+    /// Bound names as (name, hash, kind), optionally of one kind, in `order`
+    /// (when first bound), or by name with `by_name`.
+    pub fn names(&self, kind: Option<&str>, by_name: bool) -> R<Vec<(String, String, String)>> {
+        let order = if by_name { "n.name" } else { "n.\"order\", n.name" };
+        let mut stmt = self.conn.prepare(&format!(
             "SELECT n.name, n.hash, d.kind FROM names n JOIN defs d ON d.hash = n.hash
-             WHERE ?1 IS NULL OR d.kind = ?1 ORDER BY n.name",
-        )?;
+             WHERE ?1 IS NULL OR d.kind = ?1 ORDER BY {order}"
+        ))?;
         stmt.query_map(params![kind], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)))?.collect()
     }
 
@@ -198,6 +209,15 @@ mod tests {
         s.bind("a", "bb").unwrap();
         assert_eq!(s.history("a").unwrap().iter().map(|h| h.0.as_str()).collect::<Vec<_>>(), ["bb", "aa"]);
         assert_eq!(s.by_prefix("b").unwrap(), ["bb"]);
+        s.bind("z", "cc").unwrap();
+        s.bind("a", "cc").unwrap();
+        let names = |by_name| s.names(None, by_name).unwrap().into_iter().map(|n| n.0).collect::<Vec<_>>();
+        assert_eq!(names(false), ["a", "z"], "a rebound name keeps its order");
+        assert_eq!(names(true), ["a", "z"]);
+        s.unbind("a").unwrap();
+        s.bind("a", "bb").unwrap();
+        assert_eq!(names(false), ["z", "a"], "an unbound name rebound goes last");
+        assert_eq!(names(true), ["a", "z"]);
         assert_eq!(s.unbind("a").unwrap().as_deref(), Some("bb"));
         assert_eq!(s.hash_of_name("a").unwrap(), None);
         s.cache_put("aa", "c", "i", b"x").unwrap();

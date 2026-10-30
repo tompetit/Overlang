@@ -62,7 +62,7 @@ enum Command {
         #[arg(long)]
         json: bool,
     },
-    /// Store commands (add, view, edit, rm, ls, deps, dependents, ctx, history, diff).
+    /// Store commands (add, view, edit, rm, ls, export, deps, dependents, ctx, history, diff).
     #[command(flatten)]
     Store(crate::store_cli::StoreCommand),
 }
