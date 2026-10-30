@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_64_vowels_count",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_64_vowels_count",
+ "entry_point": "vowels_count",
+ "prompt": "// Write a function vowels_count which takes a string representing\n// a word as input and returns the number of vowels in the string.\n// Vowels in this case are 'a', 'e', 'i', 'o', 'u'. Here, 'y' is also a\n// vowel, but only when it is at the end of the given word.\n//\n// Examples:\n//   vowels_count(\"abcde\") == 2\n//   vowels_count(\"ACEDY\") == 3\nfn vowels_count(s: Str) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(vowels_count(\"abcde\"), 2);\n}\n\ntest check_2 {\n  assert_eq(vowels_count(\"Alone\"), 3);\n}\n\ntest check_3 {\n  assert_eq(vowels_count(\"key\"), 2);\n}\n\ntest check_4 {\n  assert_eq(vowels_count(\"bye\"), 1);\n}\n\ntest check_5 {\n  assert_eq(vowels_count(\"keY\"), 2);\n}\n\ntest check_6 {\n  assert_eq(vowels_count(\"bYe\"), 1);\n}\n\ntest check_7 {\n  assert_eq(vowels_count(\"ACEDY\"), 3);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(vowels_count(\"abcde\"), 2);\n}\n",
+ "solution": "// Write a function vowels_count which takes a string representing\n// a word as input and returns the number of vowels in the string.\n// Vowels in this case are 'a', 'e', 'i', 'o', 'u'. Here, 'y' is also a\n// vowel, but only when it is at the end of the given word.\n//\n// Examples:\n//   vowels_count(\"abcde\") == 2\n//   vowels_count(\"ACEDY\") == 3\nfn vowels_count(s: Str) -> Int {\n  let t = to_lower(s);\n  let base = len(filter(chars(t), |c| contains([\"a\", \"e\", \"i\", \"o\", \"u\"], c)));\n  if ends_with(t, \"y\") { base + 1 } else { base }\n}\n"
+}

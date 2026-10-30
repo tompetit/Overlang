@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_154_cycpattern_check",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_154_cycpattern_check",
+ "entry_point": "cycpattern_check",
+ "prompt": "// You are given 2 words. You need to return True if the second word or any of its rotations is a substring in the first word\n// Examples:\n//   cycpattern_check(\"abcd\", \"abd\") == false\n//   cycpattern_check(\"hello\", \"ell\") == true\n//   cycpattern_check(\"whassup\", \"psus\") == false\n//   cycpattern_check(\"abab\", \"baa\") == true\n//   cycpattern_check(\"efef\", \"eeff\") == false\n//   cycpattern_check(\"himenss\", \"simen\") == true\nfn cycpattern_check(a: Str, b: Str) -> Bool {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(cycpattern_check(\"xyzw\", \"xyw\"), false);\n}\n\ntest check_2 {\n  assert_eq(cycpattern_check(\"yello\", \"ell\"), true);\n}\n\ntest check_3 {\n  assert_eq(cycpattern_check(\"whattup\", \"ptut\"), false);\n}\n\ntest check_4 {\n  assert_eq(cycpattern_check(\"efef\", \"fee\"), true);\n}\n\ntest check_5 {\n  assert_eq(cycpattern_check(\"abab\", \"aabb\"), false);\n}\n\ntest check_6 {\n  assert_eq(cycpattern_check(\"winemtt\", \"tinem\"), true);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(cycpattern_check(\"xyzw\", \"xyw\"), false);\n}\n",
+ "solution": "// You are given 2 words. You need to return True if the second word or any of its rotations is a substring in the first word\n// Examples:\n//   cycpattern_check(\"abcd\", \"abd\") == false\n//   cycpattern_check(\"hello\", \"ell\") == true\n//   cycpattern_check(\"whassup\", \"psus\") == false\n//   cycpattern_check(\"abab\", \"baa\") == true\n//   cycpattern_check(\"efef\", \"eeff\") == false\n//   cycpattern_check(\"himenss\", \"simen\") == true\nfn cycpattern_check(a: Str, b: Str) -> Bool {\n  let n = str_len(b);\n  any(range(0, n + 1), |i| str_contains(a, substr(b, i, n) ++ substr(b, 0, i)))\n}\n"
+}

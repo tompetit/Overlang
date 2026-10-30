@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_99_closest_integer",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_99_closest_integer",
+ "entry_point": "closest_integer",
+ "prompt": "// Create a function that takes a value (string) representing a number\n// and returns the closest integer to it. If the number is equidistant\n// from two integers, round it away from zero.\n//\n// Examples:\n//   closest_integer(\"10\") == 10\n//   closest_integer(\"15.3\") == 15\n//\n// Note:\n// Rounding away from zero means that if the given number is equidistant\n// from two integers, the one you should return is the one that is the\n// farthest from zero. For example closest_integer(\"14.5\") should\n// return 15 and closest_integer(\"-14.5\") should return -15.\nfn closest_integer(value: Str) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(closest_integer(\"10\"), 10);\n}\n\ntest check_2 {\n  assert_eq(closest_integer(\"14.5\"), 15);\n}\n\ntest check_3 {\n  assert_eq(closest_integer(\"-15.5\"), -16);\n}\n\ntest check_4 {\n  assert_eq(closest_integer(\"15.3\"), 15);\n}\n\ntest check_5 {\n  assert_eq(closest_integer(\"0\"), 0);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(closest_integer(\"10\"), 10);\n}\n",
+ "solution": "// Create a function that takes a value (string) representing a number\n// and returns the closest integer to it. If the number is equidistant\n// from two integers, round it away from zero.\n//\n// Examples:\n//   closest_integer(\"10\") == 10\n//   closest_integer(\"15.3\") == 15\n//\n// Note:\n// Rounding away from zero means that if the given number is equidistant\n// from two integers, the one you should return is the one that is the\n// farthest from zero. For example closest_integer(\"14.5\") should\n// return 15 and closest_integer(\"-14.5\") should return -15.\nfn closest_integer(value: Str) -> Int {\n  to_int(round(unwrap_or(parse_float(value), 0.0)))\n}\n"
+}

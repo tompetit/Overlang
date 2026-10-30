@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_65_circular_shift",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_65_circular_shift",
+ "entry_point": "circular_shift",
+ "prompt": "// Circular shift the digits of the integer x, shift the digits right by shift\n// and return the result as a string.\n// If shift > number of digits, return digits reversed.\n// Examples:\n//   circular_shift(12, 1) == \"21\"\n//   circular_shift(12, 2) == \"12\"\nfn circular_shift(x: Int, shift: Int) -> Str {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(circular_shift(100, 2), \"001\");\n}\n\ntest check_2 {\n  assert_eq(circular_shift(12, 2), \"12\");\n}\n\ntest check_3 {\n  assert_eq(circular_shift(97, 8), \"79\");\n}\n\ntest check_4 {\n  assert_eq(circular_shift(12, 1), \"21\");\n}\n\ntest check_5 {\n  assert_eq(circular_shift(11, 101), \"11\");\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(circular_shift(100, 2), \"001\");\n}\n",
+ "solution": "// Circular shift the digits of the integer x, shift the digits right by shift\n// and return the result as a string.\n// If shift > number of digits, return digits reversed.\n// Examples:\n//   circular_shift(12, 1) == \"21\"\n//   circular_shift(12, 2) == \"12\"\nfn circular_shift(x: Int, shift: Int) -> Str {\n  let d = show(x);\n  let n = str_len(d);\n  if shift > n {\n    join(reverse(chars(d)), \"\")\n  } else {\n    substr(d, n - shift, n) ++ substr(d, 0, n - shift)\n  }\n}\n"
+}

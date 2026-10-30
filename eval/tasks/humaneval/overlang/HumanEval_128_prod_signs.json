@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_128_prod_signs",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_128_prod_signs",
+ "entry_point": "prod_signs",
+ "prompt": "// You are given an array arr of integers and you need to return\n// sum of magnitudes of integers multiplied by product of all signs\n// of each number in the array, represented by 1, -1 or 0.\n// Note: return None for empty arr.\n//\n// Examples:\n//   prod_signs([1, 2, 2, -4]) == Some(-9)\n//   prod_signs([0, 1]) == Some(0)\n//   prod_signs([]) == None\nfn prod_signs(arr: List[Int]) -> Option[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(prod_signs([1, 2, 2, -4]), Some(-9));\n}\n\ntest check_2 {\n  assert_eq(prod_signs([0, 1]), Some(0));\n}\n\ntest check_3 {\n  assert_eq(prod_signs([1, 1, 1, 2, 3, -1, 1]), Some(-10));\n}\n\ntest check_4 {\n  assert_eq(prod_signs([]), None);\n}\n\ntest check_5 {\n  assert_eq(prod_signs([2, 4, 1, 2, -1, -1, 9]), Some(20));\n}\n\ntest check_6 {\n  assert_eq(prod_signs([-1, 1, -1, 1]), Some(4));\n}\n\ntest check_7 {\n  assert_eq(prod_signs([-1, 1, 1, 1]), Some(-4));\n}\n\ntest check_8 {\n  assert_eq(prod_signs([-1, 1, 1, 0]), Some(0));\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(prod_signs([1, 2, 2, -4]), Some(-9));\n}\n",
+ "solution": "// You are given an array arr of integers and you need to return\n// sum of magnitudes of integers multiplied by product of all signs\n// of each number in the array, represented by 1, -1 or 0.\n// Note: return None for empty arr.\n//\n// Examples:\n//   prod_signs([1, 2, 2, -4]) == Some(-9)\n//   prod_signs([0, 1]) == Some(0)\n//   prod_signs([]) == None\nfn prod_signs(arr: List[Int]) -> Option[Int] {\n  if is_empty(arr) {\n    return None;\n  }\n  let negs = len(filter(arr, |x| x < 0));\n  let sign = if contains(arr, 0) { 0 } else if negs % 2 == 1 { -1 } else { 1 };\n  Some(sign * sum(map(arr, |x| abs(x))))\n}\n"
+}

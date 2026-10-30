@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_63_fibfib",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_63_fibfib",
+ "entry_point": "fibfib",
+ "prompt": "// The FibFib number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:\n// fibfib(0) == 0\n// fibfib(1) == 0\n// fibfib(2) == 1\n// fibfib(n) == fibfib(n-1) + fibfib(n-2) + fibfib(n-3).\n// Please write a function to efficiently compute the n-th element of the fibfib number sequence.\n// Examples:\n//   fibfib(1) == 0\n//   fibfib(5) == 4\n//   fibfib(8) == 24\nfn fibfib(n: Int) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(fibfib(2), 1);\n}\n\ntest check_2 {\n  assert_eq(fibfib(1), 0);\n}\n\ntest check_3 {\n  assert_eq(fibfib(5), 4);\n}\n\ntest check_4 {\n  assert_eq(fibfib(8), 24);\n}\n\ntest check_5 {\n  assert_eq(fibfib(10), 81);\n}\n\ntest check_6 {\n  assert_eq(fibfib(12), 274);\n}\n\ntest check_7 {\n  assert_eq(fibfib(14), 927);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(fibfib(2), 1);\n}\n",
+ "solution": "// The FibFib number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:\n// fibfib(0) == 0\n// fibfib(1) == 0\n// fibfib(2) == 1\n// fibfib(n) == fibfib(n-1) + fibfib(n-2) + fibfib(n-3).\n// Please write a function to efficiently compute the n-th element of the fibfib number sequence.\n// Examples:\n//   fibfib(1) == 0\n//   fibfib(5) == 4\n//   fibfib(8) == 24\nfn fibfib(n: Int) -> Int {\n  let mut a = 0;\n  let mut b = 0;\n  let mut c = 1;\n  for _i in range(0, n) {\n    let t = a + b + c;\n    a = b;\n    b = c;\n    c = t;\n  }\n  a\n}\n"
+}

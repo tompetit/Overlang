@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_102_choose_num",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_102_choose_num",
+ "entry_point": "choose_num",
+ "prompt": "// This function takes two positive numbers x and y and returns the\n// biggest even integer number that is in the range [x, y] inclusive. If\n// there's no such number, then the function should return -1.\n//\n// Examples:\n//   choose_num(12, 15) == 14\n//   choose_num(13, 12) == -1\nfn choose_num(x: Int, y: Int) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(choose_num(12, 15), 14);\n}\n\ntest check_2 {\n  assert_eq(choose_num(13, 12), -1);\n}\n\ntest check_3 {\n  assert_eq(choose_num(33, 12354), 12354);\n}\n\ntest check_4 {\n  assert_eq(choose_num(5234, 5233), -1);\n}\n\ntest check_5 {\n  assert_eq(choose_num(6, 29), 28);\n}\n\ntest check_6 {\n  assert_eq(choose_num(27, 10), -1);\n}\n\ntest check_7 {\n  assert_eq(choose_num(7, 7), -1);\n}\n\ntest check_8 {\n  assert_eq(choose_num(546, 546), 546);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(choose_num(12, 15), 14);\n}\n",
+ "solution": "// This function takes two positive numbers x and y and returns the\n// biggest even integer number that is in the range [x, y] inclusive. If\n// there's no such number, then the function should return -1.\n//\n// Examples:\n//   choose_num(12, 15) == 14\n//   choose_num(13, 12) == -1\nfn choose_num(x: Int, y: Int) -> Int {\n  if x > y {\n    -1\n  } else if y % 2 == 0 {\n    y\n  } else if y - 1 >= x {\n    y - 1\n  } else {\n    -1\n  }\n}\n"
+}

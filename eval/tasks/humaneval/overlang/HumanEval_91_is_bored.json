@@ -1,0 +1,14 @@
+{
+ "id": "HumanEval_91_is_bored",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_91_is_bored",
+ "entry_point": "is_bored",
+ "prompt": "// You'll be given a string of words, and your task is to count the number\n// of boredoms. A boredom is a sentence that starts with the word \"I\".\n// Sentences are delimited by '.', '?' or '!'.\n//\n// Examples:\n//   is_bored(\"Hello world\") == 0\n//   is_bored(\"The sky is blue. The sun is shining. I love this weather\") == 1\nfn is_bored(s: Str) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(is_bored(\"Hello world\"), 0);\n}\n\ntest check_2 {\n  assert_eq(is_bored(\"Is the sky blue?\"), 0);\n}\n\ntest check_3 {\n  assert_eq(is_bored(\"I love It !\"), 1);\n}\n\ntest check_4 {\n  assert_eq(is_bored(\"bIt\"), 0);\n}\n\ntest check_5 {\n  assert_eq(is_bored(\"I feel good today. I will be productive. will kill It\"), 2);\n}\n\ntest check_6 {\n  assert_eq(is_bored(\"You and I are going for a walk\"), 0);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(is_bored(\"Hello world\"), 0);\n}\n",
+ "solution": "// You'll be given a string of words, and your task is to count the number\n// of boredoms. A boredom is a sentence that starts with the word \"I\".\n// Sentences are delimited by '.', '?' or '!'.\n//\n// Examples:\n//   is_bored(\"Hello world\") == 0\n//   is_bored(\"The sky is blue. The sun is shining. I love this weather\") == 1\nfn is_bored(s: Str) -> Int {\n  let sentences = split(replace(replace(s, \"?\", \".\"), \"!\", \".\"), \".\");\n  len(filter(sentences, |t| starts_with(ltrim(t), \"I \")))\n}\n\nfn ltrim(t: Str) -> Str {\n  if starts_with(t, \" \") { ltrim(substr(t, 1, str_len(t))) } else { t }\n}\n",
+ "renamed_params": {
+  "S": "s"
+ }
+}

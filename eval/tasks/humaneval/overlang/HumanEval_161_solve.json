@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_161_solve",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_161_solve",
+ "entry_point": "solve",
+ "prompt": "// You are given a string s.\n// if s[i] is a letter, reverse its case from lower to upper or vise versa,\n// otherwise keep it as it is.\n// If the string contains no letters, reverse the string.\n// The function should return the resulted string.\n// Examples:\n//   solve(\"1234\") == \"4321\"\n//   solve(\"ab\") == \"AB\"\n//   solve(\"#a@C\") == \"#A@c\"\nfn solve(s: Str) -> Str {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(solve(\"AsDf\"), \"aSdF\");\n}\n\ntest check_2 {\n  assert_eq(solve(\"1234\"), \"4321\");\n}\n\ntest check_3 {\n  assert_eq(solve(\"ab\"), \"AB\");\n}\n\ntest check_4 {\n  assert_eq(solve(\"#a@C\"), \"#A@c\");\n}\n\ntest check_5 {\n  assert_eq(solve(\"#AsdfW^45\"), \"#aSDFw^45\");\n}\n\ntest check_6 {\n  assert_eq(solve(\"#6@2\"), \"2@6#\");\n}\n\ntest check_7 {\n  assert_eq(solve(\"#$a^D\"), \"#$A^d\");\n}\n\ntest check_8 {\n  assert_eq(solve(\"#ccc\"), \"#CCC\");\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(solve(\"AsDf\"), \"aSdF\");\n}\n",
+ "solution": "// You are given a string s.\n// if s[i] is a letter, reverse its case from lower to upper or vise versa,\n// otherwise keep it as it is.\n// If the string contains no letters, reverse the string.\n// The function should return the resulted string.\n// Examples:\n//   solve(\"1234\") == \"4321\"\n//   solve(\"ab\") == \"AB\"\n//   solve(\"#a@C\") == \"#A@c\"\nfn solve(s: Str) -> Str {\n  if all(chars(s), |c| to_upper(c) == to_lower(c)) {\n    join(reverse(chars(s)), \"\")\n  } else {\n    join(map(chars(s), |c| if c == to_upper(c) { to_lower(c) } else { to_upper(c) }), \"\")\n  }\n}\n"
+}

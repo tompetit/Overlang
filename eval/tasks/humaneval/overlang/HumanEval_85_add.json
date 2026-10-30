@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_85_add",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_85_add",
+ "entry_point": "add",
+ "prompt": "// Given a non-empty list of integers lst. add the even elements that are at odd indices..\n//\n//\n// Examples:\n//   add([4, 2, 6, 7]) == 2\nfn add(lst: List[Int]) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(add([4, 88]), 88);\n}\n\ntest check_2 {\n  assert_eq(add([4, 5, 6, 7, 2, 122]), 122);\n}\n\ntest check_3 {\n  assert_eq(add([4, 0, 6, 7]), 0);\n}\n\ntest check_4 {\n  assert_eq(add([4, 4, 6, 8]), 12);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(add([4, 88]), 88);\n}\n",
+ "solution": "// Given a non-empty list of integers lst. add the even elements that are at odd indices..\n//\n//\n// Examples:\n//   add([4, 2, 6, 7]) == 2\nfn add(lst: List[Int]) -> Int {\n  sum(map(filter(enumerate(lst), |p| p.0 % 2 == 1 && p.1 % 2 == 0), |p| p.1))\n}\n"
+}

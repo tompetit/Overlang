@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_66_digitSum",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_66_digitSum",
+ "entry_point": "digitSum",
+ "prompt": "// Task\n// Write a function that takes a string as input and returns the sum of the upper characters only'\n// ASCII codes.\n//\n// Examples:\n//   digitSum(\"\") == 0\n//   digitSum(\"abAB\") == 131\n//   digitSum(\"abcCd\") == 67\n//   digitSum(\"helloE\") == 69\n//   digitSum(\"woArBld\") == 131\n//   digitSum(\"aAaaaXa\") == 153\nfn digitSum(s: Str) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(digitSum(\"\"), 0);\n}\n\ntest check_2 {\n  assert_eq(digitSum(\"abAB\"), 131);\n}\n\ntest check_3 {\n  assert_eq(digitSum(\"abcCd\"), 67);\n}\n\ntest check_4 {\n  assert_eq(digitSum(\"helloE\"), 69);\n}\n\ntest check_5 {\n  assert_eq(digitSum(\"woArBld\"), 131);\n}\n\ntest check_6 {\n  assert_eq(digitSum(\"aAaaaXa\"), 153);\n}\n\ntest check_7 {\n  assert_eq(digitSum(\" How are yOu?\"), 151);\n}\n\ntest check_8 {\n  assert_eq(digitSum(\"You arE Very Smart\"), 327);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(digitSum(\"\"), 0);\n}\n",
+ "solution": "// Task\n// Write a function that takes a string as input and returns the sum of the upper characters only'\n// ASCII codes.\n//\n// Examples:\n//   digitSum(\"\") == 0\n//   digitSum(\"abAB\") == 131\n//   digitSum(\"abcCd\") == 67\n//   digitSum(\"helloE\") == 69\n//   digitSum(\"woArBld\") == 131\n//   digitSum(\"aAaaaXa\") == 153\nfn digitSum(s: Str) -> Int {\n  sum(map(filter(chars(s), |c| upper_letter(c)), |c| unwrap_or(code_point(c), 0)))\n}\n\nfn upper_letter(c: Str) -> Bool {\n  to_upper(c) == c && to_lower(c) != c\n}\n"
+}

@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_105_by_length",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_105_by_length",
+ "entry_point": "by_length",
+ "prompt": "// Given an array of integers, sort the integers that are between 1 and 9 inclusive,\n// reverse the resulting array, and then replace each digit by its corresponding name from\n// \"One\", \"Two\", \"Three\", \"Four\", \"Five\", \"Six\", \"Seven\", \"Eight\", \"Nine\".\n//\n// Examples:\n//   by_length([2, 1, 1, 4, 5, 8, 2, 3]) == [\"Eight\", \"Five\", \"Four\", \"Three\", \"Two\", \"Two\", \"One\", \"One\"]\n//\n//   If the array is empty, return an empty array:\n//   by_length([]) == []\n//\n//   If the array has any strange number ignore it:\n//   by_length([1, -1, 55]) == [\"One\"]\nfn by_length(arr: List[Int]) -> List[Str] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(by_length([2, 1, 1, 4, 5, 8, 2, 3]), [\"Eight\", \"Five\", \"Four\", \"Three\", \"Two\", \"Two\", \"One\", \"One\"]);\n}\n\ntest check_2 {\n  assert_eq(by_length([]), []);\n}\n\ntest check_3 {\n  assert_eq(by_length([1, -1, 55]), [\"One\"]);\n}\n\ntest check_4 {\n  assert_eq(by_length([1, -1, 3, 2]), [\"Three\", \"Two\", \"One\"]);\n}\n\ntest check_5 {\n  assert_eq(by_length([9, 4, 8]), [\"Nine\", \"Eight\", \"Four\"]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(by_length([2, 1, 1, 4, 5, 8, 2, 3]), [\"Eight\", \"Five\", \"Four\", \"Three\", \"Two\", \"Two\", \"One\", \"One\"]);\n}\n",
+ "solution": "// Given an array of integers, sort the integers that are between 1 and 9 inclusive,\n// reverse the resulting array, and then replace each digit by its corresponding name from\n// \"One\", \"Two\", \"Three\", \"Four\", \"Five\", \"Six\", \"Seven\", \"Eight\", \"Nine\".\n//\n// Examples:\n//   by_length([2, 1, 1, 4, 5, 8, 2, 3]) == [\"Eight\", \"Five\", \"Four\", \"Three\", \"Two\", \"Two\", \"One\", \"One\"]\n//\n//   If the array is empty, return an empty array:\n//   by_length([]) == []\n//\n//   If the array has any strange number ignore it:\n//   by_length([1, -1, 55]) == [\"One\"]\nfn by_length(arr: List[Int]) -> List[Str] {\n  let names = [\"One\", \"Two\", \"Three\", \"Four\", \"Five\", \"Six\", \"Seven\", \"Eight\", \"Nine\"];\n  map(reverse(sort(filter(arr, |x| x >= 1 && x <= 9))), |x| names[x - 1])\n}\n"
+}

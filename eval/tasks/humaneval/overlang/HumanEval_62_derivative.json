@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_62_derivative",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_62_derivative",
+ "entry_point": "derivative",
+ "prompt": "// xs represent coefficients of a polynomial.\n// xs[0] + xs[1] * x + xs[2] * x^2 + ....\n//  Return derivative of this polynomial in the same form.\n// Examples:\n//   derivative([3, 1, 2, 4, 5]) == [1, 4, 12, 20]\n//   derivative([1, 2, 3]) == [2, 6]\nfn derivative(xs: List[Int]) -> List[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(derivative([3, 1, 2, 4, 5]), [1, 4, 12, 20]);\n}\n\ntest check_2 {\n  assert_eq(derivative([1, 2, 3]), [2, 6]);\n}\n\ntest check_3 {\n  assert_eq(derivative([3, 2, 1]), [2, 2]);\n}\n\ntest check_4 {\n  assert_eq(derivative([3, 2, 1, 0, 4]), [2, 2, 0, 16]);\n}\n\ntest check_5 {\n  assert_eq(derivative([1]), []);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(derivative([3, 1, 2, 4, 5]), [1, 4, 12, 20]);\n}\n",
+ "solution": "// xs represent coefficients of a polynomial.\n// xs[0] + xs[1] * x + xs[2] * x^2 + ....\n//  Return derivative of this polynomial in the same form.\n// Examples:\n//   derivative([3, 1, 2, 4, 5]) == [1, 4, 12, 20]\n//   derivative([1, 2, 3]) == [2, 6]\nfn derivative(xs: List[Int]) -> List[Int] {\n  map(tail(enumerate(xs)), |p| p.0 * p.1)\n}\n"
+}

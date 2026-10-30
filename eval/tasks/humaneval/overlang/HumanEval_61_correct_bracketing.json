@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_61_correct_bracketing",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_61_correct_bracketing",
+ "entry_point": "correct_bracketing",
+ "prompt": "// brackets is a string of \"(\" and \")\".\n// return True if every opening bracket has a corresponding closing bracket.\n//\n// Examples:\n//   correct_bracketing(\"(\") == false\n//   correct_bracketing(\"()\") == true\n//   correct_bracketing(\"(()())\") == true\n//   correct_bracketing(\")(()\") == false\nfn correct_bracketing(brackets: Str) -> Bool {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(correct_bracketing(\"()\"), true);\n}\n\ntest check_2 {\n  assert_eq(correct_bracketing(\"(()())\"), true);\n}\n\ntest check_3 {\n  assert_eq(correct_bracketing(\"()()(()())()\"), true);\n}\n\ntest check_4 {\n  assert_eq(correct_bracketing(\"()()((()()())())(()()(()))\"), true);\n}\n\ntest check_5 {\n  assert_eq(correct_bracketing(\"((()())))\"), false);\n}\n\ntest check_6 {\n  assert_eq(correct_bracketing(\")(()\"), false);\n}\n\ntest check_7 {\n  assert_eq(correct_bracketing(\"(\"), false);\n}\n\ntest check_8 {\n  assert_eq(correct_bracketing(\"((((\"), false);\n}\n\ntest check_9 {\n  assert_eq(correct_bracketing(\")\"), false);\n}\n\ntest check_10 {\n  assert_eq(correct_bracketing(\"(()\"), false);\n}\n\ntest check_11 {\n  assert_eq(correct_bracketing(\"()()(()())())(()\"), false);\n}\n\ntest check_12 {\n  assert_eq(correct_bracketing(\"()()(()())()))()\"), false);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(correct_bracketing(\"()\"), true);\n}\n",
+ "solution": "// brackets is a string of \"(\" and \")\".\n// return True if every opening bracket has a corresponding closing bracket.\n//\n// Examples:\n//   correct_bracketing(\"(\") == false\n//   correct_bracketing(\"()\") == true\n//   correct_bracketing(\"(()())\") == true\n//   correct_bracketing(\")(()\") == false\nfn correct_bracketing(brackets: Str) -> Bool {\n  let mut depth = 0;\n  for c in chars(brackets) {\n    depth = if c == \"(\" { depth + 1 } else { depth - 1 };\n    if depth < 0 {\n      return false;\n    }\n  }\n  depth == 0\n}\n"
+}

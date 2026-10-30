@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_75_is_multiply_prime",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_75_is_multiply_prime",
+ "entry_point": "is_multiply_prime",
+ "prompt": "// Write a function that returns true if the given number is the multiplication of 3 prime numbers\n// and false otherwise.\n// Knowing that (a) is less then 100.\n// Examples:\n//   is_multiply_prime(30) == true\n// 30 = 2 * 3 * 5\nfn is_multiply_prime(a: Int) -> Bool {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(is_multiply_prime(5), false);\n}\n\ntest check_2 {\n  assert_eq(is_multiply_prime(30), true);\n}\n\ntest check_3 {\n  assert_eq(is_multiply_prime(8), true);\n}\n\ntest check_4 {\n  assert_eq(is_multiply_prime(10), false);\n}\n\ntest check_5 {\n  assert_eq(is_multiply_prime(125), true);\n}\n\ntest check_6 {\n  assert_eq(is_multiply_prime(105), true);\n}\n\ntest check_7 {\n  assert_eq(is_multiply_prime(126), false);\n}\n\ntest check_8 {\n  assert_eq(is_multiply_prime(729), false);\n}\n\ntest check_9 {\n  assert_eq(is_multiply_prime(891), false);\n}\n\ntest check_10 {\n  assert_eq(is_multiply_prime(1001), true);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(is_multiply_prime(5), false);\n}\n",
+ "solution": "// Write a function that returns true if the given number is the multiplication of 3 prime numbers\n// and false otherwise.\n// Knowing that (a) is less then 100.\n// Examples:\n//   is_multiply_prime(30) == true\n// 30 = 2 * 3 * 5\nfn is_multiply_prime(a: Int) -> Bool {\n  let mut m = a;\n  let mut p = 2;\n  let mut count = 0;\n  while m > 1 {\n    if m % p == 0 {\n      count = count + 1;\n      m = m / p;\n    } else {\n      p = p + 1;\n    }\n  }\n  count == 3\n}\n"
+}

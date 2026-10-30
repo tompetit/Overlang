@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_53_add",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_53_add",
+ "entry_point": "add",
+ "prompt": "// Add two numbers x and y\n// Examples:\n//   add(2, 3) == 5\n//   add(5, 7) == 12\nfn add(x: Int, y: Int) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(add(0, 1), 1);\n}\n\ntest check_2 {\n  assert_eq(add(1, 0), 1);\n}\n\ntest check_3 {\n  assert_eq(add(2, 3), 5);\n}\n\ntest check_4 {\n  assert_eq(add(5, 7), 12);\n}\n\ntest check_5 {\n  assert_eq(add(7, 5), 12);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(add(0, 1), 1);\n}\n",
+ "solution": "// Add two numbers x and y\n// Examples:\n//   add(2, 3) == 5\n//   add(5, 7) == 12\nfn add(x: Int, y: Int) -> Int {\n  x + y\n}\n"
+}

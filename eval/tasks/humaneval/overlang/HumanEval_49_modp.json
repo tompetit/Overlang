@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_49_modp",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_49_modp",
+ "entry_point": "modp",
+ "prompt": "// Return 2^n modulo p (be aware of numerics).\n// Examples:\n//   modp(3, 5) == 3\n//   modp(1101, 101) == 2\n//   modp(0, 101) == 1\n//   modp(3, 11) == 8\n//   modp(100, 101) == 1\nfn modp(n: Int, p: Int) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(modp(3, 5), 3);\n}\n\ntest check_2 {\n  assert_eq(modp(1101, 101), 2);\n}\n\ntest check_3 {\n  assert_eq(modp(0, 101), 1);\n}\n\ntest check_4 {\n  assert_eq(modp(3, 11), 8);\n}\n\ntest check_5 {\n  assert_eq(modp(100, 101), 1);\n}\n\ntest check_6 {\n  assert_eq(modp(30, 5), 4);\n}\n\ntest check_7 {\n  assert_eq(modp(31, 5), 3);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(modp(3, 5), 3);\n}\n",
+ "solution": "// Return 2^n modulo p (be aware of numerics).\n// Examples:\n//   modp(3, 5) == 3\n//   modp(1101, 101) == 2\n//   modp(0, 101) == 1\n//   modp(3, 11) == 8\n//   modp(100, 101) == 1\nfn modp(n: Int, p: Int) -> Int {\n  let mut r = 1;\n  for _i in range(0, n) {\n    r = r * 2 % p;\n  }\n  r\n}\n"
+}

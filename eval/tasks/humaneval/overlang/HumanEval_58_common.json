@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_58_common",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_58_common",
+ "entry_point": "common",
+ "prompt": "// Return sorted unique common elements for two lists.\n// Examples:\n//   common([1, 4, 3, 34, 653, 2, 5], [5, 7, 1, 5, 9, 653, 121]) == [1, 5, 653]\n//   common([5, 3, 2, 8], [3, 2]) == [2, 3]\nfn common(l1: List[Int], l2: List[Int]) -> List[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(common([1, 4, 3, 34, 653, 2, 5], [5, 7, 1, 5, 9, 653, 121]), [1, 5, 653]);\n}\n\ntest check_2 {\n  assert_eq(common([5, 3, 2, 8], [3, 2]), [2, 3]);\n}\n\ntest check_3 {\n  assert_eq(common([4, 3, 2, 8], [3, 2, 4]), [2, 3, 4]);\n}\n\ntest check_4 {\n  assert_eq(common([4, 3, 2, 8], []), []);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(common([1, 4, 3, 34, 653, 2, 5], [5, 7, 1, 5, 9, 653, 121]), [1, 5, 653]);\n}\n",
+ "solution": "// Return sorted unique common elements for two lists.\n// Examples:\n//   common([1, 4, 3, 34, 653, 2, 5], [5, 7, 1, 5, 9, 653, 121]) == [1, 5, 653]\n//   common([5, 3, 2, 8], [3, 2]) == [2, 3]\nfn common(l1: List[Int], l2: List[Int]) -> List[Int] {\n  sort(unique(filter(l1, |x| contains(l2, x))))\n}\n"
+}

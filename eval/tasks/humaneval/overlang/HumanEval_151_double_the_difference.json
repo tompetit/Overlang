@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_151_double_the_difference",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_151_double_the_difference",
+ "entry_point": "double_the_difference",
+ "prompt": "// Given a list of numbers, return the sum of squares of the numbers\n// in the list that are odd. Ignore numbers that are negative or not integers.\n//\n// Examples:\n//   double_the_difference([1.0, 3.0, 2.0, 0.0]) == 10\n//   double_the_difference([-1.0, -2.0, 0.0]) == 0\n//   double_the_difference([9.0, -2.0]) == 81\n//   double_the_difference([0.0]) == 0\n//\n// If the input list is empty, return 0.\nfn double_the_difference(lst: List[Float]) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(double_the_difference([]), 0);\n}\n\ntest check_2 {\n  assert_eq(double_the_difference([5.0, 4.0]), 25);\n}\n\ntest check_3 {\n  assert_eq(double_the_difference([0.1, 0.2, 0.3]), 0);\n}\n\ntest check_4 {\n  assert_eq(double_the_difference([-10.0, -20.0, -30.0]), 0);\n}\n\ntest check_5 {\n  assert_eq(double_the_difference([-1.0, -2.0, 8.0]), 0);\n}\n\ntest check_6 {\n  assert_eq(double_the_difference([0.2, 3.0, 5.0]), 34);\n}\n\ntest check_7 {\n  assert_eq(double_the_difference([-9.0, -7.0, -5.0, -3.0, -1.0, 1.0, 3.0, 5.0, 7.0, 9.0]), 165);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(double_the_difference([]), 0);\n}\n",
+ "solution": "// Given a list of numbers, return the sum of squares of the numbers\n// in the list that are odd. Ignore numbers that are negative or not integers.\n//\n// Examples:\n//   double_the_difference([1.0, 3.0, 2.0, 0.0]) == 10\n//   double_the_difference([-1.0, -2.0, 0.0]) == 0\n//   double_the_difference([9.0, -2.0]) == 81\n//   double_the_difference([0.0]) == 0\n//\n// If the input list is empty, return 0.\nfn double_the_difference(lst: List[Float]) -> Int {\n  fold(lst, 0, |acc, x| {\n    if x > 0.0 && x == floor(x) && to_int(x) % 2 == 1 { acc + to_int(x) * to_int(x) } else { acc }\n  })\n}\n"
+}

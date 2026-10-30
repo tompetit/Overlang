@@ -1,0 +1,14 @@
+{
+ "id": "HumanEval_111_histogram",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_111_histogram",
+ "entry_point": "histogram",
+ "prompt": "// Given a string representing a space separated lowercase letters, return a dictionary\n// of the letter with the most repetition and containing the corresponding count.\n// If several letters have the same occurrence, return all of them.\n//\n// Examples:\n//   histogram(\"a b c\") == map_from_list([(\"a\", 1), (\"b\", 1), (\"c\", 1)])\n//   histogram(\"a b b a\") == map_from_list([(\"a\", 2), (\"b\", 2)])\n//   histogram(\"a b c a b\") == map_from_list([(\"a\", 2), (\"b\", 2)])\n//   histogram(\"b b b b a\") == map_from_list([(\"b\", 4)])\n//   histogram(\"\") == map_new()\nfn histogram(s: Str) -> Map[Str, Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(histogram(\"a b b a\"), map_from_list([(\"a\", 2), (\"b\", 2)]));\n}\n\ntest check_2 {\n  assert_eq(histogram(\"a b c a b\"), map_from_list([(\"a\", 2), (\"b\", 2)]));\n}\n\ntest check_3 {\n  assert_eq(histogram(\"a b c d g\"), map_from_list([(\"a\", 1), (\"b\", 1), (\"c\", 1), (\"d\", 1), (\"g\", 1)]));\n}\n\ntest check_4 {\n  assert_eq(histogram(\"r t g\"), map_from_list([(\"r\", 1), (\"t\", 1), (\"g\", 1)]));\n}\n\ntest check_5 {\n  assert_eq(histogram(\"b b b b a\"), map_from_list([(\"b\", 4)]));\n}\n\ntest check_6 {\n  assert_eq(histogram(\"r t g\"), map_from_list([(\"r\", 1), (\"t\", 1), (\"g\", 1)]));\n}\n\ntest check_7 {\n  assert_eq(histogram(\"\"), map_new());\n}\n\ntest check_8 {\n  assert_eq(histogram(\"a\"), map_from_list([(\"a\", 1)]));\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(histogram(\"a b b a\"), map_from_list([(\"a\", 2), (\"b\", 2)]));\n}\n",
+ "solution": "// Given a string representing a space separated lowercase letters, return a dictionary\n// of the letter with the most repetition and containing the corresponding count.\n// If several letters have the same occurrence, return all of them.\n//\n// Examples:\n//   histogram(\"a b c\") == map_from_list([(\"a\", 1), (\"b\", 1), (\"c\", 1)])\n//   histogram(\"a b b a\") == map_from_list([(\"a\", 2), (\"b\", 2)])\n//   histogram(\"a b c a b\") == map_from_list([(\"a\", 2), (\"b\", 2)])\n//   histogram(\"b b b b a\") == map_from_list([(\"b\", 4)])\n//   histogram(\"\") == map_new()\nfn histogram(s: Str) -> Map[Str, Int] {\n  let words = filter(split(s, \" \"), |w| str_len(w) > 0);\n  let none: Map[Str, Int] = map_new();\n  let counts = fold(words, none, |m, w| map_set(m, w, unwrap_or(map_get(m, w), 0) + 1));\n  let best = unwrap_or(max_of(map_values(counts)), 0);\n  map_from_list(filter(map_to_list(counts), |p| p.1 == best))\n}\n",
+ "renamed_params": {
+  "test": "s"
+ }
+}

@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_97_multiply",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_97_multiply",
+ "entry_point": "multiply",
+ "prompt": "// Complete the function that takes two integers and returns\n// the product of their unit digits.\n// Assume the input is always valid.\n// Examples:\n//   multiply(148, 412) == 16\n//   multiply(19, 28) == 72\n//   multiply(2020, 1851) == 0\n//   multiply(14, -15) == 20\nfn multiply(a: Int, b: Int) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(multiply(148, 412), 16);\n}\n\ntest check_2 {\n  assert_eq(multiply(19, 28), 72);\n}\n\ntest check_3 {\n  assert_eq(multiply(2020, 1851), 0);\n}\n\ntest check_4 {\n  assert_eq(multiply(14, -15), 20);\n}\n\ntest check_5 {\n  assert_eq(multiply(76, 67), 42);\n}\n\ntest check_6 {\n  assert_eq(multiply(17, 27), 49);\n}\n\ntest check_7 {\n  assert_eq(multiply(0, 1), 0);\n}\n\ntest check_8 {\n  assert_eq(multiply(0, 0), 0);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(multiply(148, 412), 16);\n}\n",
+ "solution": "// Complete the function that takes two integers and returns\n// the product of their unit digits.\n// Assume the input is always valid.\n// Examples:\n//   multiply(148, 412) == 16\n//   multiply(19, 28) == 72\n//   multiply(2020, 1851) == 0\n//   multiply(14, -15) == 20\nfn multiply(a: Int, b: Int) -> Int {\n  (abs(a) % 10) * (abs(b) % 10)\n}\n"
+}

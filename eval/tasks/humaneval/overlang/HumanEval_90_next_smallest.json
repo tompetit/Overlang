@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_90_next_smallest",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_90_next_smallest",
+ "entry_point": "next_smallest",
+ "prompt": "// You are given a list of integers.\n// Write a function next_smallest() that returns the 2nd smallest element of the list.\n// Return None if there is no such element.\n// Examples:\n//   next_smallest([1, 2, 3, 4, 5]) == Some(2)\n//   next_smallest([5, 1, 4, 3, 2]) == Some(2)\n//   next_smallest([]) == None\n//   next_smallest([1, 1]) == None\nfn next_smallest(lst: List[Int]) -> Option[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(next_smallest([1, 2, 3, 4, 5]), Some(2));\n}\n\ntest check_2 {\n  assert_eq(next_smallest([5, 1, 4, 3, 2]), Some(2));\n}\n\ntest check_3 {\n  assert_eq(next_smallest([]), None);\n}\n\ntest check_4 {\n  assert_eq(next_smallest([1, 1]), None);\n}\n\ntest check_5 {\n  assert_eq(next_smallest([1, 1, 1, 1, 0]), Some(1));\n}\n\ntest check_6 {\n  assert_eq(next_smallest([1, 1]), None);\n}\n\ntest check_7 {\n  assert_eq(next_smallest([-35, 34, 12, -45]), Some(-35));\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(next_smallest([1, 2, 3, 4, 5]), Some(2));\n}\n",
+ "solution": "// You are given a list of integers.\n// Write a function next_smallest() that returns the 2nd smallest element of the list.\n// Return None if there is no such element.\n// Examples:\n//   next_smallest([1, 2, 3, 4, 5]) == Some(2)\n//   next_smallest([5, 1, 4, 3, 2]) == Some(2)\n//   next_smallest([]) == None\n//   next_smallest([1, 1]) == None\nfn next_smallest(lst: List[Int]) -> Option[Int] {\n  get(sort(unique(lst)), 1)\n}\n"
+}

@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_88_sort_array",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_88_sort_array",
+ "entry_point": "sort_array",
+ "prompt": "// Given an array of non-negative integers, return a copy of the given array after sorting,\n// you will sort the given array in ascending order if the sum( first index value, last index value) is odd,\n// or sort it in descending order if the sum( first index value, last index value) is even.\n//\n// Note:\n// * don't change the given array.\n//\n// Examples:\n//   sort_array([]) == []\n//   sort_array([5]) == [5]\n//   sort_array([2, 4, 3, 0, 1, 5]) == [0, 1, 2, 3, 4, 5]\n//   sort_array([2, 4, 3, 0, 1, 5, 6]) == [6, 5, 4, 3, 2, 1, 0]\nfn sort_array(array: List[Int]) -> List[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(sort_array([]), []);\n}\n\ntest check_2 {\n  assert_eq(sort_array([5]), [5]);\n}\n\ntest check_3 {\n  assert_eq(sort_array([2, 4, 3, 0, 1, 5]), [0, 1, 2, 3, 4, 5]);\n}\n\ntest check_4 {\n  assert_eq(sort_array([2, 4, 3, 0, 1, 5, 6]), [6, 5, 4, 3, 2, 1, 0]);\n}\n\ntest check_5 {\n  assert_eq(sort_array([2, 1]), [1, 2]);\n}\n\ntest check_6 {\n  assert_eq(sort_array([15, 42, 87, 32, 11, 0]), [0, 11, 15, 32, 42, 87]);\n}\n\ntest check_7 {\n  assert_eq(sort_array([21, 14, 23, 11]), [23, 21, 14, 11]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(sort_array([]), []);\n}\n",
+ "solution": "// Given an array of non-negative integers, return a copy of the given array after sorting,\n// you will sort the given array in ascending order if the sum( first index value, last index value) is odd,\n// or sort it in descending order if the sum( first index value, last index value) is even.\n//\n// Note:\n// * don't change the given array.\n//\n// Examples:\n//   sort_array([]) == []\n//   sort_array([5]) == [5]\n//   sort_array([2, 4, 3, 0, 1, 5]) == [0, 1, 2, 3, 4, 5]\n//   sort_array([2, 4, 3, 0, 1, 5, 6]) == [6, 5, 4, 3, 2, 1, 0]\nfn sort_array(array: List[Int]) -> List[Int] {\n  if is_empty(array) {\n    return [];\n  }\n  let s = sort(array);\n  if (array[0] + array[len(array) - 1]) % 2 == 1 { s } else { reverse(s) }\n}\n"
+}

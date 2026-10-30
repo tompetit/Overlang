@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_135_can_arrange",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_135_can_arrange",
+ "entry_point": "can_arrange",
+ "prompt": "// Create a function which returns the largest index of an element which\n// is not greater than or equal to the element immediately preceding it. If\n// no such element exists then return -1. The given array will not contain\n// duplicate values.\n//\n// Examples:\n//   can_arrange([1, 2, 4, 3, 5]) == 3\n//   can_arrange([1, 2, 3]) == -1\nfn can_arrange(arr: List[Int]) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(can_arrange([1, 2, 4, 3, 5]), 3);\n}\n\ntest check_2 {\n  assert_eq(can_arrange([1, 2, 4, 5]), -1);\n}\n\ntest check_3 {\n  assert_eq(can_arrange([1, 4, 2, 5, 6, 7, 8, 9, 10]), 2);\n}\n\ntest check_4 {\n  assert_eq(can_arrange([4, 8, 5, 7, 3]), 4);\n}\n\ntest check_5 {\n  assert_eq(can_arrange([]), -1);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(can_arrange([1, 2, 4, 3, 5]), 3);\n}\n",
+ "solution": "// Create a function which returns the largest index of an element which\n// is not greater than or equal to the element immediately preceding it. If\n// no such element exists then return -1. The given array will not contain\n// duplicate values.\n//\n// Examples:\n//   can_arrange([1, 2, 4, 3, 5]) == 3\n//   can_arrange([1, 2, 3]) == -1\nfn can_arrange(arr: List[Int]) -> Int {\n  let mut best = -1;\n  for i in range(1, len(arr)) {\n    if arr[i] < arr[i - 1] {\n      best = i;\n    }\n  }\n  best\n}\n"
+}

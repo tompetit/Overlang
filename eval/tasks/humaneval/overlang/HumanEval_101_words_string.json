@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_101_words_string",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_101_words_string",
+ "entry_point": "words_string",
+ "prompt": "// You will be given a string of words separated by commas or spaces. Your task is\n// to split the string into words and return an array of the words.\n//\n// Examples:\n//   words_string(\"Hi, my name is John\") == [\"Hi\", \"my\", \"name\", \"is\", \"John\"]\n//   words_string(\"One, two, three, four, five, six\") == [\"One\", \"two\", \"three\", \"four\", \"five\", \"six\"]\nfn words_string(s: Str) -> List[Str] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(words_string(\"Hi, my name is John\"), [\"Hi\", \"my\", \"name\", \"is\", \"John\"]);\n}\n\ntest check_2 {\n  assert_eq(words_string(\"One, two, three, four, five, six\"), [\"One\", \"two\", \"three\", \"four\", \"five\", \"six\"]);\n}\n\ntest check_3 {\n  assert_eq(words_string(\"Hi, my name\"), [\"Hi\", \"my\", \"name\"]);\n}\n\ntest check_4 {\n  assert_eq(words_string(\"One,, two, three, four, five, six,\"), [\"One\", \"two\", \"three\", \"four\", \"five\", \"six\"]);\n}\n\ntest check_5 {\n  assert_eq(words_string(\"\"), []);\n}\n\ntest check_6 {\n  assert_eq(words_string(\"ahmed     , gamal\"), [\"ahmed\", \"gamal\"]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(words_string(\"Hi, my name is John\"), [\"Hi\", \"my\", \"name\", \"is\", \"John\"]);\n}\n",
+ "solution": "// You will be given a string of words separated by commas or spaces. Your task is\n// to split the string into words and return an array of the words.\n//\n// Examples:\n//   words_string(\"Hi, my name is John\") == [\"Hi\", \"my\", \"name\", \"is\", \"John\"]\n//   words_string(\"One, two, three, four, five, six\") == [\"One\", \"two\", \"three\", \"four\", \"five\", \"six\"]\nfn words_string(s: Str) -> List[Str] {\n  filter(split(replace(s, \",\", \" \"), \" \"), |w| str_len(w) > 0)\n}\n"
+}
