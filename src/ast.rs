@@ -342,7 +342,8 @@ pub enum PatKind {
     Record { name: String, fields: Vec<FieldPat>, rest: bool },
     Tuple(Vec<Pat>),
     /// `[a, b]`, `[a, ..rest]`, `[..init, z]`. When `rest` is set, at most
-    /// one of `before` and `after` is non-empty.
+    /// one of `before` and `after` is non-empty. A bare `..` is `Some("_")`
+    /// and binds nothing.
     List { before: Vec<Pat>, rest: Option<String>, after: Vec<Pat> },
     /// `p | q`
     Or(Vec<Pat>),

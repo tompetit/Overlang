@@ -9,18 +9,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 
 /* The only global mutable state: argv, the RNG, (and stdout buffering via stdio). */
 static int g_argc;
 static char** g_argv;
 static uint64_t g_rng;
 static bool g_rng_seeded;
+static bool g_tty; /* stdout is a terminal: println flushes */
 
 void ov_init(int argc, char** argv) {
   GC_INIT();
   g_argc = argc;
   g_argv = argv;
   setvbuf(stdout, NULL, _IOFBF, 1 << 16);
+  g_tty = isatty(STDOUT_FILENO);
 }
 
 /* ---- traps ---- */
@@ -601,7 +604,12 @@ ov_list* ov_set_to_list(ov_set* s) { return ov_map_keys(s->m); }
 /* ---- IO and environment ---- */
 
 void ov_print(ov_str* s) { fwrite(s->data, 1, (size_t)s->len, stdout); }
-void ov_println(ov_str* s) { ov_print(s); putc('\n', stdout); }
+void ov_flush(void) { fflush(stdout); }
+void ov_println(ov_str* s) {
+  ov_print(s);
+  putc('\n', stdout);
+  if (g_tty) fflush(stdout);
+}
 
 ov_str* ov_read_line(bool* ok) {
   ov_sb* sb = ov_sb_new();
