@@ -1,0 +1,13 @@
+test split_route_without_database {
+  assert_eq(route_get(0, "/nope").status, 404);
+  assert_eq(route_get(0, "/add").status, 404);
+  assert_eq(route_post(0, "/nope", "").status, 404);
+  assert_eq(route_post(0, "/", "").status, 404);
+  assert_eq(route_post(0, "/todos.txt", "").status, 404);
+  assert_eq(route_post(0, "/add", "title=  ").status, 400);
+  assert_eq(route_post(0, "/toggle", "id=0").status, 400);
+  assert_eq(route_post(0, "/delete", "").status, 400);
+  assert_eq(route(0, "PUT", "/", "").status, 404);
+  assert_eq(route(0, "GET", "/nope", "").status, 404);
+  assert_eq(route(0, "POST", "/toggle", "id=-1").status, 400);
+}

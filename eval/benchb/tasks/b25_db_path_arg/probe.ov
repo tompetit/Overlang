@@ -1,0 +1,6 @@
+test db_path_from_args {
+  assert_eq(db_path_from(["9000", "other.db"]), "other.db");
+  assert_eq(db_path_from(["9000"]), "todo.db");
+  assert_eq(db_path_from([]), "todo.db");
+  assert_eq(db_path_from(["9000", "/a/b.db", "extra"]), "/a/b.db");
+}

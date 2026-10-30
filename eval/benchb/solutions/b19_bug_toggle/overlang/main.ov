@@ -1,0 +1,178 @@
+// HTTP todo app backed by SQLite. Run: ov run examples/todo/main.ov [port]
+
+type Todo = { id: Int, title: Str, done: Bool }
+type Response = { status: Int, content_type: Str, body: Str }
+
+// ---- foreign bindings: sqlite (!fs) ----
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_open(path: Str) -> Int !fs = "ov_sqlite_open"
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_close(db: Int) -> Unit !fs = "ov_sqlite_close"
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_error(db: Int) -> Str !fs = "ov_sqlite_error"
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_exec(db: Int, sql: Str) -> Int !fs = "ov_sqlite_exec"
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_exec_1s(db: Int, sql: Str, p1: Str) -> Int !fs = "ov_sqlite_exec_1s"
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_exec_1i(db: Int, sql: Str, p1: Int) -> Int !fs = "ov_sqlite_exec_1i"
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_query(db: Int, sql: Str) -> Option[Str] !fs = "ov_sqlite_query"
+
+// ---- foreign bindings: http (!net) and pure helpers ----
+foreign c "ov_http.h" fn http_listen(port: Int) -> Int !net = "ov_http_listen"
+foreign c "ov_http.h" fn http_accept(server: Int) -> Int !net = "ov_http_accept"
+foreign c "ov_http.h" fn http_method(req: Int) -> Str !net = "ov_http_method"
+foreign c "ov_http.h" fn http_path(req: Int) -> Str !net = "ov_http_path"
+foreign c "ov_http.h" fn http_body(req: Int) -> Str !net = "ov_http_body"
+foreign c "ov_http.h" fn http_respond(req: Int, status: Int, content_type: Str, body: Str) -> Int !net = "ov_http_respond"
+foreign c "ov_http.h" fn url_decode(s: Str) -> Str = "ov_http_url_decode"
+foreign c "ov_http.h" fn form_value(body: Str, key: Str) -> Str = "ov_http_form_value"
+foreign c "ov_http.h" fn html_escape(s: Str) -> Str = "ov_http_html_escape"
+
+// ---- database ----
+fn db_init(db: Int) -> Int !fs {
+  sqlite_exec(db, "create table if not exists todos (id integer primary key autoincrement, title text not null, done integer not null default 0)")
+}
+
+// Splits the shim encoding (header row, then rows by \x1e, columns by \x1f) into todos.
+fn parse_rows(text: Str) -> List[Todo]
+  ensures all(result, |t| t.id > 0)
+{
+  let mut out: List[Todo] = [];
+  for row in drop(split(text, "\u{1e}"), 1) {
+    match split(row, "\u{1f}") {
+      [id, title, done] => match parse_int(id) {
+        Some(n) if n > 0 => { out = push(out, Todo { id: n, title: title, done: done == "1" }); },
+        _ => {},
+      },
+      _ => {},
+    }
+  }
+  out
+}
+
+fn list_todos(db: Int) -> List[Todo] !fs {
+  match sqlite_query(db, "select id, title, done from todos order by id") {
+    Some(text) => parse_rows(text),
+    None => [],
+  }
+}
+
+fn add_todo(db: Int, title: Str) -> Int !fs
+  requires str_len(trim(title)) > 0
+{
+  sqlite_exec_1s(db, "insert into todos (title) values (?)", trim(title))
+}
+
+fn toggle_todo(db: Int, id: Int) -> Int !fs
+  requires id > 0
+{
+  sqlite_exec_1i(db, "update todos set done = 1 - done where id = ?", id)
+}
+
+fn delete_todo(db: Int, id: Int) -> Int !fs
+  requires id > 0
+{
+  sqlite_exec_1i(db, "delete from todos where id = ?", id)
+}
+
+// ---- views ----
+fn id_form(action: Str, id: Int, label: Str) -> Str {
+  "<form method=\"post\" action=\"" ++ action ++ "\" style=\"display:inline\">"
+    ++ "<input type=\"hidden\" name=\"id\" value=\"" ++ show(id) ++ "\">"
+    ++ "<button>" ++ label ++ "</button></form>"
+}
+
+fn render_todo(t: Todo) -> Str {
+  let mark = if t.done { "[x] " } else { "[ ] " };
+  "<li>" ++ mark ++ html_escape(t.title) ++ " "
+    ++ id_form("/toggle", t.id, "toggle") ++ " "
+    ++ id_form("/delete", t.id, "delete") ++ "</li>"
+}
+
+fn render_page(todos: List[Todo]) -> Str {
+  "<!doctype html><html><head><meta charset=\"utf-8\"><title>Todos</title></head><body><h1>Todos</h1>"
+    ++ "<form method=\"post\" action=\"/add\"><input name=\"title\" placeholder=\"What needs doing?\">"
+    ++ "<button>add</button></form><ul>"
+    ++ join(map(todos, |t| render_todo(t)), "")
+    ++ "</ul></body></html>"
+}
+
+fn render_text(todos: List[Todo]) -> Str {
+  join(map(todos, |t| show(t.id) ++ " " ++ (if t.done { "[x] " } else { "[ ] " }) ++ t.title ++ "\n"), "")
+}
+
+// ---- routing ----
+fn respond_page(db: Int) -> Response !fs {
+  Response { status: 200, content_type: "text/html; charset=utf-8", body: render_page(list_todos(db)) }
+}
+
+fn bad_request(msg: Str) -> Response {
+  Response { status: 400, content_type: "text/plain", body: msg ++ "\n" }
+}
+
+fn route(db: Int, method: Str, path: Str, body: Str) -> Response !fs {
+  let id = unwrap_or(parse_int(form_value(body, "id")), 0);
+  match (method, path) {
+    ("GET", "/") => respond_page(db),
+    ("GET", "/todos.txt") => Response { status: 200, content_type: "text/plain; charset=utf-8", body: render_text(list_todos(db)) },
+    ("POST", "/add") => {
+      if str_len(trim(form_value(body, "title"))) == 0 {
+        bad_request("title required")
+      } else {
+        add_todo(db, form_value(body, "title"));
+        respond_page(db)
+      }
+    },
+    ("POST", "/toggle") => if id > 0 { toggle_todo(db, id); respond_page(db) } else { bad_request("bad id") },
+    ("POST", "/delete") => if id > 0 { delete_todo(db, id); respond_page(db) } else { bad_request("bad id") },
+    _ => Response { status: 404, content_type: "text/plain", body: "not found\n" },
+  }
+}
+
+// ---- server ----
+fn port_from(argv: List[Str]) -> Int {
+  match argv {
+    [p, .._rest] => unwrap_or(parse_int(p), 8080),
+    _ => 8080,
+  }
+}
+
+fn serve(db: Int, server: Int) -> Unit !net !fs {
+  while true {
+    let req = http_accept(server);
+    if req >= 0 {
+      let r = route(db, http_method(req), http_path(req), http_body(req));
+      http_respond(req, r.status, r.content_type, r.body);
+    }
+  }
+}
+
+fn main() -> Unit !io !net !fs {
+  let port = port_from(args());
+  let db = sqlite_open("todo.db");
+  let server = http_listen(port);
+  if db < 1 {
+    println("cannot open todo.db: " ++ sqlite_error(0));
+  } else if server < 1 {
+    println("cannot listen on port " ++ show(port));
+  } else {
+    db_init(db);
+    println("listening on http://127.0.0.1:" ++ show(port));
+    serve(db, server);
+  }
+}
+
+// ---- tests ----
+test parse_rows_decodes_rows {
+  let text = "id\u{1f}title\u{1f}done\u{1e}1\u{1f}milk\u{1f}0\u{1e}2\u{1f}eggs, bread\u{1f}1";
+  assert_eq(parse_rows(text), [Todo { id: 1, title: "milk", done: false }, Todo { id: 2, title: "eggs, bread", done: true }]);
+  assert_eq(parse_rows("id\u{1f}title\u{1f}done"), []);
+}
+
+test render_page_escapes_titles {
+  let html = render_page([Todo { id: 3, title: "<b>x</b> & \"y\"", done: false }]);
+  assert(!str_contains(html, "<b>x</b>"));
+  assert(str_contains(html, "&lt;b&gt;x&lt;/b&gt; &amp; &quot;y&quot;"));
+  assert(str_contains(html, "name=\"id\" value=\"3\""));
+}
+
+test route_unknown_is_404 {
+  let r = route(0, "GET", "/nope", "");
+  assert_eq(r.status, 404);
+  assert_eq(route(0, "POST", "/", "").status, 404);
+}

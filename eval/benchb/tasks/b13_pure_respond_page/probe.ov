@@ -1,0 +1,12 @@
+// Only typechecks if respond_page takes the list and is free of effects.
+fn probe_status(todos: List[Todo]) -> Int {
+  respond_page(todos).status
+}
+
+test respond_page_renders_given_todos {
+  let r = respond_page([Todo { id: 7, title: "a<b", done: true }]);
+  assert_eq(r.status, 200);
+  assert(str_contains(r.content_type, "text/html"));
+  assert(str_contains(r.body, "[x] a&lt;b"));
+  assert_eq(probe_status([]), 200);
+}

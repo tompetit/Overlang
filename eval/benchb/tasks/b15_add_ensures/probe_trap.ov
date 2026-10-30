@@ -1,0 +1,4 @@
+fn probe_main() -> Unit !io !fs {
+  let n = add_todo(0, "x");
+  println("returned " ++ show(n));
+}

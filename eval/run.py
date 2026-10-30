@@ -26,6 +26,8 @@ FIELDS = ("input_tokens", "output_tokens", "cache_creation_input_tokens", "cache
 
 def load_tasks(benchmark, lang, spec, tasks_dir=HERE / "tasks"):
     """Tasks in index order; `spec` is a start:stop slice of the shared task list."""
+    if benchmark == "benchb":  # maintenance tasks: eval/benchb/tasks/<id>/, sorted by id
+        return adapters.get("benchb").load_tasks(spec)
     shared = json.loads((tasks_dir / "index.json").read_text())[benchmark]["shared"]
     start, _, stop = spec.partition(":")
     ids = shared[int(start or 0):int(stop) if stop else None]
@@ -88,15 +90,20 @@ def parse_transcript(text, markers):
     }
 
 
-def run_claude(adapter, work, args):
-    instruction = (f"Read CLAUDE.md, then implement the function stub in {adapter.SOLUTION}. "
-                   f"Run `{adapter.test_command()}` until it passes, then stop.")
+def run_claude(adapter, task, work, args):
+    if hasattr(adapter, "instruction"):  # benchb: the task statement goes in the prompt
+        instruction = adapter.instruction(task)
+    else:
+        instruction = (f"Read CLAUDE.md, then implement the function stub in {adapter.SOLUTION}. "
+                       f"Run `{adapter.test_command()}` until it passes, then stop.")
     env = dict(os.environ, CLAUDE_CODE_DISABLE_AUTO_MEMORY="1")
     start = time.time()
     _, out, timed_out = adapters.run(claude_cmd(args.model, args.max_turns, instruction, args.bare),
                                      work, args.agent_timeout, env)
     (work.parent / "transcript.jsonl").write_text(out)
     rec = parse_transcript(out, adapter.TEST_MARKERS)
+    if args.benchmark == "benchb":
+        rec.update(adapters.get("benchb").read_tokens(out))
     if timed_out:
         rec.update(agent_error="timeout", timeout=True,
                    duration_ms=rec["duration_ms"] or int((time.time() - start) * 1000))
@@ -106,16 +113,19 @@ def run_claude(adapter, work, args):
 def run_mock(adapter, task, work, args):
     """No model: leave the stub (fails), or with --mock-solve write the reference."""
     start = time.time()
-    ref = adapter.reference(task) if args.mock_solve else None
-    if ref:
-        (work / adapter.SOLUTION).write_text(ref)
+    if args.mock_solve and hasattr(adapter, "apply_reference"):  # benchb: reference solution files
+        adapter.apply_reference(task, work)
+    else:
+        ref = adapter.reference(task) if args.mock_solve else None
+        if ref:
+            (work / adapter.SOLUTION).write_text(ref)
     return {"num_turns": 0, "total_cost_usd": 0.0, "duration_ms": int((time.time() - start) * 1000),
             **{f: 0 for f in FIELDS}, "failed_rounds": 0, "test_rounds": 0, "agent_error": None}
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--benchmark", required=True, choices=["humaneval", "mbpp"])
+    ap.add_argument("--benchmark", required=True, choices=["humaneval", "mbpp", "benchb"])
     ap.add_argument("--lang", required=True, choices=["python", "rust", "overlang"])
     ap.add_argument("--model", default="sonnet")
     ap.add_argument("--tasks", default="0:5", help="start:stop slice of the shared task list (default 0:5)")
@@ -130,7 +140,12 @@ def main():
     ap.add_argument("--tasks-dir", type=Path, default=HERE / "tasks")
     args = ap.parse_args()
 
-    adapter = adapters.get(args.lang)
+    if args.benchmark == "benchb":
+        if args.lang not in ("python", "overlang"):
+            sys.exit("benchb supports --lang python and overlang")
+        adapter = adapters.get("benchb").for_lang(args.lang)
+    else:
+        adapter = adapters.get(args.lang)
     runs_dir = args.out.parent / args.out.stem
     args.out.parent.mkdir(parents=True, exist_ok=True)
     done = set()
@@ -150,7 +165,7 @@ def main():
                 shutil.rmtree(run_dir, ignore_errors=True)
                 work = run_dir / "work"
                 adapter.workspace(task, work)
-                rec = (run_claude(adapter, work, args) if args.agent == "claude"
+                rec = (run_claude(adapter, task, work, args) if args.agent == "claude"
                        else run_mock(adapter, task, work, args))
                 graded = adapter.grade(work, args.grade_timeout)
                 rec = {"benchmark": args.benchmark, "lang": args.lang, "task": task["id"], "run": run,
