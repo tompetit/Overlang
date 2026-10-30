@@ -3,9 +3,10 @@
  "benchmark": "humaneval",
  "lang": "overlang",
  "name": "HumanEval_131_digits",
- "entry_point": "digits",
- "prompt": "// Given a positive integer n, return the product of the odd digits.\n// Return 0 if all digits are even.\n// Examples:\n//   digits(1) == 1\n//   digits(4) == 0\n//   digits(235) == 15\nfn digits(n: Int) -> Int {\n  todo()\n}\n",
- "tests": "test check_1 {\n  assert_eq(digits(5), 5);\n}\n\ntest check_2 {\n  assert_eq(digits(54), 5);\n}\n\ntest check_3 {\n  assert_eq(digits(120), 1);\n}\n\ntest check_4 {\n  assert_eq(digits(5014), 5);\n}\n\ntest check_5 {\n  assert_eq(digits(98765), 315);\n}\n\ntest check_6 {\n  assert_eq(digits(5576543), 2625);\n}\n\ntest check_7 {\n  assert_eq(digits(2468), 0);\n}\n",
- "visible_test": "test check_1 {\n  assert_eq(digits(5), 5);\n}\n",
- "solution": "// Given a positive integer n, return the product of the odd digits.\n// Return 0 if all digits are even.\n// Examples:\n//   digits(1) == 1\n//   digits(4) == 0\n//   digits(235) == 15\nfn digits(n: Int) -> Int {\n  let odd = filter(map(chars(show(n)), |c| unwrap_or(parse_int(c), 0)), |d| d % 2 == 1);\n  if is_empty(odd) { 0 } else { fold(odd, 1, |a, d| a * d) }\n}\n"
+ "entry_point": "odd_digit_product",
+ "prompt": "// Given a positive integer n, return the product of the odd digits.\n// Return 0 if all digits are even.\n// Examples:\n//   odd_digit_product(1) == 1\n//   odd_digit_product(4) == 0\n//   odd_digit_product(235) == 15\nfn odd_digit_product(n: Int) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(odd_digit_product(5), 5);\n}\n\ntest check_2 {\n  assert_eq(odd_digit_product(54), 5);\n}\n\ntest check_3 {\n  assert_eq(odd_digit_product(120), 1);\n}\n\ntest check_4 {\n  assert_eq(odd_digit_product(5014), 5);\n}\n\ntest check_5 {\n  assert_eq(odd_digit_product(98765), 315);\n}\n\ntest check_6 {\n  assert_eq(odd_digit_product(5576543), 2625);\n}\n\ntest check_7 {\n  assert_eq(odd_digit_product(2468), 0);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(odd_digit_product(5), 5);\n}\n",
+ "solution": "// Given a positive integer n, return the product of the odd digits.\n// Return 0 if all digits are even.\n// Examples:\n//   odd_digit_product(1) == 1\n//   odd_digit_product(4) == 0\n//   odd_digit_product(235) == 15\nfn odd_digit_product(n: Int) -> Int {\n  let odd = filter(map(chars(show(n)), |c| unwrap_or(parse_int(c), 0)), |d| d % 2 == 1);\n  if is_empty(odd) { 0 } else { fold(odd, 1, |a, d| a * d) }\n}\n",
+ "renamed_from": "digits"
 }

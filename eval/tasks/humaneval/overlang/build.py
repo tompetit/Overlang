@@ -521,7 +521,7 @@ sol("HumanEval_29_filter_by_prefix", "filter(strings, |s| starts_with(s, prefix)
 
 sol("HumanEval_30_get_positive", "filter(l, |x| x > 0)")
 
-sol("HumanEval_31_is_prime", """
+sol("HumanEval_31_is_prime", rename="is_prime_number", body="""
 if n < 2 {
   return false;
 }
@@ -1013,20 +1013,6 @@ sol("HumanEval_94_skjkasdkd", """
 let primes = filter(lst, |x| is_prime(x));
 let best = unwrap_or(max_of(primes), 0);
 sum(map(chars(show(best)), |c| unwrap_or(parse_int(c), 0)))
-""", """
-fn is_prime(n: Int) -> Bool {
-  if n < 2 {
-    return false;
-  }
-  let mut i = 2;
-  while i * i <= n {
-    if n % i == 0 {
-      return false;
-    }
-    i = i + 1;
-  }
-  true
-}
 """)
 
 sol("HumanEval_95_check_dict_case", """
@@ -1034,21 +1020,7 @@ let keys = map_keys(dict);
 !is_empty(keys) && (all(keys, |k| k == to_lower(k) && k != to_upper(k)) || all(keys, |k| k == to_upper(k) && k != to_lower(k)))
 """)
 
-sol("HumanEval_96_count_up_to", "filter(range(2, n), |x| is_prime(x))", """
-fn is_prime(n: Int) -> Bool {
-  if n < 2 {
-    return false;
-  }
-  let mut i = 2;
-  while i * i <= n {
-    if n % i == 0 {
-      return false;
-    }
-    i = i + 1;
-  }
-  true
-}
-""")
+sol("HumanEval_96_count_up_to", "filter(range(2, n), |x| is_prime(x))")
 
 sol("HumanEval_97_multiply", "(abs(a) % 10) * (abs(b) % 10)")
 
@@ -1257,20 +1229,6 @@ true
 sol("HumanEval_127_intersection", """
 let length = min(interval1.1, interval2.1) - max(interval1.0, interval2.0);
 if length > 1 && is_prime(length) { "YES" } else { "NO" }
-""", """
-fn is_prime(n: Int) -> Bool {
-  if n < 2 {
-    return false;
-  }
-  let mut i = 2;
-  while i * i <= n {
-    if n % i == 0 {
-      return false;
-    }
-    i = i + 1;
-  }
-  true
-}
 """)
 
 sol("HumanEval_128_prod_signs", """
@@ -1307,7 +1265,7 @@ for i in range(2, n + 1) {
 take(t, n + 1)
 """)
 
-sol("HumanEval_131_digits", """
+sol("HumanEval_131_digits", rename="odd_digit_product", body="""
 let odd = filter(map(chars(show(n)), |c| unwrap_or(parse_int(c), 0)), |d| d % 2 == 1);
 if is_empty(odd) { 0 } else { fold(odd, 1, |a, d| a * d) }
 """)
@@ -1408,20 +1366,6 @@ sum(map(enumerate(lst), |p| if p.0 % 3 == 0 { p.1 * p.1 } else if p.0 % 4 == 0 {
 
 sol("HumanEval_143_words_in_sentence", """
 join(filter(split(sentence, " "), |w| is_prime(str_len(w))), " ")
-""", """
-fn is_prime(n: Int) -> Bool {
-  if n < 2 {
-    return false;
-  }
-  let mut i = 2;
-  while i * i <= n {
-    if n % i == 0 {
-      return false;
-    }
-    i = i + 1;
-  }
-  true
-}
 """)
 
 sol("HumanEval_144_simplify", """

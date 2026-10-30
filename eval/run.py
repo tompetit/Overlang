@@ -32,7 +32,11 @@ def load_tasks(benchmark, lang, spec, tasks_dir=HERE / "tasks"):
     start, _, stop = spec.partition(":")
     ids = shared[int(start or 0):int(stop) if stop else None]
     task_lang = adapters.get(lang).TASK_LANG
-    return [json.loads((tasks_dir / benchmark / task_lang / f"{i}.json").read_text()) for i in ids]
+    files = [(i, tasks_dir / benchmark / task_lang / f"{i}.json") for i in ids]
+    for i, f in files:
+        if not f.exists():
+            print(f"skip {i}: no {task_lang} task file", file=sys.stderr)
+    return [json.loads(f.read_text()) for _, f in files if f.exists()]
 
 
 def claude_cmd(model, max_turns, instruction, bare):

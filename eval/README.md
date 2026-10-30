@@ -143,8 +143,8 @@ exposing:
 
 ### Overlang
 
-`tasks/humaneval/overlang/<id>.json` are hand translations of the first 40
-shared HumanEval tasks (see `NOTES.md` there for what was skipped or renamed and
+`tasks/humaneval/overlang/<id>.json` are hand translations of 155 of the 156
+shared HumanEval tasks (`HumanEval_92` is untypable; see `NOTES.md` there for what was skipped or renamed and
 the compiler/language gaps found; `build.py` regenerates and validates them with
 the real `ov`). Fields: the common ones plus `prompt` (`//` comment + signature
 with a `todo()` body, written verbatim to `solution.ov`), `tests` (hidden `test
@@ -163,11 +163,10 @@ exit 0 and every hidden block printed `ok <name>`. The compiler is found via
 
 ```
 python3 eval/run.py --benchmark humaneval --lang overlang --agent mock --mock-solve \
-        --tasks 0:40 --runs 1 --out eval/runs/smoke-ov.jsonl   # all 40 pass
+        --tasks 0:156 --runs 1 --out eval/runs/smoke-ov.jsonl  # all 155 pass
 ```
 
-Only the first 40 tasks have Overlang versions; `--tasks` beyond that fails with
-a missing-file error.
+`run.py` skips a shared id that has no task file for the language (a `skip <id>` line on stderr).
 
 ## Benchmark B: maintenance tasks
 
@@ -249,9 +248,9 @@ is no `main.ov` anywhere the agent can reach (the seed file is deleted; the only
 `.ovstore/`). `CLAUDE.md` is the language card plus the store workflow (`./ov ls|ctx|view|edit|add|rm|check|test`,
 `./ov build main`, `./ov run main -- 8080`) and a note on shims declared in the C runtime but not in the app
 (for example `ov_sqlite_exec_2s`). `./ov` is a wrapper around the compiler binary (`$OV_BIN`, else
-`target/release/ov`). Grading exports the store (`ov view` of every name in `ov ls` order) to
+`target/release/ov`). Grading exports the store (`ov export`) to
 `hidden/export/main.ov` and runs the check on it, so a store that does not typecheck or build fails.
-Comments are not kept by `ov view`, which does not matter for grading.
+Comments are not kept by `ov export`, which does not matter for grading.
 
 The prompt is "Read CLAUDE.md, then make this change to the todo app: <task.md> Run `<test command>` before
 you stop." Test command: `python3 -I -m unittest` or `./ov test`. `failed_rounds` counts Bash calls with those

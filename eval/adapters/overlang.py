@@ -44,8 +44,8 @@ Run the tests with:
 
 To typecheck without running: `./ov check {solution} {visible}`. In this workspace
 `ov` is the local `./ov` wrapper and works on files: `check`, `run`, `test` and `fmt`
-take file names, there is no `--json` flag, and the store commands in the Toolchain
-table (`add`, `view`, `edit`, `ctx`, `deps`) are not available.
+take file names. There is no store in this workspace, so the store commands in the
+Toolchain table (`add`, `view`, `edit`, `ctx`, `deps`, `export`, ...) have nothing to work on.
 
 Stop as soon as the tests pass. The visible test is a single smoke check; the
 grader runs more cases, so read the doc comment and handle the general case.

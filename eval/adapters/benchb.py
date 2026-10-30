@@ -12,7 +12,7 @@ Python workspace: main.py, test_todo.py, CLAUDE.md. The agent edits files.
 Overlang workspace: .ovstore/ already populated from the app (so the agent starts from
 the store), an `ov` wrapper, CLAUDE.md (language card + store workflow). There is no
 main.ov: the only way to read code is `ov ctx` / `ov view`. Grading exports the store
-(`ov view` of every name in `ov ls` order) to hidden/export/main.ov and runs the check on
+(`ov export`) to hidden/export/main.ov and runs the check on
 that. Hidden stuff (seed source, export, scratch dirs of the check) is in hidden/.
 
 Grading runs the task's check script: `check.sh <app dir> <lang>`, exit 0 = pass.
@@ -76,7 +76,9 @@ compiler binary; run it from this directory):
 - `./ov ls` lists bound names. `./ov ctx <name>` prints a definition plus the signatures and types
   it needs (`--depth 1` adds bodies of callees); `./ov view <name>` prints one definition.
 - `./ov edit <name> --file f.ov` (or text on stdin) replaces one existing definition; the name in
-  the text must match. Dependents are re-hashed automatically but not re-checked: run `./ov check`.
+  the text must match. Dependents are re-hashed and re-checked: if one now has errors the definition
+  is still stored, the errors are printed after the `name hash` lines and the exit code is 2 (fix the
+  dependents with further edits).
 - `./ov add f.ov` stores new definitions from a file (use it for new functions, types and tests;
   the file may hold several). `./ov rm <name>` unbinds a name.
 - `./ov check` typechecks everything, `./ov test` runs the `test` blocks and fuzzes contracts,
@@ -221,16 +223,17 @@ class Adapter:
 
     # ---- overlang helpers ----
     def _ov(self, work, *args):
+        """Run `ov` in the workspace and return stdout. Exit 2 from add/edit means "stored, but a
+        rebound dependent has errors" (a valid state mid-edit); its diagnostics are on stdout, so
+        they are part of the returned text."""
         p = subprocess.run([ovmod.ov_bin(), *args], cwd=work, capture_output=True, text=True)
-        if p.returncode != 0:
+        if p.returncode not in ((0, 2) if args[0] in ("add", "edit") else (0,)):
             raise RuntimeError(f"ov {' '.join(args)} failed: {p.stdout[-800:]} {p.stderr[-800:]}")
         return p.stdout
 
     def export_store(self, work):
         """All bound definitions as one source file, in `ov ls` order."""
-        names = [l.split()[0] for l in self._ov(work, "ls").splitlines() if l.strip()]
-        return "\n\n".join(self._ov(work, "view", n).rstrip("\n") for n in names) + "\n"
-
+        return self._ov(work, "export")
 
 
 def for_lang(lang):
