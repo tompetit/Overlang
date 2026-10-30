@@ -310,6 +310,9 @@ pub enum StmtKind {
     While { cond: Expr, body: Block },
     For { pat: Pat, iter: Expr, body: Block },
     Return(Expr),
+    /// `break;` and `continue;`, legal only in a `while` or `for` body (E0117).
+    Break,
+    Continue,
     /// `e;`, or a block-like expression (`if`, `match`, block) with no `;`.
     Expr(Expr),
     Comment(Comment),

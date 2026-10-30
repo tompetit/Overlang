@@ -1,0 +1,108 @@
+type Shape = Circle(r: Int) | Square(s: Int) | Stop
+
+// Early-exit search: the first index whose value is negative.
+fn first_negative(xs: List[Int]) -> Option[Int] {
+  let mut found = None;
+  for (i, x) in enumerate(xs) {
+    if x < 0 {
+      found = Some(i);
+      break;
+    }
+  }
+  found
+}
+
+// `break` inside a `match` inside a `for`; the match has a value.
+fn total_until_stop(shapes: List[Shape]) -> Int {
+  let mut acc = 0;
+  for s in shapes {
+    let n = match s {
+      Circle(r) => r * 3,
+      Square(x) => {
+        if x == 0 {
+          continue;
+        }
+        x * x
+      },
+      Stop => {
+        break;
+      },
+    };
+    acc = acc + n;
+  }
+  acc
+}
+
+// `continue` in a `while`: sum of the odd numbers below n.
+fn odd_sum(n: Int) -> Int {
+  let mut i = 0;
+  let mut acc = 0;
+  while i < n {
+    i = i + 1;
+    if i % 2 == 0 {
+      continue;
+    }
+    acc = acc + i;
+  }
+  acc
+}
+
+// Nested loops: `break` and `continue` act on the innermost loop only.
+fn pairs(n: Int) -> List[(Int, Int)] {
+  let mut out = [];
+  let mut i = 0;
+  while true {
+    i = i + 1;
+    if i > n {
+      break;
+    }
+    for j in range(1, n + 1) {
+      if j == i {
+        continue;
+      }
+      if j > i {
+        break;
+      }
+      out = push(out, (i, j));
+    }
+  }
+  out
+}
+
+// A loop with an `ensures` contract, so `return` goes through `ov_ret`.
+fn first_square_above(n: Int) -> Int
+  ensures result * result > n
+{
+  let mut k = 0;
+  while true {
+    if k * k > n {
+      break;
+    }
+    k = k + 1;
+  }
+  k
+}
+
+// A lambda inside a loop body has its own `return`, and the loop still breaks.
+fn count_until(xs: List[Str], stop: Str) -> Int {
+  let mut n = 0;
+  for x in xs {
+    let is_stop = (|y: Str| { return y == stop; })(x);
+    if is_stop {
+      break;
+    }
+    n = n + 1;
+  }
+  n
+}
+
+fn main() -> Unit !io {
+  println(show(first_negative([3, 1, -4, 1, -5])));
+  println(show(first_negative([1, 2])));
+  println(show(total_until_stop([Circle(1), Square(0), Square(2), Stop, Circle(100)])));
+  println(show(total_until_stop([])));
+  println(show(odd_sum(10)));
+  println(show(pairs(3)));
+  println(show(first_square_above(10)));
+  println(show(count_until(["a", "b", "end", "c"], "end")));
+}

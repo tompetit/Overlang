@@ -319,6 +319,27 @@ fn recovery_reports_one_error_per_broken_definition() {
 }
 
 #[test]
+fn uppercase_value_names_say_why_and_suggest_the_lowercase_name() {
+    for (src, bad, fix) in [
+        ("fn solve(N: Int) -> Int { N }", "N", "n"),
+        ("fn Strongest_Extension(s: Str) -> Str { s }", "Strongest_Extension", "strongest_extension"),
+        ("fn f() -> Int { let mut MinPath = 1; MinPath }", "MinPath", "min_path"),
+        ("fn f(Type: Int) -> Int { 1 }", "Type", "type_"),
+    ] {
+        let d = &errors(src)[0];
+        assert_eq!(d.code, "E0002");
+        assert!(d.message.contains(&format!("`{bad}`")) && d.message.contains("start with a lowercase letter"), "{}", d.message);
+        assert_eq!(d.fixes.as_ref().unwrap()[0].patch, fix);
+    }
+}
+
+#[test]
+fn break_and_continue_need_a_semicolon_and_round_trip() {
+    assert_round_trip("fn f() -> Unit {\n  while true {\n    if false {\n      continue;\n    }\n    break;\n  }\n}\n");
+    assert_eq!(expected_of(&errors("fn f() -> Unit { while true { break } }")[0]), vec![";"]);
+}
+
+#[test]
 fn effect_names_are_lowercase() {
     let d = &errors("fn f() -> Unit !IO { () }")[0];
     assert_eq!(expected_of(d), vec!["effect name"]);

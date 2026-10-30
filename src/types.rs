@@ -337,6 +337,9 @@ struct Ctx {
     charges: Vec<Charge>,
     depth: usize,
     captures: Vec<(String, VarRef, Ty)>,
+    /// Enclosing `while`/`for` bodies; a lambda starts a new context, so a
+    /// `break` in a lambda does not see the loop around it.
+    loops: usize,
 }
 
 struct PendingMatch<'a> {
@@ -414,11 +417,24 @@ fn nearest<'s>(name: &str, cands: impl Iterator<Item = &'s String>) -> Option<Ve
     if fixes.is_empty() { None } else { Some(fixes) }
 }
 
-/// A statement that never completes normally: `return`, or an `if`/`match`/
+/// An unknown bare `N` is most likely a value name written with a capital:
+/// say so and offer the lowercased name first.
+fn value_name_hint(d: &mut Diag, name: &str) {
+    let fix = crate::parser::value_name(name);
+    d.message.push_str(&format!("; if `{name}` is meant as a variable, value names start with a lowercase letter"));
+    let mut fixes = vec![Fix { rank: 1, description: format!("rename `{name}` to `{fix}`"), patch: fix }];
+    for mut f in d.fixes.take().unwrap_or_default() {
+        f.rank = fixes.len() as u32 + 1;
+        fixes.push(f);
+    }
+    d.fixes = Some(fixes);
+}
+
+/// A statement that never completes normally: `return`, `break`, `continue`, or an `if`/`match`/
 /// block whose every branch ends in one.
 fn stmt_diverges(s: &Stmt) -> bool {
     match &s.kind {
-        StmtKind::Return(_) => true,
+        StmtKind::Return(_) | StmtKind::Break | StmtKind::Continue => true,
         StmtKind::Expr(e) => expr_diverges(e),
         _ => false,
     }
@@ -846,7 +862,7 @@ impl<'a> Checker<'a> {
                 self.begin(&f.sig.name);
                 self.check_contracts_and_params(&f.sig, &f.requires, &f.ensures);
                 let ret = self.out.fns[&f.sig.name].ret.clone();
-                self.ctxs.push(Ctx { kind: CtxKind::Body, ret: Some(ret.clone()), charges: vec![], depth: 0, captures: vec![] });
+                self.ctxs.push(Ctx { kind: CtxKind::Body, ret: Some(ret.clone()), charges: vec![], depth: 0, captures: vec![], loops: 0 });
                 self.check_block(&f.body, &ret);
                 self.body_charges = self.ctxs.pop().unwrap().charges;
                 self.pop_scope();
@@ -864,7 +880,7 @@ impl<'a> Checker<'a> {
             Item::Test(t) => {
                 self.begin(&t.name);
                 self.scopes.push(vec![]);
-                self.ctxs.push(Ctx { kind: CtxKind::Test, ret: Some(Ty::Unit), charges: vec![], depth: 0, captures: vec![] });
+                self.ctxs.push(Ctx { kind: CtxKind::Test, ret: Some(Ty::Unit), charges: vec![], depth: 0, captures: vec![], loops: 0 });
                 self.check_block(&t.body, &Ty::Unit);
                 self.ctxs.pop();
                 self.pop_scope();
@@ -899,7 +915,7 @@ impl<'a> Checker<'a> {
         for (clauses, is_ensures) in [(requires, false), (ensures, true)] {
             for c in clauses {
                 self.result_ty = if is_ensures { Some(fsig.ret.clone()) } else { None };
-                self.ctxs.push(Ctx { kind: CtxKind::Contract, ret: None, charges: vec![], depth: 0, captures: vec![] });
+                self.ctxs.push(Ctx { kind: CtxKind::Contract, ret: None, charges: vec![], depth: 0, captures: vec![], loops: 0 });
                 self.check(c, &Ty::Bool);
                 let ctx = self.ctxs.pop().unwrap();
                 self.contract_charges.extend(ctx.charges);
@@ -1567,6 +1583,9 @@ impl<'a> Checker<'a> {
             let fixes = nearest(name, self.out.ctors.keys());
             let d = self.diag("E0103", e.span, msg);
             d.fixes = fixes;
+            if args.is_empty() {
+                value_name_hint(d, name);
+            }
             for a in args {
                 self.expr(a, None);
             }
@@ -1736,7 +1755,7 @@ impl<'a> Checker<'a> {
             None => self.fresh(),
         };
         self.scopes.push(scope);
-        self.ctxs.push(Ctx { kind: CtxKind::Lambda, ret: Some(ret.clone()), charges: vec![], depth, captures: vec![] });
+        self.ctxs.push(Ctx { kind: CtxKind::Lambda, ret: Some(ret.clone()), charges: vec![], depth, captures: vec![], loops: 0 });
         self.check(body, &ret);
         let ctx = self.ctxs.pop().unwrap();
         self.pop_scope();
@@ -1825,7 +1844,7 @@ impl<'a> Checker<'a> {
             }
             StmtKind::While { cond, body } => {
                 self.check(cond, &Ty::Bool);
-                self.block(body, None);
+                self.loop_body(body);
             }
             StmtKind::For { pat, iter, body } => {
                 let it = self.expr(iter, None);
@@ -1836,7 +1855,7 @@ impl<'a> Checker<'a> {
                 self.pat(pat, &elem, false, &mut binds);
                 self.declare(binds, false);
                 self.irrefutable.push((pat, elem, None));
-                self.block(body, None);
+                self.loop_body(body);
                 self.pop_scope();
             }
             StmtKind::Return(v) => match self.ctxs.last().and_then(|c| c.ret.clone()) {
@@ -1848,10 +1867,26 @@ impl<'a> Checker<'a> {
                     self.expr(v, None);
                 }
             },
+            StmtKind::Break | StmtKind::Continue => {
+                if self.ctxs.last().is_none_or(|c| c.loops == 0) {
+                    let kw = if matches!(s.kind, StmtKind::Break) { "break" } else { "continue" };
+                    self.diag("E0117", s.span, format!("`{kw}` outside a loop: it must be inside a `while` or `for` body of the same function (a lambda body does not count)"));
+                }
+            }
             StmtKind::Expr(e) => {
                 self.expr(e, None);
             }
             StmtKind::Comment(_) => {}
+        }
+    }
+
+    fn loop_body(&mut self, body: &'a Block) {
+        if let Some(c) = self.ctxs.last_mut() {
+            c.loops += 1;
+        }
+        self.block(body, None);
+        if let Some(c) = self.ctxs.last_mut() {
+            c.loops -= 1;
         }
     }
 
@@ -1886,6 +1921,9 @@ impl<'a> Checker<'a> {
                     let fixes = nearest(name, self.out.ctors.keys());
                     let d = self.diag("E0103", p.span, format!("unknown constructor `{name}`"));
                     d.fixes = fixes;
+                    if args.is_empty() {
+                        value_name_hint(d, name);
+                    }
                     for a in args {
                         self.pat(a, &Ty::Error, mutable, out);
                     }

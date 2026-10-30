@@ -18,9 +18,13 @@ simplifications with a named upgrade path.
 - Comments: `//` to end of line. No block comments.
 - Identifiers: value and function names match `[a-z_][A-Za-z0-9_]*`. Type
   and constructor names match `[A-Z][A-Za-z0-9_]*`. Effect names match
-  `[a-z][a-z0-9_]*` and appear only after `!`.
+  `[a-z][a-z0-9_]*` and appear only after `!`. A name starting with an
+  uppercase letter where a value name is required (a parameter, a function,
+  a field, `let mut N`) is E0002 whose message says value names start with a
+  lowercase letter and whose fix is the name in snake case (`N` to `n`,
+  `Strongest_Extension` to `strongest_extension`).
 - Keywords: `fn type declare foreign link intrinsic let mut if else match while
-  for in return requires ensures test true false result`.
+  for in return break continue requires ensures test true false result`.
   `result` is a keyword only inside an `ensures` clause.
 - Literals:
   - Int: decimal digits with optional `_` separators (`1_000_000`). Must fit
@@ -195,8 +199,16 @@ unary `- !`, postfix (`?`, call, field, index). Comparisons do not chain.
 - Statements: `let p = e;` (pattern must be irrefutable, E0110), `let x: T = e;`
   (annotation on a plain name, the fix E0107 points to), `let mut x = e;`,
   `x = e;` (x must be `mut`), `while c { }`, `for p in e { }` where e is a
-  List, `return e;` (a value is required; write `return ();`), `e;`. As in
-  Rust, a statement that is an `if`, `match` or block needs no `;` after it.
+  List, `return e;` (a value is required; write `return ();`), `break;`,
+  `continue;`, `e;`. As in Rust, a statement that is an `if`, `match` or block
+  needs no `;` after it.
+- `break;` leaves the innermost enclosing `while` or `for`; `continue;` skips
+  to its next iteration (re-testing a `while` condition). There are no labels
+  and no `break` value. Both are legal only in a loop body of the same
+  function, test or lambda: a `break` in a lambda inside a loop does not see
+  the loop, and one in a `while` condition does not either (E0117). Like
+  `return`, they never complete, so a block or match arm ending in one fits
+  any expected type: `let n = match o { Some(v) => v, None => { break; } };`.
 - `e?` on `Result[T, E]` evaluates to `T` or returns `Err(e)` from the
   enclosing function, whose return type must be `Result[_, E]`. On
   `Option[T]` it returns `None` likewise.
@@ -345,8 +357,11 @@ truth; this list is the required set.
 `filter_map[T, U, !e](xs, f: fn(T) -> Option[U] !e) -> List[U] !e`,
 `take_while[T, !e](xs, p: fn(T) -> Bool !e) -> List[T] !e`, `drop_while` (same),
 `max_by[T](xs, key: fn(T) -> Int) -> Option[T]`, `min_by` (same; the first
-element wins ties), `sort_by_str[T](xs, key: fn(T) -> Str) -> List[T]`
-(stable, as is `sort_by`).
+element wins ties), `sort_by_str[T](xs, key: fn(T) -> Str) -> List[T]`,
+`count_by[T, K](xs, key: fn(T) -> K) -> Map[K, Int]` (K is a map key: Int,
+Str or Bool; keys in order of first appearance),
+`sum_by[T, !e](xs, f: fn(T) -> Int !e) -> Int !e`. `sort`, `sort_by` and
+`sort_by_str` are stable: elements that compare equal keep their order.
 
 **Str**: `str_len` (code points), `chars -> List[Str]`, `split(s, sep)`,
 `trim`, `to_upper`, `to_lower`, `starts_with`, `ends_with`, `str_contains`,
@@ -359,7 +374,9 @@ index; an empty needle gives `Some(0)`), `lines(s) -> List[Str]` (split on
 `"\n"`, dropping one trailing empty line, so `lines("") == []`), and ASCII
 classification of the first code point, false for the empty string:
 `is_digit`, `is_alpha`, `is_alnum`, `is_space` (space and `\t` to `\r`),
-`is_upper`, `is_lower`, each `(s: Str) -> Bool`.
+`is_upper`, `is_lower`, each `(s: Str) -> Bool`; `split_ws(s) -> List[Str]`
+(split on runs of ASCII whitespace as `is_space`, no empty pieces, so
+`split_ws(" a  b ") == ["a", "b"]`).
 
 **Map and Set**: `map_new`, `map_get -> Option[V]`, `map_set` (returns new),
 `map_remove`, `map_contains`, `map_keys`, `map_values`, `map_len`,
@@ -371,7 +388,15 @@ classification of the first code point, false for the empty string:
 
 **Math**: `abs`, `min`, `max` (Int), `fabs`, `fmin`, `fmax` (Float), `pow(Int, Int)`,
 `fpow`, `sqrt`, `floor`, `ceil`, `round`, `to_float`, `to_int` (truncate),
-`div_floor`, `mod_floor`.
+`div_floor`, `mod_floor`. Integers: `digits(n) -> List[Int]` (decimal digits
+of `|n|`, most significant first, `[0]` for 0), `from_digits(List[Int]) -> Int`
+(requires every digit in 0..9), `to_base(n, base) -> Str` (requires
+`2 <= base <= 36`; digits `0-9a-z`, `-` prefix for negatives),
+`from_base(s, base) -> Option[Int]` (same requirement; an optional `-` then
+one or more digits of either case below `base`; `None` otherwise or when the
+value does not fit an Int), `gcd(a, b)` (non-negative, `gcd(0, 0) == 0`),
+`lcm(a, b)` (non-negative, 0 if either is 0), `is_prime(n) -> Bool` (trial
+division up to the square root; false below 2).
 
 **IO** (`!io`): `print(s)`, `println(s)`, `read_line() -> Option[Str]`,
 `read_all() -> Str`, `args() -> List[Str]`, `flush() -> Unit`.
@@ -568,7 +593,7 @@ Codes:
 |---|---|---|
 | E0000 | Command-line or file error | `message` |
 | E0001 | Lexical error | `message` |
-| E0002 | Parse error | `expected` tokens |
+| E0002 | Parse error | `expected` tokens; for an uppercase value name, `fixes`: the snake-case name |
 | E0100 | Unknown name | `fixes`: nearest names by edit distance |
 | E0101 | Type mismatch | `expected`, `actual` types |
 | E0102 | Wrong argument count | `expected`, `actual` counts |
@@ -586,6 +611,7 @@ Codes:
 | E0114 | Invalid foreign signature | which type |
 | E0115 | Recursive type without indirection through a constructor | |
 | E0116 | Ambiguous hash prefix | `actual`: the matching hashes |
+| E0117 | `break` or `continue` outside a loop | |
 | W0001 | Unimplemented `declare` | |
 | W0002 | Unused variable | `fixes`: rename to `_x` |
 | W0003 | Unreachable match arm | |
@@ -616,6 +642,9 @@ Codes:
 - All heap allocation goes through `GC_MALLOC`. Nothing is freed.
 - Int arithmetic uses `__builtin_*_overflow` and traps on overflow.
 - Contracts become checks at function entry and before every return.
+- `break` and `continue` become `goto` to per-loop labels placed after the
+  loop and at the end of its body, never C `break`/`continue`, so they stay
+  correct inside whatever C the lowering of `match` and `if` emits.
 - `show` is generated per monomorphized type.
 - Traps call `ov_trap(kind, fn, hash, detail_json)` which prints and exits 3;
   `hash` is the full store hash of the definition that trapped.

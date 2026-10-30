@@ -196,6 +196,24 @@ fn min_by[T](xs: List[T], key: fn(T) -> Int) -> Option[T] {
   best
 }
 
+fn sum_by[T, !e](xs: List[T], f: fn(T) -> Int !e) -> Int !e {
+  let mut acc = 0;
+  for x in xs {
+    acc = acc + f(x);
+  }
+  acc
+}
+
+// How many elements have each key, keys in order of first appearance.
+fn count_by[T, K](xs: List[T], key: fn(T) -> K) -> Map[K, Int] {
+  let mut m = map_new();
+  for x in xs {
+    let k = key(x);
+    m = map_set(m, k, unwrap_or(map_get(m, k), 0) + 1);
+  }
+  m
+}
+
 // Stable: equal keys keep their order. Ranks the distinct keys, then sorts by rank.
 fn sort_by_str[T](xs: List[T], key: fn(T) -> Str) -> List[T] {
   let sorted_keys = unique(sort(map(xs, key)));
@@ -281,6 +299,25 @@ fn is_space(s: Str) -> Bool {
     Some(c) => c == 32 || (c >= 9 && c <= 13),
     None => false,
   }
+}
+
+// Split on runs of ASCII whitespace (as `is_space`); no empty pieces.
+fn split_ws(s: Str) -> List[Str]
+  ensures all(result, |w| w != "")
+{
+  let mut out = [];
+  let mut cur = "";
+  for c in chars(s) {
+    if is_space(c) {
+      if cur != "" {
+        out = push(out, cur);
+        cur = "";
+      }
+    } else {
+      cur = cur ++ c;
+    }
+  }
+  if cur != "" { push(out, cur) } else { out }
 }
 
 // ---- Map and Set (runtime; K restricted to Int, Str, Bool) ----
@@ -396,6 +433,111 @@ intrinsic fn to_float(x: Int) -> Float = "@to_float"
 intrinsic fn to_int(x: Float) -> Int = "@to_int"
 intrinsic fn div_floor(a: Int, b: Int) -> Int = "ov_div_floor"
 intrinsic fn mod_floor(a: Int, b: Int) -> Int = "ov_mod_floor"
+
+// Decimal digits of |n|, most significant first; digits(0) is [0].
+fn digits(n: Int) -> List[Int]
+  ensures len(result) >= 1
+  ensures all(result, |d| d >= 0 && d <= 9)
+{
+  if n == 0 {
+    return [0];
+  }
+  // `%` and `/` truncate toward zero, so this also works for the minimum Int.
+  let mut m = n;
+  let mut out = [];
+  while m != 0 {
+    out = push(out, abs(m % 10));
+    m = m / 10;
+  }
+  reverse(out)
+}
+
+fn from_digits(ds: List[Int]) -> Int
+  requires all(ds, |d| d >= 0 && d <= 9)
+{
+  fold(ds, 0, |a, d| a * 10 + d)
+}
+
+// Digits 0-9 then a-z; a `-` prefix for negatives.
+fn to_base(n: Int, base: Int) -> Str
+  requires base >= 2 && base <= 36
+{
+  if n == 0 {
+    return "0";
+  }
+  let alphabet = "0123456789abcdefghijklmnopqrstuvwxyz";
+  let mut m = n;
+  let mut out = "";
+  while m != 0 {
+    let d = abs(m % base);
+    out = substr(alphabet, d, d + 1) ++ out;
+    m = m / base;
+  }
+  if n < 0 { "-" ++ out } else { out }
+}
+
+// An optional `-`, then one or more digits 0-9, a-z or A-Z below `base`.
+// None for anything else, or when the value does not fit in an Int.
+fn from_base(s: Str, base: Int) -> Option[Int]
+  requires base >= 2 && base <= 36
+{
+  let neg = starts_with(s, "-");
+  let body = if neg { drop(chars(s), 1) } else { chars(s) };
+  if is_empty(body) {
+    return None;
+  }
+  let lowest = 0 - 9223372036854775807 - 1;
+  // Accumulate negatively: the minimum Int has no positive counterpart.
+  let mut acc = 0;
+  for c in body {
+    let cp = unwrap_or(code_point(c), 0);
+    let d = if is_digit(c) { cp - 48 } else if is_lower(c) { cp - 87 } else if is_upper(c) { cp - 55 } else { 99 };
+    if d >= base || acc < (lowest + d) / base {
+      return None;
+    }
+    acc = acc * base - d;
+  }
+  if neg { Some(acc) } else if acc == lowest { None } else { Some(0 - acc) }
+}
+
+fn gcd(a: Int, b: Int) -> Int
+  ensures result >= 0
+{
+  let mut x = abs(a);
+  let mut y = abs(b);
+  while y != 0 {
+    let t = x % y;
+    x = y;
+    y = t;
+  }
+  x
+}
+
+// 0 when either argument is 0.
+fn lcm(a: Int, b: Int) -> Int
+  ensures result >= 0
+{
+  if a == 0 || b == 0 { 0 } else { abs(a / gcd(a, b) * b) }
+}
+
+// Trial division up to the square root.
+fn is_prime(n: Int) -> Bool {
+  if n < 2 {
+    return false;
+  }
+  if n % 2 == 0 {
+    return n == 2;
+  }
+  let mut i = 3;
+  // `i <= n / i` rather than `i * i <= n`, which overflows near the maximum Int.
+  while i <= n / i {
+    if n % i == 0 {
+      return false;
+    }
+    i = i + 2;
+  }
+  true
+}
 
 // ---- IO and environment ----
 intrinsic fn print(s: Str) -> Unit !io = "ov_print"

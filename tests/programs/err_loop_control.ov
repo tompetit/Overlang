@@ -1,0 +1,22 @@
+fn f(xs: List[Int]) -> Int {
+  if len(xs) == 0 {
+    break;
+  }
+  len(xs)
+}
+
+// A lambda body does not see the loop around it.
+fn g(xs: List[Int]) -> Unit {
+  for x in xs {
+    for_each(xs, |y| {
+      if y == x {
+        continue;
+      }
+    });
+  }
+}
+
+fn main() -> Unit !io {
+  println(show(f([1])));
+  g([1]);
+}

@@ -1,0 +1,45 @@
+type P = { name: Str, n: Int }
+
+fn main() -> Unit !io {
+  println(show(digits(9045)));
+  println(show(digits(0)));
+  println(show(digits(-37)));
+  println(show(len(digits(0 - 9223372036854775807 - 1))));
+  println(show(from_digits([9, 0, 4, 5])));
+  println(show(from_digits([])));
+  println(show(from_digits(digits(1234567))));
+  println(to_base(10, 2));
+  println(to_base(255, 16));
+  println(to_base(-35, 36));
+  println(to_base(0, 7));
+  println(to_base(9223372036854775807, 36));
+  println(show(from_base("1010", 2)));
+  println(show(from_base("FF", 16)));
+  println(show(from_base("-z", 36)));
+  println(show(from_base("12", 2)));
+  println(show(from_base("", 10)));
+  println(show(from_base("-", 10)));
+  println(show(from_base("1x", 10)));
+  println(show(from_base("9223372036854775807", 10)));
+  println(show(from_base("9223372036854775808", 10)));
+  println(show(from_base("-9223372036854775808", 10)));
+  println(show(from_base("-9223372036854775809", 10)));
+  println(show(from_base(to_base(-123456, 7), 7)));
+  println(show([gcd(12, 18), gcd(-12, 18), gcd(0, 5), gcd(0, 0), gcd(17, 5)]));
+  println(show([lcm(4, 6), lcm(-4, 6), lcm(0, 3), lcm(7, 7)]));
+  println(show(filter(range(-3, 30), is_prime)));
+  println(show([is_prime(7919), is_prime(7917), is_prime(2147483647), is_prime(9223372036854775807)]));
+  println(show(split_ws("  the quick\tbrown\n\nfox  ")));
+  println(show(split_ws("")));
+  println(show(split_ws(" \t ")));
+  println(show(split_ws("one")));
+  println(show(count_by(["a", "bb", "c", "dd", "eee"], str_len)));
+  println(show(count_by(chars("hello"), |c| c)));
+  println(show(count_by([1, 2, 3, 4, 5], |x| x % 2 == 0)));
+  println(show(count_by([], |x: Int| x)));
+  println(show(sum_by([P { name: "a", n: 2 }, P { name: "b", n: 5 }], |p| p.n)));
+  println(show(sum_by([], |s: Str| str_len(s))));
+  // sort, sort_by and sort_by_str are stable.
+  let ps = [P { name: "x", n: 2 }, P { name: "y", n: 1 }, P { name: "z", n: 2 }, P { name: "w", n: 1 }];
+  println(show(map(sort_by(ps, |p| p.n), |p| p.name)));
+}
