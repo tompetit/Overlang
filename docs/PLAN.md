@@ -283,4 +283,5 @@ are not included.
 | 2026-10-30 | Contract fuzzing | Opus | 308k |
 | 2026-10-30 | Language revision 1 | Sonnet | 126k |
 | 2026-10-30 | HumanEval translations 40 to 155 | Sonnet | 238k |
-| | **Total so far** | | **2.61M** |
+| 2026-10-30 | Benchmark B tasks and Python port | Sonnet | 245k |
+| | **Total so far** | | **2.86M** |
