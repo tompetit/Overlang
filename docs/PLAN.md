@@ -259,4 +259,9 @@ are not included.
 | 2026-10-29 | Store follow-up (propagation, rendering) | Opus | 155k |
 | 2026-10-29 | Language card | Sonnet | 95k |
 | 2026-10-29 | Monomorphization and C emitter | Opus | 254k |
-| | **Total so far** | | **1.45M** |
+| 2026-10-29 | Todo web app example | Sonnet | 88k |
+| 2026-10-29 | Overlang eval adapter, 40 HumanEval tasks | Sonnet | 159k |
+| 2026-10-30 | Store merge and integration | Opus | 237k |
+| 2026-10-30 | Contract fuzzing | Opus | 308k |
+| 2026-10-30 | Language revision 1 | Sonnet | 126k |
+| | **Total so far** | | **2.37M** |
