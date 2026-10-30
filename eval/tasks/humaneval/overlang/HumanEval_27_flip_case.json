@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_27_flip_case",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_27_flip_case",
+ "entry_point": "flip_case",
+ "prompt": "// For a given string, flip lowercase characters to uppercase and uppercase to lowercase.\n// Examples:\n//   flip_case(\"Hello\") == \"hELLO\"\nfn flip_case(string: Str) -> Str {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(flip_case(\"\"), \"\");\n}\n\ntest check_2 {\n  assert_eq(flip_case(\"Hello!\"), \"hELLO!\");\n}\n\ntest check_3 {\n  assert_eq(flip_case(\"These violent delights have violent ends\"), \"tHESE VIOLENT DELIGHTS HAVE VIOLENT ENDS\");\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(flip_case(\"\"), \"\");\n}\n",
+ "solution": "// For a given string, flip lowercase characters to uppercase and uppercase to lowercase.\n// Examples:\n//   flip_case(\"Hello\") == \"hELLO\"\nfn flip_case(string: Str) -> Str {\n  join(map(chars(string), |c| if c == to_upper(c) { to_lower(c) } else { to_upper(c) }), \"\")\n}\n"
+}

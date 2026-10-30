@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_5_intersperse",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_5_intersperse",
+ "entry_point": "intersperse",
+ "prompt": "// Insert a number 'delimeter' between every two consecutive elements of input list `numbers'\n// Examples:\n//   intersperse([], 4) == []\n//   intersperse([1, 2, 3], 4) == [1, 4, 2, 4, 3]\nfn intersperse(numbers: List[Int], delimeter: Int) -> List[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(intersperse([], 7), []);\n}\n\ntest check_2 {\n  assert_eq(intersperse([5, 6, 3, 2], 8), [5, 8, 6, 8, 3, 8, 2]);\n}\n\ntest check_3 {\n  assert_eq(intersperse([2, 2, 2], 2), [2, 2, 2, 2, 2]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(intersperse([], 7), []);\n}\n",
+ "solution": "// Insert a number 'delimeter' between every two consecutive elements of input list `numbers'\n// Examples:\n//   intersperse([], 4) == []\n//   intersperse([1, 2, 3], 4) == [1, 4, 2, 4, 3]\nfn intersperse(numbers: List[Int], delimeter: Int) -> List[Int] {\n  let mut out: List[Int] = [];\n  for (i, x) in enumerate(numbers) {\n    if i > 0 {\n      out = push(out, delimeter);\n    }\n    out = push(out, x);\n  }\n  out\n}\n"
+}

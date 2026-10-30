@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_26_remove_duplicates",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_26_remove_duplicates",
+ "entry_point": "remove_duplicates",
+ "prompt": "// From a list of integers, remove all elements that occur more than once.\n// Keep order of elements left the same as in the input.\n// Examples:\n//   remove_duplicates([1, 2, 3, 2, 4]) == [1, 3, 4]\nfn remove_duplicates(numbers: List[Int]) -> List[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(remove_duplicates([]), []);\n}\n\ntest check_2 {\n  assert_eq(remove_duplicates([1, 2, 3, 4]), [1, 2, 3, 4]);\n}\n\ntest check_3 {\n  assert_eq(remove_duplicates([1, 2, 3, 2, 4, 3, 5]), [1, 4, 5]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(remove_duplicates([]), []);\n}\n",
+ "solution": "// From a list of integers, remove all elements that occur more than once.\n// Keep order of elements left the same as in the input.\n// Examples:\n//   remove_duplicates([1, 2, 3, 2, 4]) == [1, 3, 4]\nfn remove_duplicates(numbers: List[Int]) -> List[Int] {\n  filter(numbers, |x| len(filter(numbers, |y| y == x)) == 1)\n}\n"
+}

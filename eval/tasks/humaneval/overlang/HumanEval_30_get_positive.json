@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_30_get_positive",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_30_get_positive",
+ "entry_point": "get_positive",
+ "prompt": "// Return only positive numbers in the list.\n// Examples:\n//   get_positive([-1, 2, -4, 5, 6]) == [2, 5, 6]\n//   get_positive([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10]) == [5, 3, 2, 3, 9, 123, 1]\nfn get_positive(l: List[Int]) -> List[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(get_positive([-1, -2, 4, 5, 6]), [4, 5, 6]);\n}\n\ntest check_2 {\n  assert_eq(get_positive([5, 3, -5, 2, 3, 3, 9, 0, 123, 1, -10]), [5, 3, 2, 3, 3, 9, 123, 1]);\n}\n\ntest check_3 {\n  assert_eq(get_positive([-1, -2]), []);\n}\n\ntest check_4 {\n  assert_eq(get_positive([]), []);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(get_positive([-1, -2, 4, 5, 6]), [4, 5, 6]);\n}\n",
+ "solution": "// Return only positive numbers in the list.\n// Examples:\n//   get_positive([-1, 2, -4, 5, 6]) == [2, 5, 6]\n//   get_positive([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10]) == [5, 3, 2, 3, 9, 123, 1]\nfn get_positive(l: List[Int]) -> List[Int] {\n  filter(l, |x| x > 0)\n}\n"
+}

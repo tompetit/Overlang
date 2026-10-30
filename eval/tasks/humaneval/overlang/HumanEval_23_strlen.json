@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_23_strlen",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_23_strlen",
+ "entry_point": "strlen",
+ "prompt": "// Return length of given string\n// Examples:\n//   strlen(\"\") == 0\n//   strlen(\"abc\") == 3\nfn strlen(string: Str) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(strlen(\"\"), 0);\n}\n\ntest check_2 {\n  assert_eq(strlen(\"x\"), 1);\n}\n\ntest check_3 {\n  assert_eq(strlen(\"asdasnakj\"), 9);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(strlen(\"\"), 0);\n}\n",
+ "solution": "// Return length of given string\n// Examples:\n//   strlen(\"\") == 0\n//   strlen(\"abc\") == 3\nfn strlen(string: Str) -> Int {\n  str_len(string)\n}\n"
+}

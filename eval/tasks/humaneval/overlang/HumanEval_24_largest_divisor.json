@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_24_largest_divisor",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_24_largest_divisor",
+ "entry_point": "largest_divisor",
+ "prompt": "// For a given number n, find the largest number that divides n evenly, smaller than n\n// Examples:\n//   largest_divisor(15) == 5\nfn largest_divisor(n: Int) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(largest_divisor(3), 1);\n}\n\ntest check_2 {\n  assert_eq(largest_divisor(7), 1);\n}\n\ntest check_3 {\n  assert_eq(largest_divisor(10), 5);\n}\n\ntest check_4 {\n  assert_eq(largest_divisor(100), 50);\n}\n\ntest check_5 {\n  assert_eq(largest_divisor(49), 7);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(largest_divisor(3), 1);\n}\n",
+ "solution": "// For a given number n, find the largest number that divides n evenly, smaller than n\n// Examples:\n//   largest_divisor(15) == 5\nfn largest_divisor(n: Int) -> Int {\n  let mut d = n / 2;\n  while d > 1 && n % d != 0 {\n    d = d - 1;\n  }\n  d\n}\n"
+}

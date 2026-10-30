@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_1_separate_paren_groups",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_1_separate_paren_groups",
+ "entry_point": "separate_paren_groups",
+ "prompt": "// Input to this function is a string containing multiple groups of nested parentheses. Your goal is to\n// separate those group into separate strings and return the list of those.\n// Separate groups are balanced (each open brace is properly closed) and not nested within each other\n// Ignore any spaces in the input string.\n// Examples:\n//   separate_paren_groups(\"( ) (( )) (( )( ))\") == [\"()\", \"(())\", \"(()())\"]\nfn separate_paren_groups(paren_string: Str) -> List[Str] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(separate_paren_groups(\"(()()) ((())) () ((())()())\"), [\"(()())\", \"((()))\", \"()\", \"((())()())\"]);\n}\n\ntest check_2 {\n  assert_eq(separate_paren_groups(\"() (()) ((())) (((())))\"), [\"()\", \"(())\", \"((()))\", \"(((())))\"]);\n}\n\ntest check_3 {\n  assert_eq(separate_paren_groups(\"(()(())((())))\"), [\"(()(())((())))\"]);\n}\n\ntest check_4 {\n  assert_eq(separate_paren_groups(\"( ) (( )) (( )( ))\"), [\"()\", \"(())\", \"(()())\"]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(separate_paren_groups(\"(()()) ((())) () ((())()())\"), [\"(()())\", \"((()))\", \"()\", \"((())()())\"]);\n}\n",
+ "solution": "// Input to this function is a string containing multiple groups of nested parentheses. Your goal is to\n// separate those group into separate strings and return the list of those.\n// Separate groups are balanced (each open brace is properly closed) and not nested within each other\n// Ignore any spaces in the input string.\n// Examples:\n//   separate_paren_groups(\"( ) (( )) (( )( ))\") == [\"()\", \"(())\", \"(()())\"]\nfn separate_paren_groups(paren_string: Str) -> List[Str] {\n  let mut out: List[Str] = [];\n  let mut cur = \"\";\n  let mut depth = 0;\n  for c in chars(paren_string) {\n    if c == \"(\" {\n      depth = depth + 1;\n      cur = cur ++ c;\n    } else if c == \")\" {\n      depth = depth - 1;\n      cur = cur ++ c;\n      if depth == 0 {\n        out = push(out, cur);\n        cur = \"\";\n      }\n    }\n  }\n  out\n}\n"
+}

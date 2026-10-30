@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_18_how_many_times",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_18_how_many_times",
+ "entry_point": "how_many_times",
+ "prompt": "// Find how many times a given substring can be found in the original string. Count overlaping cases.\n// Examples:\n//   how_many_times(\"\", \"a\") == 0\n//   how_many_times(\"aaa\", \"a\") == 3\n//   how_many_times(\"aaaa\", \"aa\") == 3\nfn how_many_times(string: Str, substring: Str) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(how_many_times(\"\", \"x\"), 0);\n}\n\ntest check_2 {\n  assert_eq(how_many_times(\"xyxyxyx\", \"x\"), 4);\n}\n\ntest check_3 {\n  assert_eq(how_many_times(\"cacacacac\", \"cac\"), 4);\n}\n\ntest check_4 {\n  assert_eq(how_many_times(\"john doe\", \"john\"), 1);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(how_many_times(\"\", \"x\"), 0);\n}\n",
+ "solution": "// Find how many times a given substring can be found in the original string. Count overlaping cases.\n// Examples:\n//   how_many_times(\"\", \"a\") == 0\n//   how_many_times(\"aaa\", \"a\") == 3\n//   how_many_times(\"aaaa\", \"aa\") == 3\nfn how_many_times(string: Str, substring: Str) -> Int {\n  let n = str_len(string);\n  let m = str_len(substring);\n  let mut count = 0;\n  for i in range(0, n - m + 1) {\n    if substr(string, i, i + m) == substring {\n      count = count + 1;\n    }\n  }\n  count\n}\n"
+}

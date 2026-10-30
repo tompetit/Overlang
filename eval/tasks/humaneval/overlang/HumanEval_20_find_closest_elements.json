@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_20_find_closest_elements",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_20_find_closest_elements",
+ "entry_point": "find_closest_elements",
+ "prompt": "// From a supplied list of numbers (of length at least two) select and return two that are the closest to each\n// other and return them in order (smaller number, larger number).\n// Examples:\n//   find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.2]) == (2.0, 2.2)\n//   find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0]) == (2.0, 2.0)\nfn find_closest_elements(numbers: List[Float]) -> (Float, Float) {\n  todo()\n}\n",
+ "tests": "fn tst_close(a: Float, b: Float) -> Bool {\n  fabs(a - b) < 1.0e-6\n}\n\nfn tst_close_pair(a: (Float, Float), b: (Float, Float)) -> Bool {\n  tst_close(a.0, b.0) && tst_close(a.1, b.1)\n}\n\ntest check_1 {\n  assert(tst_close_pair(find_closest_elements([1.0, 2.0, 3.9, 4.0, 5.0, 2.2]), (3.9, 4.0)));\n}\n\ntest check_2 {\n  assert(tst_close_pair(find_closest_elements([1.0, 2.0, 5.9, 4.0, 5.0]), (5.0, 5.9)));\n}\n\ntest check_3 {\n  assert(tst_close_pair(find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.2]), (2.0, 2.2)));\n}\n\ntest check_4 {\n  assert(tst_close_pair(find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0]), (2.0, 2.0)));\n}\n\ntest check_5 {\n  assert(tst_close_pair(find_closest_elements([1.1, 2.2, 3.1, 4.1, 5.1]), (2.2, 3.1)));\n}\n",
+ "visible_test": "fn tst_close(a: Float, b: Float) -> Bool {\n  fabs(a - b) < 1.0e-6\n}\n\nfn tst_close_pair(a: (Float, Float), b: (Float, Float)) -> Bool {\n  tst_close(a.0, b.0) && tst_close(a.1, b.1)\n}\n\ntest check_1 {\n  assert(tst_close_pair(find_closest_elements([1.0, 2.0, 3.9, 4.0, 5.0, 2.2]), (3.9, 4.0)));\n}\n",
+ "solution": "// From a supplied list of numbers (of length at least two) select and return two that are the closest to each\n// other and return them in order (smaller number, larger number).\n// Examples:\n//   find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.2]) == (2.0, 2.2)\n//   find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0]) == (2.0, 2.0)\nfn find_closest_elements(numbers: List[Float]) -> (Float, Float) {\n  let xs = sort(numbers);\n  let mut best = (xs[0], xs[1]);\n  for i in range(2, len(xs)) {\n    if xs[i] - xs[i - 1] < best.1 - best.0 {\n      best = (xs[i - 1], xs[i]);\n    }\n  }\n  best\n}\n"
+}

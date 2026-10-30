@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_11_string_xor",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_11_string_xor",
+ "entry_point": "string_xor",
+ "prompt": "// Input are two strings a and b consisting only of 1s and 0s.\n// Perform binary XOR on these inputs and return result also as a string.\n// Examples:\n//   string_xor(\"010\", \"110\") == \"100\"\nfn string_xor(a: Str, b: Str) -> Str {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(string_xor(\"111000\", \"101010\"), \"010010\");\n}\n\ntest check_2 {\n  assert_eq(string_xor(\"1\", \"1\"), \"0\");\n}\n\ntest check_3 {\n  assert_eq(string_xor(\"0101\", \"0000\"), \"0101\");\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(string_xor(\"111000\", \"101010\"), \"010010\");\n}\n",
+ "solution": "// Input are two strings a and b consisting only of 1s and 0s.\n// Perform binary XOR on these inputs and return result also as a string.\n// Examples:\n//   string_xor(\"010\", \"110\") == \"100\"\nfn string_xor(a: Str, b: Str) -> Str {\n  join(map(zip(chars(a), chars(b)), |p| if p.0 == p.1 { \"0\" } else { \"1\" }), \"\")\n}\n"
+}
