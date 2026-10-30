@@ -87,6 +87,17 @@ class TestAdapter(unittest.TestCase):
         self.assertIn("update todos set done = 1 where id", out)  # setup override reached the store
         self.assertIn("toggle_todo", ad.export_store(work))
 
+    @unittest.skipUnless(OV, "ov not built")
+    def test_ov_helper_accepts_exit_2_for_edit(self):
+        work = SCRATCH / "ovedit" / "work"
+        ad = benchb.for_lang("overlang")
+        ad.workspace({"id": "b19_bug_toggle"}, work)
+        (work / "bad.ov").write_text("fn bad_request(msg: Str) -> Int { 1 }\n")
+        out = ad._ov(work, "edit", "bad_request", "--file", "bad.ov")  # a dependent breaks: exit 2
+        self.assertIn('"code":"E0101"', out)
+        with self.assertRaises(RuntimeError):
+            ad._ov(work, "view", "no_such_name")
+
     def test_read_tokens(self):
         def turn(mid, tool=None, inp=None, usage=(0, 0)):
             content = [{"type": "tool_use", "id": mid, "name": tool, "input": inp or {}}] if tool else [{"type": "text", "text": "x"}]

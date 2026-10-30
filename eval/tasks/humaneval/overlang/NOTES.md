@@ -3,12 +3,17 @@
 All 156 shared ids of `eval/tasks/index.json`. **155 validated, 1 skipped** (HumanEval_92).
 Batch 1 = ids 0..39 (40 validated); batch 2 = ids 40..155 (115 validated, 1 skipped).
 Regenerate and re-validate with `python3 -I eval/tasks/humaneval/overlang/build.py [--tasks a:b]`
-(needs `target/release/ov`); it only writes a task file when `ov` confirms that
+(needs `target/release/ov`; default range `0:40`, so also run `--tasks 40:156`); it only writes a task file when `ov` confirms that
 the stub checks, the stub fails the hidden tests, and the reference solution
 passes both the visible and the hidden tests. The mock run
-(`run.py --benchmark humaneval --lang overlang --agent mock --mock-solve`) passes 155/155;
-`--tasks 0:156` itself fails because the harness loads `index.json` ids without skipping
-a missing task file, so run it as `0:88` and `89:156` (88 is the skipped id).
+(`run.py --benchmark humaneval --lang overlang --agent mock --mock-solve --tasks 0:156`) passes 155/155;
+`run.py` logs `skip HumanEval_92_any_int` for the missing task file and goes on.
+
+**Re-validation after language revisions 1 and 2** (store re-check on edit, `ov export`, `break`/`continue`,
+number/digit/counting prelude helpers): all 155 tasks regenerated and validated again (155 validated,
+0 failed, 1 skipped); mock-solve 155/155. Six tasks clashed with prelude names added by revision 2 and
+were changed (below); the other 149 regenerate byte-identical. A scan of every entry point and every
+`fn`/`type` defined in a solution against all prelude names found no other clash.
 
 ## Task file format
 
@@ -28,8 +33,9 @@ a missing task file, so run it as `0:88` and `89:156` (88 is the skipped id).
 ## Deviations from the Python task
 
 - `HumanEval_34_unique` is renamed `unique_sorted`: `unique` is a prelude
-  function and prelude names cannot be redefined (E0109). Of all 156 shared
-  HumanEval ids this is the only entry-point clash. The other direction: one
+  function and prelude names cannot be redefined (E0109). Revision 2 added two
+  more entry-point clashes (`is_prime`, `digits`), see the revision-2 renames below.
+  The other direction: one
   parameter name is an Overlang keyword, `test` in `HumanEval_111_histogram`
   (`let test = ...` and `fn f(type: Int)` are parse errors E0002); it will need
   a rename when that task is translated.
@@ -51,14 +57,10 @@ that remain. No fixtures were added to `tests/programs/`.
 
 ## Language and tooling gaps
 
-1. **The card describes a store-based CLI that the binary does not have.**
-   CARD.md says "always pass `--json`" and lists `ov check [name]`,
-   `ov run <name>`, `ov add/view/edit/ctx/deps`. The built `ov` has `check`,
-   `build`, `run`, `test`, `fmt`, `parse` over *files*; `--json` is rejected
-   (E0000) and `ctx` is an unrecognized subcommand. The adapter's CLAUDE.md
-   states the file-based reality after the card, but an agent that follows the
-   card first will waste turns. Either implement the store commands or trim the
-   card.
+1. **(Resolved.) The card described a store-based CLI that the binary did not have.**
+   The store commands now exist and the card was re-checked against `ov --help` and
+   every subcommand (see below); the Benchmark A workspace has no store, and its
+   CLAUDE.md says so.
 2. **Build products land in the cwd**: `ov test` / `ov run` leave `.ovbuild/`,
    `a` and `a.c` in the current directory. The adapter runs `ov` from `.ovtest/`
    (workspace) and `hidden/` (grading) to keep the agent's directory clean.
@@ -107,7 +109,19 @@ that remain. No fixtures were added to `tests/programs/`.
 | 153_Strongest_Extension | fn `Strongest_Extension` | `strongest_extension` | same, `renamed_from` set |
 
 Names like `digitSum`, `minPath`, `specialFilter`, `minSubArraySum` (lower camel case) are fine.
-No entry point of batch 2 clashed with a prelude name.
+At the time, no entry point of batch 2 clashed with a prelude name; revision 2 changed that.
+
+## Renames forced by revision 2 (prelude `is_prime`, `digits`)
+
+| task | python | Overlang | why |
+|---|---|---|---|
+| 31_is_prime | fn `is_prime` | `is_prime_number` | `is_prime` is now a prelude function (E0109); `renamed_from` set |
+| 131_digits | fn `digits` | `odd_digit_product` | `digits` is now a prelude function; `renamed_from` set |
+| 94_skjkasdkd, 96_count_up_to, 127_intersection, 143_words_in_sentence | helper `is_prime` in the solution | dropped | the solutions call the prelude `is_prime` instead |
+
+The doc-comment examples follow the new names automatically (the generator rewrites them from the entry
+point). Prelude names that are *not* clashes with these tasks but would be if a solution defined them:
+`count`, `gcd`, `lcm`, `sum_by`, `max_by`, `split_ws`; none of the 155 solutions defines one.
 
 ## Skipped
 
@@ -172,3 +186,16 @@ solutions; a task can appear under several gaps).
 
 (The gaps listed for batch 1 above still stand: card vs. CLI mismatch, build products in cwd,
 no summary line from `ov test`, prelude clashes, `while true` tail.)
+
+## Status of the gaps after revisions 1 and 2
+
+Resolved: batch-1 gap 1 (CLI/card mismatch), batch-2 gaps 1 (`count`, `count_by`), 2 (`digits`,
+`from_digits`, `to_base`, `from_base`), 3 (`is_digit` ... `is_lower`), 4 (`is_prime`, `gcd`, `lcm`),
+5 (`break`/`continue`), 6 (`split_ws`), 8 (`max_by`/`min_by`), 12 (`run.py` skips a missing task file),
+and gap 7 in part (stability of `sort`/`sort_by`/`sort_by_str` is now in the spec and the card;
+`sort_by_str` exists). Gap 9 is better: the E0002 for a capitalised name now carries a `fixes` patch with
+the snake_case name. Still open: 10 (no bitwise operators, hex literals or trig), 11 (no map literal),
+13 (`any_int`), and the batch-1 gaps about build products in the cwd and no summary line from `ov test`.
+The reference solutions were not rewritten to use the new helpers (apart from `is_prime`): they still
+validate, and keeping them as written keeps the task set stable across revisions.
+Card note: `unique` is documented as Int/Str/Bool (the spec); the compiler also accepts Float.
