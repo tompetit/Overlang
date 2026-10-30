@@ -843,7 +843,7 @@ impl Parser {
         Ok(self.pat_node(kind, start))
     }
 
-    /// After `[`. `..name` may appear once, as the first or the last element.
+    /// After `[`. `..name` or a bare `..` may appear once, as the first or the last element.
     fn list_pattern(&mut self) -> PResult<PatKind> {
         let mut before = Vec::new();
         let mut rest = None;
@@ -853,7 +853,8 @@ impl Parser {
                 break;
             }
             if rest.is_none() && self.eat(&Tok::DotDot) {
-                rest = Some(self.ident()?);
+                // A bare `..` binds nothing; the AST spells it "_".
+                rest = Some(if matches!(self.peek(), Tok::Ident(_) | Tok::Underscore) { self.binder()? } else { "_".to_string() });
                 if !before.is_empty() {
                     // `[a, ..rest]`: the rest must be last.
                     self.eat(&Tok::Comma);

@@ -82,7 +82,7 @@ test total_empty {
 | Lambda | `\|x, y\| e` `\|x: Int\| { block }`; captures by value |
 | Control | `if c { a } else { b }` (expression, branches agree) `while c { }` `for x in list { }` `return e;` (value required: `return ();`) |
 | match | `match e { P => e, P if g => e, }` commas between arms |
-| Patterns | `_` `x` `1` `"s"` `true` `Ctor(p, q)` `Ctor` `P { x: p, .. }` `(p, q)` `[]` `[p, q]` `[p, ..rest]` `[..init, p]` `p \| q` (same bindings) |
+| Patterns | `_` `x` `1` `"s"` `true` `Ctor(p, q)` `Ctor` `P { x: p, .. }` `(p, q)` `[]` `[p, q]` `[p, ..rest]` `[..init, p]` `[p, ..]` `[.., p]` (bare `..` binds nothing) `p \| q` (same bindings) |
 | Tuples | `(1, "a")`, `t.0`, `t.1` |
 | Lists | `[1, 2]`; `xs[i]` traps (`bounds`); `get(xs, i)` gives `Option`; `m[k]` traps, `map_get` is safe |
 | Call | `f(a, b)` equals `a.f(b)` unless `a` has a field `f` |
@@ -93,7 +93,7 @@ Statements `if`/`match`/block need no `;`. A block ending in `;` has type Unit. 
 
 ## Effects
 
-A call is legal only if the callee's effects are a subset of the caller's declared effects. Pure means no labels. Labels: `io` (print, println, read_line, read_all, args), `fs`, `net`, `rand` (random_int), `time` (now_millis), `exit` (exit). Any identifier is allowed as your own label (`!db`). List several as `!io !net`. Local mutation (`let mut`, `while`, `for`) is not an effect. A lambda's effects are inferred from its body.
+A call is legal only if the callee's effects are a subset of the caller's declared effects. Pure means no labels. Labels: `io` (print, println, flush, read_line, read_all, args), `fs`, `net`, `rand` (random_int), `time` (now_millis), `exit` (exit). Any identifier is allowed as your own label (`!db`). List several as `!io !net`. Local mutation (`let mut`, `while`, `for`) is not an effect. A lambda's effects are inferred from its body.
 
 Higher-order functions take one effect parameter `!e` in the same brackets as type parameters and use it on the function argument and the result: `fn map[T, U, !e](xs: List[T], f: fn(T) -> U !e) -> List[U] !e`. The caller pays for the effects of the lambda passed in.
 
@@ -111,9 +111,9 @@ Error you will see: `E0105` with `expected: ["!io"]` and a fix whose `patch` is 
 
 All pure unless marked. Prelude names are always in scope.
 
-**List**: `len(List[T])->Int` `get(xs,i)->Option[T]` `push(xs,x)->List[T]` (new list) `concat(xs,ys)` `slice(xs,from,to)` `reverse` `take(xs,n)` `drop(xs,n)` `tail` `head->Option[T]` `last->Option[T]` `is_empty->Bool` `map(xs,fn(T)->U !e)->List[U] !e` `filter(xs,fn(T)->Bool !e) !e` `fold(xs,init:A,fn(A,T)->A !e)->A !e` `for_each(xs,fn(T)->Unit !e)->Unit !e` `any(xs,p)` `all(xs,p)` `flat_map(xs,fn(T)->List[U] !e)` `flatten(List[List[T]])` `sum(List[Int])->Int` `sum_float(List[Float])->Float` `range(a,b)->List[Int]` (half-open) `zip(xs,ys)->List[(A,B)]` `enumerate(xs)->List[(Int,T)]` `contains(xs,x)->Bool` `index_of(xs,x)->Option[Int]` `join(List[Str],sep)->Str` `sort(xs)` `min_of(xs)->Option[T]` `max_of(xs)->Option[T]` (sort, min_of, max_of: Int, Float, Str only) `sort_by(xs,key:fn(T)->Int)` `unique(xs)` (Int, Str, Bool only).
+**List**: `len(List[T])->Int` `get(xs,i)->Option[T]` `push(xs,x)->List[T]` (new list) `concat(xs,ys)` `slice(xs,from,to)` `reverse` `take(xs,n)` `drop(xs,n)` `tail` `head->Option[T]` `last->Option[T]` `is_empty->Bool` `map(xs,fn(T)->U !e)->List[U] !e` `filter(xs,fn(T)->Bool !e) !e` `fold(xs,init:A,fn(A,T)->A !e)->A !e` `for_each(xs,fn(T)->Unit !e)->Unit !e` `any(xs,p)` `all(xs,p)` `flat_map(xs,fn(T)->List[U] !e)` `flatten(List[List[T]])` `sum(List[Int])->Int` `sum_float(List[Float])->Float` `range(a,b)->List[Int]` (half-open) `zip(xs,ys)->List[(A,B)]` `enumerate(xs)->List[(Int,T)]` `contains(xs,x)->Bool` `index_of(xs,x)->Option[Int]` `count(xs,p)->Int !e` `filter_map(xs,fn(T)->Option[U] !e)->List[U] !e` `take_while(xs,p)` `drop_while(xs,p)` `max_by(xs,key:fn(T)->Int)->Option[T]` `min_by` (first wins ties) `join(List[Str],sep)->Str` `sort(xs)` `min_of(xs)->Option[T]` `max_of(xs)->Option[T]` (sort, min_of, max_of: Int, Float, Str only) `sort_by(xs,key:fn(T)->Int)` `sort_by_str(xs,key:fn(T)->Str)` (both stable) `unique(xs)` (Int, Str, Bool only).
 
-**Str**: `str_len(s)->Int` (code points) `chars(s)->List[Str]` `split(s,sep)->List[Str]` `trim` `to_upper` `to_lower` `starts_with(s,p)` `ends_with(s,p)` `str_contains(s,needle)` `replace(s,from,to)` `substr(s,from,to)` `repeat(s,n)` `char_at(s,i)->Option[Str]` `code_point(s)->Option[Int]` `from_code_point(Int)->Str` `parse_int(s)->Option[Int]` `parse_float(s)->Option[Float]` `show[T](x:T)->Str` (any non-function type; Str shows quoted, `3.0` shows `3`; `println` takes Str, so `println(show(n))`).
+**Str**: `str_len(s)->Int` (code points) `chars(s)->List[Str]` `split(s,sep)->List[Str]` `trim` `to_upper` `to_lower` `starts_with(s,p)` `ends_with(s,p)` `str_contains(s,needle)` `replace(s,from,to)` `substr(s,from,to)` `repeat(s,n)` `char_at(s,i)->Option[Str]` `code_point(s)->Option[Int]` `from_code_point(Int)->Str` `parse_int(s)->Option[Int]` `parse_float(s)->Option[Float]` `split_once(s,sep)->Option[(Str,Str)]` `str_index_of(s,needle)->Option[Int]` (code points) `lines(s)->List[Str]` (drops one trailing empty line) `is_digit` `is_alpha` `is_alnum` `is_space` `is_upper` `is_lower` (Str->Bool, ASCII, first code point) `show[T](x:T)->Str` (any non-function type; Str shows quoted, `3.0` shows `3`; `println` takes Str, so `println(show(n))`).
 
 **Map, Set** (keys Int, Str or Bool only; all immutable, updates return a new value): `map_new()` `map_get(m,k)->Option[V]` `map_set(m,k,v)` `map_remove(m,k)` `map_contains(m,k)` `map_keys(m)` `map_values(m)` `map_len(m)` `map_from_list(List[(K,V)])` `map_to_list(m)`; `set_new()` `set_add(s,x)` `set_remove(s,x)` `set_contains(s,x)` `set_len(s)` `set_to_list(s)` `set_from_list(xs)`.
 
@@ -121,27 +121,27 @@ All pure unless marked. Prelude names are always in scope.
 
 **Math**: Int: `abs` `min` `max` `pow(base,exp)` (exp >= 0) `div_floor` `mod_floor`. Float: `fabs` `fmin` `fmax` `fpow` `sqrt` `floor` `ceil` `round` (all Float to Float). Convert: `to_float(Int)->Float`, `to_int(Float)->Int` (truncates).
 
-**IO and env**: `print(s)` `println(s)` `read_line()->Option[Str]` `read_all()->Str` `args()->List[Str]` all `!io`; `exit(code)->Unit !exit`; `now_millis()->Int !time`; `random_int(lo,hi)->Int !rand`.
+**IO and env**: `print(s)` `println(s)` `flush()->Unit` `read_line()->Option[Str]` `read_all()->Str` `args()->List[Str]` (after `--`, no program name) all `!io`; stdout is block-buffered unless a terminal, so `flush()` before a server blocks; `exit(code)->Unit !exit`; `now_millis()->Int !time`; `random_int(lo,hi)->Int !rand`.
 
 **Testing**: `assert(Bool)` `assert_eq(a,b)` `todo[T]()->T`.
 
 ## Toolchain
 
-Always pass `--json`. `ov run <name>` needs a no-parameter fn returning `Unit` or `Result[Unit, E]`; `Err(e)` prints `{"kind":"error",...}` to stderr, exit 1.
+Diagnostics are JSON, one object per line, on stdout. `ov check|build|run|test` take a `.ov` file (several are one program) or, when `.ovstore/` exists, a stored name; they do not take `--json`. Store commands take `--json`. `ov run` needs a no-parameter `main` (`--entry f` to pick another) returning `Unit` or `Result[Unit, E]`; `Err(e)` prints `{"kind":"error",...}` to stderr, exit 1. `ov run main -- a b` gives the program `args() == ["a", "b"]`. `ov test` runs `test` blocks in order, prints `ok <name>`, stops at the first failing block (exit 3), then fuzzes contracted functions.
 
 | Command | Use |
 |---|---|
-| `ov check [name]` | typecheck, effects, exhaustiveness; JSON diagnostics, exit 0 if no errors |
-| `ov run <name>` | build and execute (stdin, stdout, exit code forwarded) |
-| `ov test [name]` | run `test` blocks, then fuzz contracted functions |
-| `ov fmt <file.ov>` | canonical formatting |
+| `ov check [file.ov... \| name]` | typecheck, effects, exhaustiveness; exit 1 if any error |
+| `ov build <file.ov... \| name> [-o out]` | native executable |
+| `ov run <file.ov... \| name> [-- args]` | build and execute (stdin, stdout, exit code forwarded) |
+| `ov test [file.ov... \| name]` | test blocks, then fuzzing |
+| `ov fmt <file.ov> [--write]` | canonical formatting |
 | `ov add <file.ov>...` | typecheck and store definitions, bind names, print `name hash` |
-| `ov view <name>` | print one definition in canonical form |
-| `ov edit <name> [--file f]` | replace one definition from file or stdin (its name must match) |
-| `ov ctx <name>` | source of `name`, plus signatures and needed types of what it calls; use instead of reading files (`--depth 1` adds bodies) |
+| `ov view <name>` `ov edit <name> [--file f]` `ov rm <name>` `ov ls` `ov history <name>` `ov diff <a> <b>` | show / replace / unbind / list / past hashes / diff |
+| `ov ctx <name>` | source of `name` plus signatures and types of what it calls (`--depth 1` adds bodies) |
 | `ov deps <name>` / `ov dependents <name>` | transitive dependencies / callers |
 
-Diagnostics are one JSON object per line: `code`, `severity`, `name`, `span` (`line col end_line end_col`), `message`, and when relevant `expected`, `actual`, `fixes` (`rank`, `description`, `patch`). A `patch` is often exact text to apply: the signature line for E0105, `let mut x` for E0112, `None => todo(),` arms for E0104. Other codes: E0100 unknown name (nearest names), E0101 type mismatch, E0102 argument count, E0103 unknown field or constructor, E0106 unknown type, E0107 cannot infer, E0110 refutable `let`, E0113 `?` in a fn with the wrong return type. W-codes are warnings (unused variable: rename to `_x`).
+Diagnostics have `code`, `severity`, `name`, `span` (`line col end_line end_col`), `message`, and when relevant `expected`, `actual`, `fixes` (`rank`, `description`, `patch`). A `patch` is often exact text to apply: the signature line for E0105, `let mut x` for E0112, `None => todo(),` arms for E0104. E0100 unknown name, E0101 type mismatch, E0107 cannot infer, E0109 prelude or duplicate name. W-codes are warnings (unused variable: rename to `_x`).
 
 ## Common mistakes
 
@@ -149,11 +149,9 @@ Diagnostics are one JSON object per line: `code`, `severity`, `name`, `span` (`l
 2. Calling `println` in a fn declared without `!io`: E0105. Add `!io` to its signature and to its callers.
 3. `return;`: parse error E0002. Write `return ();`.
 4. `let y = if c { 1 };`: `if` without `else` is Unit. Add `else { 0 }`.
-5. `let x = 1 x`: parse error E0002. Every `let` and assignment ends with `;`.
-6. `f == g` on functions: E0101. Compare data, not functions.
-7. `xs[i]` when `i` may be out of range traps `bounds`. Use `get(xs, i)` and match `Some`/`None`.
-8. `xs.0`: E0103; `.0` is for tuples only. Use `head(xs)` or `xs[0]`.
-9. `let xs = [];` alone: E0107. Annotate: `let xs: List[Int] = [];`.
-10. Missing match arm: E0104; paste the fix `patch`. Also: assigning to a non-`mut` binding is E0112; `declare fn` bodies do not exist, so running one traps `unimplemented`; `parse_int(s)?` inside a fn returning `Int` is E0113 (return `Option` or `match`).
+5. `xs[i]` when `i` may be out of range traps `bounds`. Use `get(xs, i)` and match `Some`/`None`.
+6. `let xs = [];` alone: E0107. Annotate: `let xs: List[Int] = [];`.
+7. `while true { ... return x; }` as the last statement still needs a tail expression (`0`). `assert_eq(max_of([]), None)` is E0107: annotate one side. `test` and `type` are keywords, not names. `for (i, x) in enumerate(xs)` works.
+8. Missing match arm: E0104; paste the fix `patch`. Also: assigning to a non-`mut` binding is E0112; `parse_int(s)?` in a fn returning `Int` is E0113.
 
-<!-- token estimate: 1,740 words x 1.3 = ~2,260 by the word rule; by characters (11.4k / 3.7) ~3,050. Code-heavy, so trust the larger figure. -->
+<!-- token estimate: 3.3k by characters (chars / 3.7); code-heavy, so trust this over the word rule. -->

@@ -1,0 +1,31 @@
+fn first_or(xs: List[Int], d: Int) -> Int {
+  match xs {
+    [x, ..] => x,
+    [] => d,
+  }
+}
+
+fn last_or(xs: List[Int], d: Int) -> Int {
+  match xs {
+    [.., x] => x,
+    [] => d,
+  }
+}
+
+fn shape(xs: List[Str]) -> Str {
+  match xs {
+    [] => "empty",
+    [a] => "one " ++ a,
+    [_, ..] => "many",
+  }
+}
+
+fn main() -> Unit !io {
+  println(show(first_or([4, 5, 6], 0)));
+  println(show(first_or([], 9)));
+  println(show(last_or([4, 5, 6], 0)));
+  println(show(last_or([], 9)));
+  println(shape([]));
+  println(shape(["x"]));
+  println(shape(["x", "y"]));
+}

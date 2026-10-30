@@ -130,6 +130,79 @@ fn index_of[T](xs: List[T], x: T) -> Option[Int] {
   None
 }
 
+fn count[T, !e](xs: List[T], p: fn(T) -> Bool !e) -> Int !e {
+  let mut n = 0;
+  for x in xs {
+    if p(x) {
+      n = n + 1;
+    }
+  }
+  n
+}
+
+fn filter_map[T, U, !e](xs: List[T], f: fn(T) -> Option[U] !e) -> List[U] !e {
+  let mut out = [];
+  for x in xs {
+    match f(x) {
+      Some(y) => {
+        out = push(out, y);
+      },
+      None => {},
+    }
+  }
+  out
+}
+
+fn take_while[T, !e](xs: List[T], p: fn(T) -> Bool !e) -> List[T] !e {
+  let mut n = 0;
+  while n < len(xs) && p(xs[n]) {
+    n = n + 1;
+  }
+  take(xs, n)
+}
+
+fn drop_while[T, !e](xs: List[T], p: fn(T) -> Bool !e) -> List[T] !e {
+  let mut n = 0;
+  while n < len(xs) && p(xs[n]) {
+    n = n + 1;
+  }
+  drop(xs, n)
+}
+
+// The first element with the largest (smallest) key.
+fn max_by[T](xs: List[T], key: fn(T) -> Int) -> Option[T] {
+  let mut best = None;
+  let mut best_key = 0;
+  for x in xs {
+    let k = key(x);
+    if is_none(best) || k > best_key {
+      best = Some(x);
+      best_key = k;
+    }
+  }
+  best
+}
+
+fn min_by[T](xs: List[T], key: fn(T) -> Int) -> Option[T] {
+  let mut best = None;
+  let mut best_key = 0;
+  for x in xs {
+    let k = key(x);
+    if is_none(best) || k < best_key {
+      best = Some(x);
+      best_key = k;
+    }
+  }
+  best
+}
+
+// Stable: equal keys keep their order. Ranks the distinct keys, then sorts by rank.
+fn sort_by_str[T](xs: List[T], key: fn(T) -> Str) -> List[T] {
+  let sorted_keys = unique(sort(map(xs, key)));
+  let rank = map_from_list(map(enumerate(sorted_keys), |p| (p.1, p.0)));
+  sort_by(xs, |x| rank[key(x)])
+}
+
 // ---- Str primitives (runtime) ----
 intrinsic fn str_len(s: Str) -> Int = "ov_str_len_cps"
 intrinsic fn chars(s: Str) -> List[Str] = "ov_str_chars"
@@ -151,6 +224,64 @@ intrinsic fn parse_int(s: Str) -> Option[Int] = "ov_parse_int"
 intrinsic fn parse_float(s: Str) -> Option[Float] = "ov_parse_float"
 // show is generated per monomorphized type.
 intrinsic fn show[T](x: T) -> Str = "@show"
+
+// ---- Str functions (Overlang) ----
+// Code point index of the first occurrence of needle.
+fn str_index_of(s: Str, needle: Str) -> Option[Int] {
+  if needle == "" {
+    return Some(0);
+  }
+  let parts = split(s, needle);
+  if len(parts) < 2 { None } else { Some(str_len(parts[0])) }
+}
+
+// Splits at the first occurrence of sep; an empty sep splits at 0.
+fn split_once(s: Str, sep: Str) -> Option[(Str, Str)] {
+  if sep == "" {
+    return Some(("", s));
+  }
+  let parts = split(s, sep);
+  if len(parts) < 2 { None } else { Some((parts[0], join(drop(parts, 1), sep))) }
+}
+
+// Split on "\n", dropping one trailing empty line: lines("a\nb\n") is ["a", "b"].
+fn lines(s: Str) -> List[Str] {
+  let parts = split(s, "\n");
+  if last(parts) == Some("") { take(parts, len(parts) - 1) } else { parts }
+}
+
+// ASCII classification of the first code point; false for the empty string.
+fn is_digit(s: Str) -> Bool {
+  match code_point(s) {
+    Some(c) => c >= 48 && c <= 57,
+    None => false,
+  }
+}
+
+fn is_upper(s: Str) -> Bool {
+  match code_point(s) {
+    Some(c) => c >= 65 && c <= 90,
+    None => false,
+  }
+}
+
+fn is_lower(s: Str) -> Bool {
+  match code_point(s) {
+    Some(c) => c >= 97 && c <= 122,
+    None => false,
+  }
+}
+
+fn is_alpha(s: Str) -> Bool { is_upper(s) || is_lower(s) }
+
+fn is_alnum(s: Str) -> Bool { is_alpha(s) || is_digit(s) }
+
+fn is_space(s: Str) -> Bool {
+  match code_point(s) {
+    Some(c) => c == 32 || (c >= 9 && c <= 13),
+    None => false,
+  }
+}
 
 // ---- Map and Set (runtime; K restricted to Int, Str, Bool) ----
 intrinsic fn map_new[K, V]() -> Map[K, V] = "ov_map_new"
@@ -269,6 +400,7 @@ intrinsic fn mod_floor(a: Int, b: Int) -> Int = "ov_mod_floor"
 // ---- IO and environment ----
 intrinsic fn print(s: Str) -> Unit !io = "ov_print"
 intrinsic fn println(s: Str) -> Unit !io = "ov_println"
+intrinsic fn flush() -> Unit !io = "ov_flush"
 intrinsic fn read_line() -> Option[Str] !io = "ov_read_line"
 intrinsic fn read_all() -> Str !io = "ov_read_all"
 intrinsic fn args() -> List[Str] !io = "ov_args"

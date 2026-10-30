@@ -1965,7 +1965,9 @@ impl<'a> Checker<'a> {
                 for a in before.iter().chain(after) {
                     self.pat(a, &elem, mutable, out);
                 }
-                if let Some(r) = rest {
+                if let Some(r) = rest
+                    && r != "_"
+                {
                     let lt = Ty::List(Box::new(elem));
                     out.push((r.clone(), lt.clone(), p.id, p.span));
                     self.bindings.push((p.id, Binding { name: r.clone(), ty: lt, mutable }));

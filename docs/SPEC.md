@@ -186,7 +186,9 @@ unary `- !`, postfix (`?`, call, field, index). Comparisons do not chain.
 - Patterns: `_`, binding `x`, literals, `Ctor(p, p)`, `Ctor`, record
   `P { x: p, .. }` (`..` ignores remaining fields), tuple `(p, p)`, list `[]`,
   `[p, p]`, `[p, ..rest]`, `[..init, p]`, and `p | p` alternatives binding
-  the same names.
+  the same names. The rest may be written as a bare `..` (`[p, ..]`,
+  `[.., p]`), which binds nothing; in the AST and in hashing it is a rest
+  whose name is `_`, distinct from a named rest.
 - Lambda: `|x, y| expr` or `|x, y| { block }`. Captures by value.
 - Block: `{ stmt; stmt; expr }`. The final expression is the value; a block
   ending in `;` has type Unit.
@@ -266,13 +268,26 @@ truth; this list is the required set.
 `contains`, `index_of -> Option[Int]`, `head -> Option[T]`, `last -> Option[T]`,
 `tail`, `take`, `drop`, `slice(xs, from, to)`, `flat_map`, `flatten`, `is_empty`,
 `min_of -> Option[T]`, `max_of -> Option[T]` (Int, Float, Str), `unique`
-(Int, Str, Bool), `for_each[T, !e](xs, f: fn(T) -> Unit !e) !e`.
+(Int, Str, Bool), `for_each[T, !e](xs, f: fn(T) -> Unit !e) !e`,
+`count[T, !e](xs, p: fn(T) -> Bool !e) -> Int !e`,
+`filter_map[T, U, !e](xs, f: fn(T) -> Option[U] !e) -> List[U] !e`,
+`take_while[T, !e](xs, p: fn(T) -> Bool !e) -> List[T] !e`, `drop_while` (same),
+`max_by[T](xs, key: fn(T) -> Int) -> Option[T]`, `min_by` (same; the first
+element wins ties), `sort_by_str[T](xs, key: fn(T) -> Str) -> List[T]`
+(stable, as is `sort_by`).
 
 **Str**: `str_len` (code points), `chars -> List[Str]`, `split(s, sep)`,
 `trim`, `to_upper`, `to_lower`, `starts_with`, `ends_with`, `str_contains`,
 `replace(s, from, to)`, `parse_int -> Option[Int]`, `parse_float -> Option[Float]`,
 `show[T](x: T) -> Str`, `char_at(s, i) -> Option[Str]`, `substr(s, from, to)`,
-`repeat(s, n)`, `code_point(s) -> Option[Int]`, `from_code_point(Int) -> Str`.
+`repeat(s, n)`, `code_point(s) -> Option[Int]`, `from_code_point(Int) -> Str`,
+`split_once(s, sep) -> Option[(Str, Str)]` (at the first `sep`; an empty `sep`
+gives `Some(("", s))`), `str_index_of(s, needle) -> Option[Int]` (code point
+index; an empty needle gives `Some(0)`), `lines(s) -> List[Str]` (split on
+`"\n"`, dropping one trailing empty line, so `lines("") == []`), and ASCII
+classification of the first code point, false for the empty string:
+`is_digit`, `is_alpha`, `is_alnum`, `is_space` (space and `\t` to `\r`),
+`is_upper`, `is_lower`, each `(s: Str) -> Bool`.
 
 **Map and Set**: `map_new`, `map_get -> Option[V]`, `map_set` (returns new),
 `map_remove`, `map_contains`, `map_keys`, `map_values`, `map_len`,
@@ -287,8 +302,14 @@ truth; this list is the required set.
 `div_floor`, `mod_floor`.
 
 **IO** (`!io`): `print(s)`, `println(s)`, `read_line() -> Option[Str]`,
-`read_all() -> Str`, `args() -> List[Str]`. `exit(code) -> Unit !exit`.
-`now_millis() -> Int !time`. `random_int(lo, hi) -> Int !rand`.
+`read_all() -> Str`, `args() -> List[Str]`, `flush() -> Unit`.
+`exit(code) -> Unit !exit`. `now_millis() -> Int !time`.
+`random_int(lo, hi) -> Int !rand`. `args()` is the arguments after `--` in
+`ov run`, without a program name. Stdout is block-buffered, except that
+`println` also flushes when stdout is a terminal; `exit` and normal
+termination flush. A program that prints and then blocks (a server waiting
+for connections) must call `flush()` first, or its output may never appear
+when piped or when the process is killed.
 
 **Testing**: `assert`, `assert_eq`, `todo`.
 

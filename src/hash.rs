@@ -715,7 +715,7 @@ impl Canon<'_> {
             PatKind::Tuple(ps) => json!({ "tuple": ps.iter().map(|q| self.pat(q, alt)).collect::<Vec<_>>() }),
             PatKind::List { before, rest, after } => {
                 let before: Vec<Value> = before.iter().map(|q| self.pat(q, alt)).collect();
-                let rest = rest.as_ref().map(|r| bind(self, r));
+                let rest = rest.as_ref().map(|r| if r == "_" { json!("_") } else { bind(self, r) });
                 let after: Vec<Value> = after.iter().map(|q| self.pat(q, alt)).collect();
                 json!({ "list": before, "rest": rest, "after": after })
             }

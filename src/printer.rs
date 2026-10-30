@@ -445,7 +445,7 @@ impl Printer {
             PatKind::List { before, rest, after } => {
                 let mut parts: Vec<String> = before.iter().map(|p| self.pat(p)).collect();
                 if let Some(r) = rest {
-                    parts.push(format!("..{r}"));
+                    parts.push(if r == "_" { "..".to_string() } else { format!("..{r}") });
                 }
                 parts.extend(after.iter().map(|p| self.pat(p)));
                 format!("[{}]", parts.join(", "))

@@ -299,6 +299,8 @@ static void test_env(void) {
   ov_random_int(INT64_MIN, INT64_MAX);
   ov_print(S("print-ok "));
   ov_println(S("println-ok"));
+  ov_flush(); /* smoke: must not crash with pending output */
+  ov_flush();
 }
 
 int main(void) {

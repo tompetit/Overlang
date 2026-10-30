@@ -196,6 +196,8 @@ ov_list* ov_set_to_list(ov_set* s);
 void ov_print(ov_str* s);
 /* Write s and a newline to stdout. */
 void ov_println(ov_str* s);
+/* Flush buffered stdout (println already flushes when stdout is a terminal). */
+void ov_flush(void);
 /* Read a line from stdin without the trailing "\n" or "\r\n"; *ok is false at EOF. */
 ov_str* ov_read_line(bool* ok);
 /* Read all of stdin. */
