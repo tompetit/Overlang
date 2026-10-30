@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_0_has_close_elements",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_0_has_close_elements",
+ "entry_point": "has_close_elements",
+ "prompt": "// Check if in given list of numbers, are any two numbers closer to each other than\n// given threshold.\n// Examples:\n//   has_close_elements([1.0, 2.0, 3.0], 0.5) == false\n//   has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == true\nfn has_close_elements(numbers: List[Float], threshold: Float) -> Bool {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(has_close_elements([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.3), true);\n}\n\ntest check_2 {\n  assert_eq(has_close_elements([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.05), false);\n}\n\ntest check_3 {\n  assert_eq(has_close_elements([1.0, 2.0, 5.9, 4.0, 5.0], 0.95), true);\n}\n\ntest check_4 {\n  assert_eq(has_close_elements([1.0, 2.0, 5.9, 4.0, 5.0], 0.8), false);\n}\n\ntest check_5 {\n  assert_eq(has_close_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0], 0.1), true);\n}\n\ntest check_6 {\n  assert_eq(has_close_elements([1.1, 2.2, 3.1, 4.1, 5.1], 1.0), true);\n}\n\ntest check_7 {\n  assert_eq(has_close_elements([1.1, 2.2, 3.1, 4.1, 5.1], 0.5), false);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(has_close_elements([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.3), true);\n}\n",
+ "solution": "// Check if in given list of numbers, are any two numbers closer to each other than\n// given threshold.\n// Examples:\n//   has_close_elements([1.0, 2.0, 3.0], 0.5) == false\n//   has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == true\nfn has_close_elements(numbers: List[Float], threshold: Float) -> Bool {\n  let n = len(numbers);\n  for i in range(0, n) {\n    for j in range(i + 1, n) {\n      if fabs(numbers[i] - numbers[j]) < threshold {\n        return true;\n      }\n    }\n  }\n  false\n}\n"
+}

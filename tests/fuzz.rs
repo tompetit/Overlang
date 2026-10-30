@@ -45,6 +45,7 @@ fn records_total_fuzzes_ok_and_is_cached() {
     assert_eq!(v["status"], "ok", "{v}");
     assert_eq!(v["cases"], 200);
     assert!(v["rejected"].as_u64().unwrap() < 180, "{v}");
+    assert!(v["hash"].as_str().unwrap().len() >= 8, "the store hash: {v}");
     assert!(!stdout(&out).contains("W0004"));
     // Same C text and seed: the second run is served from the cache.
     let again = ov_test(&dir, &[&f, "--seed", "3"]);

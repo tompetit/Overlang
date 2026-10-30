@@ -233,8 +233,8 @@ For `bounds`, `overflow`, `div_zero`, `assert`, `todo`, `unimplemented`:
 `ov test [--name N] [--cases N] [--seed S] [--json]` runs every `test` block
 and, if they all pass, fuzzes every user function (prelude functions are not
 fuzzed) that has at least one `requires` or `ensures` and is reachable from
-the test blocks; with `--name`, only those also in the closure of the
-function or test `N`. Generic functions are fuzzed per instance, named
+the test blocks; with `--name N` (or, from the store, `ov test N`), only
+those also in the closure of the function or test `N`. Generic functions are fuzzed per instance, named
 `f[Int]`. Generators and shrinkers are generated into the test binary per
 parameter type; `ov` only drives it, running for each function
 `<binary> --fuzz <fn> --seed <s> --cases <n>`. The seed is `--seed`, else
@@ -286,8 +286,8 @@ any argument that still satisfies `requires` and fails with the same trap
 `status` is `ok`, `fail` or `skipped` (with `reason`). `args` and
 `shrunk_args` hold `show` of each argument; `detail` is the clause for
 contract traps and the trap's detail otherwise; `case` is the failing case,
-and (seed, case) determines its input. `hash` hashes the C text of the
-instance and of every instance it reaches.
+and (seed, case) determines its input. `hash` is the definition's store
+hash, as in traps.
 
 Traps must not end the process while fuzzing. In test builds only, the
 generated `ov_types.h` redefines `ov_trap`, `ov_trap_contract` and the
@@ -306,9 +306,10 @@ diagnostic. With `--json` every line is JSON: `{"test": name, "status":
 a test block or any fuzzing failed. A `--fuzz` run that crashes or runs over
 60 seconds is a failure of kind `crash` or `timeout`.
 
-An `ok` result is cached in `.ovbuild/test/fuzz-cache.json`, keyed by
-`hash`: a function whose hash, seed and case count are unchanged is not
-re-fuzzed, and its line ends `, cached)`. (**shortcut**: a JSON file next to
+An `ok` result is cached in `.ovbuild/test/fuzz-cache.json`, keyed by a
+hash of the C text of the instance and of every instance it reaches: a
+function whose key, seed and case count are unchanged is not re-fuzzed, and
+its line ends `, cached)`. (**shortcut**: a JSON file next to
 the build; moves to the store with the rest of the build cache.) A user may
 override generation for a type with `gen Name { expr }` returning
 `List[Name]` (**shortcut**: not in v0.1).
@@ -365,18 +366,28 @@ truth; this list is the required set.
 
 ## 10. The store
 
-Code is stored in `.ovstore/store.sqlite` in the project root.
+Code is stored in `.ovstore/store.sqlite` in the project root (the current
+directory of the `ov` command), created on first use.
 
 Tables:
 
-- `defs(hash TEXT PRIMARY KEY, kind TEXT, ast TEXT, created_at INTEGER)`.
-  `ast` is the canonical JSON serialization (section 10.1). `kind` is
-  `fn`, `type`, `declare`, `foreign` or `test`.
+- `defs(hash TEXT PRIMARY KEY, kind TEXT, ast TEXT, source TEXT, created_at INTEGER)`.
+  `ast` is the named AST (section 10.1b) as JSON
+  `{"item": ..., "refs": ...}`: `refs` is its resolution table, the hash each
+  global name written in it resolved to (`values`, `types`, and `ctors`
+  mapping to the constructor's type), plus the ids of the expressions that
+  are global references. `kind` is `fn`, `type`, `declare`, `foreign` or
+  `test`, or `intrinsic` for prelude bindings. `source` is the definition's
+  canonical text as last written, comments included (`ov view --raw`).
+  Re-adding a definition with the same hash replaces `ast` and `source`
+  without adding a row. Every prelude definition is in `defs`, unbound in `names`;
+  prelude names resolve without being bound.
 - `names(name TEXT PRIMARY KEY, hash TEXT, updated_at INTEGER)`.
 - `history(name TEXT, hash TEXT, at INTEGER)`. Append-only.
 - `deps(hash TEXT, dep_hash TEXT)`. Direct dependencies.
-- `cache(hash TEXT, kind TEXT, blob BLOB, at INTEGER)`. Emitted C, fuzz
-  results, keyed by hash.
+- `cache(hash TEXT, kind TEXT, instance TEXT, blob BLOB, at INTEGER)`.
+  Emitted C, fuzz results, keyed by `(hash, kind, instance)`. Emitted C is
+  kind `c` with the instance's C name as `instance`; other kinds use `""`.
 
 ### 10.1 Hashing
 
@@ -391,7 +402,8 @@ canonical form is the AST serialized as JSON with:
 - every reference to another top-level definition replaced by that
   definition's hash;
 - every reference to a type replaced by that type's hash (built-in types
-  hash to their name);
+  hash to their name; for hashing, `Option` and `Result` count as built-in,
+  and their constructors are `("Option", 0)` for `Some` and so on);
 - constructor references replaced by `(type hash, constructor index)`;
 - record field names kept (they are part of the type's identity);
 - type parameter names replaced by position;
@@ -404,7 +416,9 @@ Mutually recursive definitions form a cycle. The cycle's canonical form is the
 list of its members' canonical forms, each member referring to the others by
 position in the cycle, ordered by the lexicographic order of their canonical
 forms before cycle references are resolved. The cycle hash is the SHA-256 of
-that list, and member `i` has hash `<cycle hash>.<i>`.
+that list, and member `i` has hash `<cycle hash>.<i>`. A definition that
+refers only to itself is a cycle of one: the self-reference is position 0,
+and its hash is the plain SHA-256 of that form, with no suffix.
 
 Short hash prefixes are accepted anywhere a hash is expected when they are
 unambiguous.
@@ -422,6 +436,15 @@ resolves to, so a dependent's text does not change.
 
 A `type` edit propagates the same way to every definition that mentions the
 type.
+
+`ov add` and `ov edit` print the rebound dependents after the `name hash`
+lines, one `name old_hash new_hash` line each; with `--json` the output is
+`{"defs": [{name, hash}], "propagated": [{name, old, new}]}`. Only bound
+dependents are re-hashed: old versions no name points to stay as they are.
+Dependents are re-hashed dependencies first, a cycle of dependents as one
+unit, so the result is what adding the edited code to an empty store gives.
+If a dependent no longer resolves (a constructor it uses was removed), the
+command fails with that diagnostic and stores nothing.
 
 ### 10.1b Named AST and rendering
 
@@ -457,6 +480,30 @@ always JSON.
 | `ov history <name>` | Every hash the name has pointed to, newest first. |
 | `ov fmt <file.ov>` | Rewrite a file in canonical form without touching the store. |
 
+Typechecking `ov add` and `ov edit`: the new definitions are checked
+together with the prelude and the stored dependency closure of what they
+reference, rendered with current names; a stored definition whose name a new
+definition takes is left out. Any error aborts the command and stores
+nothing. Warnings do not abort; they are printed to stderr, one JSON object
+per line, so stdout stays the command's output. A diagnostic inside a stored
+definition carries its `hash` and no `file`, and its `span` is relative to
+that definition's canonical text. Dependents of an edited definition are
+re-hashed (10.1a) but not re-checked (**shortcut**: check them too when an
+edit that breaks a caller's types is a real problem; `ov check` reports it).
+
+Names and files: `ov check`, `ov build`, `ov run` and `ov test` take `.ov`
+files, or, when `.ovstore/store.sqlite` exists in the current directory and
+the single argument is not an existing `.ov` file, a bound name or hash.
+With a name, the definition's transitive dependency closure is rendered from
+the store with current names and checked and built as one program. `ov check`
+and `ov test` with no argument and a store cover every bound name and every
+bound `test` block. `ov test <name>` runs the test `name`, or every bound test
+that depends on `name`. `ov build <name>` writes `./<name>`; file builds keep
+`--entry` (default `main`) and `-o`. File builds put each file's directory on
+the C include path, store builds the current directory, so a `foreign c`
+header next to the source is found. `ov run <name> -- a b` passes the
+arguments after `--` to the program (`args()`).
+
 ### 10.3 Canonical printing
 
 `ov view` and `ov fmt` produce the canonical text. Rules: two-space
@@ -487,7 +534,9 @@ Every diagnostic is one JSON object. `ov check` prints one per line.
 }
 ```
 
-Fields `expected`, `actual` and `fixes` are present when they apply. `span` is
+Fields `expected`, `actual` and `fixes` are present when they apply. A fix
+has a `patch` only when it is complete text to insert; otherwise (E0107 on a
+type that is only partly known) `description` says what to write. `span` is
 relative to the definition's canonical text, which is what the agent sees
 from `ov view`. For `ov add` and `ov fmt`, `span` is relative to the file and
 a `file` field is added.
@@ -515,6 +564,7 @@ Codes:
 | E0113 | `?` outside a compatible function | `expected` return type |
 | E0114 | Invalid foreign signature | which type |
 | E0115 | Recursive type without indirection through a constructor | |
+| E0116 | Ambiguous hash prefix | `actual`: the matching hashes |
 | W0001 | Unimplemented `declare` | |
 | W0002 | Unused variable | `fixes`: rename to `_x` |
 | W0003 | Unreachable match arm | |
@@ -524,10 +574,17 @@ Codes:
 
 - Monomorphization: every generic definition is instantiated per concrete
   type argument tuple reached from the entry point. Instances are named
-  `ov_<name>_<hash8>_<instance8>`.
+  `ov_<name>_<hash8>_<instance8>`, where `hash8` is the first 8 hex digits of
+  the definition's store hash (section 10.1). A build from files computes the
+  same hashes from the parsed files, so both paths name instances and report
+  trap hashes identically.
 - One C translation unit per definition instance, `#include "rt.h"`, plus a
-  generated `ov_types.h` with every monomorphized struct. Emitted C is cached
-  in the store by `(hash, instance)`.
+  generated `ov_types.h` with every monomorphized struct. A build from the
+  store caches each instance's C in `cache` as `(hash, "c", instance)`; the
+  entry also records the compiler version and the definition's rendered text,
+  since the hash does not cover names that the C shows (callees' current names,
+  parameter names in contract traps). An unchanged instance is not emitted
+  again.
 - Representation: `Int` is `int64_t`, `Float` is `double`, `Bool` is `bool`,
   `Unit` is `uint8_t` (value 0), `Str` is `ov_str*`, `List[T]` is
   `ov_list*` holding `ov_value` slots (**shortcut**: unboxed specializations
@@ -539,7 +596,8 @@ Codes:
 - Int arithmetic uses `__builtin_*_overflow` and traps on overflow.
 - Contracts become checks at function entry and before every return.
 - `show` is generated per monomorphized type.
-- Traps call `ov_trap(kind, fn, hash, detail_json)` which prints and exits 3.
+- Traps call `ov_trap(kind, fn, hash, detail_json)` which prints and exits 3;
+  `hash` is the full store hash of the definition that trapped.
 - `main` is generated for the entry point: initializes the GC, captures argv
   for `args()`, calls the entry, maps `Err` to exit 1.
 - The `--fuzz <name>` protocol (section 7.1) is generated for every

@@ -6,7 +6,9 @@ use crate::ast::Span;
 use crate::diag::{Diag, Severity};
 use crate::emit::{self, Mode};
 use crate::mono::{self, Def, Defs, Root};
-use crate::types::{self, Ty};
+use crate::store::Store;
+use crate::types::{self, Checked, Ty};
+use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -32,13 +34,21 @@ fn error(code: &str, message: String) -> Diag {
     Diag::error(code, Span::default(), message)
 }
 
-/// Build `files` for `target`; the path of the executable.
+/// Build `files` for `target`; the path of the executable. Each file's
+/// directory is on the C include path, for `foreign c` headers.
 pub fn build(files: &[PathBuf], target: Target, out: Option<&Path>) -> Result<PathBuf, Vec<Diag>> {
     build_with_fuzz(files, target, out).map(|(exe, _)| exe)
 }
 
 /// `build`, plus the fuzz targets of a test build (spec section 7.1).
 pub fn build_with_fuzz(files: &[PathBuf], target: Target, out: Option<&Path>) -> Result<(PathBuf, Vec<emit::FuzzTarget>), Vec<Diag>> {
+    let cwd = std::env::current_dir().map_err(|e| vec![error("E0000", format!("no current directory: {e}"))])?;
+    let include: Vec<PathBuf> = files.iter().map(|f| cwd.join(f.parent().unwrap_or(Path::new("")))).collect();
+    build_sources(&read_sources(files)?, None, &include, target, out)
+}
+
+/// (file name, text) of each file.
+pub fn read_sources(files: &[PathBuf]) -> Result<Vec<(String, String)>, Vec<Diag>> {
     let mut sources = Vec::new();
     for f in files {
         match std::fs::read_to_string(f) {
@@ -50,12 +60,32 @@ pub fn build_with_fuzz(files: &[PathBuf], target: Target, out: Option<&Path>) ->
             }
         }
     }
-    let (checked, diags) = types::check_sources(&sources);
+    Ok(sources)
+}
+
+/// Store hash of every definition in the checked files, plus the prelude's:
+/// what `ov add` of these files would store them under.
+fn file_hashes(checked: &Checked) -> Result<HashMap<String, String>, Vec<Diag>> {
+    let items: Vec<_> = checked.files.iter().flat_map(|(_, p)| p.items.iter().cloned()).collect();
+    Ok(crate::hash::hash_items(&items, &crate::hash::prelude().scope)?.into_iter().map(|h| (h.name, h.hash)).collect())
+}
+
+/// Build checked-together `sources` for `target`. `store` is set when the
+/// sources were rendered from the store: its hashes name the definitions
+/// and its `cache` table holds their emitted C. `include` is the C include path.
+/// Also returns the fuzz targets of a test build (spec section 7.1).
+pub fn build_sources(sources: &[(String, String)], store: Option<(&Store, HashMap<String, String>)>, include: &[PathBuf], target: Target, out: Option<&Path>) -> Result<(PathBuf, Vec<emit::FuzzTarget>), Vec<Diag>> {
+    let (checked, diags) = types::check_sources(sources);
     let errors: Vec<Diag> = diags.into_iter().filter(|d| d.severity == Severity::Error).collect();
     if !errors.is_empty() {
         return Err(errors);
     }
-    let defs = Defs::new(&checked);
+    let mut hashes: HashMap<String, String> = crate::hash::prelude().defs.iter().map(|d| (d.name.clone(), d.hash.clone())).collect();
+    match &store {
+        Some((_, h)) => hashes.extend(h.clone()),
+        None => hashes.extend(file_hashes(&checked)?),
+    }
+    let defs = Defs::new(&checked, hashes);
     let (dir_name, root, mode, only) = match target {
         Target::Entry(e) => {
             check_entry(&checked.typed, &defs, e)?;
@@ -64,7 +94,15 @@ pub fn build_with_fuzz(files: &[PathBuf], target: Target, out: Option<&Path>) ->
         Target::Tests(only) => ("test".to_string(), Root::Tests, Mode::Test, only),
     };
     let insts = mono::collect(&checked, &defs, root)?;
-    let mut output = emit::emit(&checked, &defs, &insts, mode);
+    let cache = store.map(|s| s.0);
+    let db = |r: rusqlite::Result<()>| r.map_err(|e| vec![error("E0000", format!("store error: {e}"))]);
+    if let Some(s) = cache {
+        db(s.begin())?;
+    }
+    let mut output = emit::emit(&checked, &defs, &insts, mode, cache);
+    if let Some(s) = cache {
+        db(s.commit())?;
+    }
     let mut fuzz = std::mem::take(&mut output.fuzz);
     if let Some(name) = only {
         let roots: Vec<&str> = insts.iter().filter(|i| i.name == name).map(|i| i.c_name.as_str()).collect();
@@ -107,10 +145,13 @@ pub fn build_with_fuzz(files: &[PathBuf], target: Target, out: Option<&Path>) ->
     }
     // Every header a file can see, so a header change invalidates objects.
     let headers: String = all.iter().filter(|(n, _, _)| n.ends_with(".h") && n != "ov_types.h").map(|(_, t, _)| *t).collect();
+    // shortcut: headers found through `include` are not part of the object key; an edited
+    // external header needs `rm -r .ovbuild`. Hash them too if that bites.
+    let inc: Vec<String> = include.iter().map(|d| format!("-I{}", d.display())).collect();
     let mut objs = Vec::new();
     let mut jobs = Vec::new();
     for (n, text, generated) in all.iter().filter(|(n, _, _)| n.ends_with(".c")) {
-        let flags: Vec<&str> = CFLAGS.iter().chain(if *generated { GEN_WARN } else { &[] }).copied().collect();
+        let flags: Vec<&str> = CFLAGS.iter().chain(if *generated { GEN_WARN } else { &[] }).copied().chain(inc.iter().map(String::as_str)).collect();
         let key = mono::fnv64(&format!("{}\0{text}\0{headers}\0{}{}", flags.join(" "), emit::HEADER_PREAMBLE, emit::FUZZ_H));
         let obj = format!("obj/{key:016x}.o");
         if !dir.join(&obj).exists() {

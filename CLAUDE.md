@@ -7,8 +7,11 @@ spec in the same commit and say why in the commit message.
 ## Layout
 
 - `src/` Rust compiler, one crate, binary `ov`. Modules: `lexer`, `parser`,
-  `ast`, `printer`, `types`, `effects`, `exhaust`, `mono`, `emit`, `store`,
-  `diag`, `fuzz`, `cli`.
+  `ast`, `printer`, `prelude`, `types`, `effects`, `exhaust`, `hash`
+  (canonical form and hashing), `store` (SQLite tables), `store_cli` (store
+  commands, and checking and building from stored names), `mono`
+  (monomorphization), `emit` (C emission), `build` (cc and linking), `fuzz`,
+  `diag`, `cli`.
 - `runtime/` C runtime (`rt.h`, `rt.c`) linked into every program, with its
   own tests in `runtime/tests/`.
 - `tests/programs/` `.ov` fixtures. Each has an `.expect` file: either the

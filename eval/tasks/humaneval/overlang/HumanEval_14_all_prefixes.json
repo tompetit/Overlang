@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_14_all_prefixes",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_14_all_prefixes",
+ "entry_point": "all_prefixes",
+ "prompt": "// Return list of all prefixes from shortest to longest of the input string\n// Examples:\n//   all_prefixes(\"abc\") == [\"a\", \"ab\", \"abc\"]\nfn all_prefixes(string: Str) -> List[Str] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(all_prefixes(\"\"), []);\n}\n\ntest check_2 {\n  assert_eq(all_prefixes(\"asdfgh\"), [\"a\", \"as\", \"asd\", \"asdf\", \"asdfg\", \"asdfgh\"]);\n}\n\ntest check_3 {\n  assert_eq(all_prefixes(\"WWW\"), [\"W\", \"WW\", \"WWW\"]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(all_prefixes(\"\"), []);\n}\n",
+ "solution": "// Return list of all prefixes from shortest to longest of the input string\n// Examples:\n//   all_prefixes(\"abc\") == [\"a\", \"ab\", \"abc\"]\nfn all_prefixes(string: Str) -> List[Str] {\n  map(range(1, str_len(string) + 1), |i| substr(string, 0, i))\n}\n"
+}

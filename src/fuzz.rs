@@ -3,14 +3,14 @@
 //! function in `--fuzz` mode. Generators, shrinkers and the trap escape are
 //! generated into the binary (see the fuzzing section of `emit.rs`); this
 //! module only drives it, prints results, emits W0004 and keeps the cache
-//! `.ovbuild/test/fuzz-cache.json` of `ok` results by target hash.
+//! `.ovbuild/test/fuzz-cache.json` of `ok` results by C-text key.
 
 use crate::ast::Span;
-use crate::build::{self, Target};
 use crate::diag::{Diag, Severity};
+use crate::emit::FuzzTarget;
 use serde_json::{json, Map, Value};
 use std::os::unix::process::ExitStatusExt;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::{Command, ExitStatus, Stdio};
 use std::time::{Duration, Instant, SystemTime};
 
@@ -25,10 +25,10 @@ fn exit_code(s: ExitStatus) -> i32 {
     s.code().unwrap_or_else(|| 128 + s.signal().unwrap_or(0))
 }
 
-/// Exit code: the test binary's if a test block failed, else 3 if any fuzzing failed, else 0.
-pub fn test(files: &[PathBuf], name: Option<&str>, cases: u64, seed: Option<u64>, json: bool) -> Result<i32, Vec<Diag>> {
-    let (exe, targets) = build::build_with_fuzz(files, Target::Tests(name), None)?;
-    let mut cmd = Command::new(&exe);
+/// Run the test binary `exe`, then fuzz `targets`. Exit code: the binary's
+/// if a test block failed, else 3 if any fuzzing failed, else 0.
+pub fn test(exe: &Path, targets: &[FuzzTarget], cases: u64, seed: Option<u64>, json: bool) -> Result<i32, Vec<Diag>> {
+    let mut cmd = Command::new(exe);
     if json {
         cmd.arg("--json");
     }
@@ -44,14 +44,14 @@ pub fn test(files: &[PathBuf], name: Option<&str>, cases: u64, seed: Option<u64>
     let old: Map<String, Value> = std::fs::read_to_string(&cache_path).ok().and_then(|s| serde_json::from_str(&s).ok()).unwrap_or_default();
     let mut cache = Map::new();
     let mut failed = false;
-    for t in &targets {
-        let line = match old.get(&t.hash) {
+    for t in targets {
+        let line = match old.get(&t.key) {
             Some(c) if c["seed"] == seed && c["cases"] == cases => {
                 let mut v = c["result"].clone();
                 v["cached"] = json!(true);
                 v
             }
-            _ => run(&exe, &t.name, &t.hash, seed, cases),
+            _ => run(exe, &t.name, &t.hash, seed, cases),
         };
         let status = line["status"].as_str().unwrap_or("");
         if json {
@@ -79,7 +79,7 @@ pub fn test(files: &[PathBuf], name: Option<&str>, cases: u64, seed: Option<u64>
                 if let Some(o) = v.as_object_mut() {
                     o.remove("cached");
                 }
-                cache.insert(t.hash.clone(), json!({"seed": seed, "cases": cases, "result": v}));
+                cache.insert(t.key.clone(), json!({"seed": seed, "cases": cases, "result": v}));
             }
             "skipped" => {}
             _ => failed = true,

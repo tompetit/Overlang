@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_15_string_sequence",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_15_string_sequence",
+ "entry_point": "string_sequence",
+ "prompt": "// Return a string containing space-delimited numbers starting from 0 upto n inclusive.\n// Examples:\n//   string_sequence(0) == \"0\"\n//   string_sequence(5) == \"0 1 2 3 4 5\"\nfn string_sequence(n: Int) -> Str {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(string_sequence(0), \"0\");\n}\n\ntest check_2 {\n  assert_eq(string_sequence(3), \"0 1 2 3\");\n}\n\ntest check_3 {\n  assert_eq(string_sequence(10), \"0 1 2 3 4 5 6 7 8 9 10\");\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(string_sequence(0), \"0\");\n}\n",
+ "solution": "// Return a string containing space-delimited numbers starting from 0 upto n inclusive.\n// Examples:\n//   string_sequence(0) == \"0\"\n//   string_sequence(5) == \"0 1 2 3 4 5\"\nfn string_sequence(n: Int) -> Str {\n  join(map(range(0, n + 1), |i| show(i)), \" \")\n}\n"
+}

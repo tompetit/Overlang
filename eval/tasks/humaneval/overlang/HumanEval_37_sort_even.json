@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_37_sort_even",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_37_sort_even",
+ "entry_point": "sort_even",
+ "prompt": "// This function takes a list l and returns a list l' such that\n// l' is identical to l in the odd indicies, while its values at the even indicies are equal\n// to the values of the even indicies of l, but sorted.\n// Examples:\n//   sort_even([1, 2, 3]) == [1, 2, 3]\n//   sort_even([5, 6, 3, 4]) == [3, 6, 5, 4]\nfn sort_even(l: List[Int]) -> List[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(sort_even([1, 2, 3]), [1, 2, 3]);\n}\n\ntest check_2 {\n  assert_eq(sort_even([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10]), [-10, 3, -5, 2, -3, 3, 5, 0, 9, 1, 123]);\n}\n\ntest check_3 {\n  assert_eq(sort_even([5, 8, -12, 4, 23, 2, 3, 11, 12, -10]), [-12, 8, 3, 4, 5, 2, 12, 11, 23, -10]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(sort_even([1, 2, 3]), [1, 2, 3]);\n}\n",
+ "solution": "// This function takes a list l and returns a list l' such that\n// l' is identical to l in the odd indicies, while its values at the even indicies are equal\n// to the values of the even indicies of l, but sorted.\n// Examples:\n//   sort_even([1, 2, 3]) == [1, 2, 3]\n//   sort_even([5, 6, 3, 4]) == [3, 6, 5, 4]\nfn sort_even(l: List[Int]) -> List[Int] {\n  let vals = sort(map(filter(enumerate(l), |p| p.0 % 2 == 0), |p| p.1));\n  map(enumerate(l), |p| if p.0 % 2 == 0 { vals[p.0 / 2] } else { p.1 })\n}\n"
+}

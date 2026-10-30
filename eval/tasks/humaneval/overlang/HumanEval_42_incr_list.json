@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_42_incr_list",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_42_incr_list",
+ "entry_point": "incr_list",
+ "prompt": "// Return list with elements incremented by 1.\n// Examples:\n//   incr_list([1, 2, 3]) == [2, 3, 4]\n//   incr_list([5, 3, 5, 2, 3, 3, 9, 0, 123]) == [6, 4, 6, 3, 4, 4, 10, 1, 124]\nfn incr_list(l: List[Int]) -> List[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(incr_list([]), []);\n}\n\ntest check_2 {\n  assert_eq(incr_list([3, 2, 1]), [4, 3, 2]);\n}\n\ntest check_3 {\n  assert_eq(incr_list([5, 2, 5, 2, 3, 3, 9, 0, 123]), [6, 3, 6, 3, 4, 4, 10, 1, 124]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(incr_list([]), []);\n}\n",
+ "solution": "// Return list with elements incremented by 1.\n// Examples:\n//   incr_list([1, 2, 3]) == [2, 3, 4]\n//   incr_list([5, 3, 5, 2, 3, 3, 9, 0, 123]) == [6, 4, 6, 3, 4, 4, 10, 1, 124]\nfn incr_list(l: List[Int]) -> List[Int] {\n  map(l, |x| x + 1)\n}\n"
+}

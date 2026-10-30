@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_25_factorize",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_25_factorize",
+ "entry_point": "factorize",
+ "prompt": "// Return list of prime factors of given integer in the order from smallest to largest.\n// Each of the factors should be listed number of times corresponding to how many times it appeares in factorization.\n// Input number should be equal to the product of all factors\n// Examples:\n//   factorize(8) == [2, 2, 2]\n//   factorize(25) == [5, 5]\n//   factorize(70) == [2, 5, 7]\nfn factorize(n: Int) -> List[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(factorize(2), [2]);\n}\n\ntest check_2 {\n  assert_eq(factorize(4), [2, 2]);\n}\n\ntest check_3 {\n  assert_eq(factorize(8), [2, 2, 2]);\n}\n\ntest check_4 {\n  assert_eq(factorize(57), [3, 19]);\n}\n\ntest check_5 {\n  assert_eq(factorize(3249), [3, 3, 19, 19]);\n}\n\ntest check_6 {\n  assert_eq(factorize(185193), [3, 3, 3, 19, 19, 19]);\n}\n\ntest check_7 {\n  assert_eq(factorize(20577), [3, 19, 19, 19]);\n}\n\ntest check_8 {\n  assert_eq(factorize(18), [2, 3, 3]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(factorize(2), [2]);\n}\n",
+ "solution": "// Return list of prime factors of given integer in the order from smallest to largest.\n// Each of the factors should be listed number of times corresponding to how many times it appeares in factorization.\n// Input number should be equal to the product of all factors\n// Examples:\n//   factorize(8) == [2, 2, 2]\n//   factorize(25) == [5, 5]\n//   factorize(70) == [2, 5, 7]\nfn factorize(n: Int) -> List[Int] {\n  let mut out: List[Int] = [];\n  let mut m = n;\n  let mut p = 2;\n  while p * p <= m {\n    if m % p == 0 {\n      out = push(out, p);\n      m = m / p;\n    } else {\n      p = p + 1;\n    }\n  }\n  if m > 1 { push(out, m) } else { out }\n}\n"
+}

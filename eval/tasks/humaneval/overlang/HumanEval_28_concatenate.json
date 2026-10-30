@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_28_concatenate",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_28_concatenate",
+ "entry_point": "concatenate",
+ "prompt": "// Concatenate list of strings into a single string\n// Examples:\n//   concatenate([]) == \"\"\n//   concatenate([\"a\", \"b\", \"c\"]) == \"abc\"\nfn concatenate(strings: List[Str]) -> Str {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(concatenate([]), \"\");\n}\n\ntest check_2 {\n  assert_eq(concatenate([\"x\", \"y\", \"z\"]), \"xyz\");\n}\n\ntest check_3 {\n  assert_eq(concatenate([\"x\", \"y\", \"z\", \"w\", \"k\"]), \"xyzwk\");\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(concatenate([]), \"\");\n}\n",
+ "solution": "// Concatenate list of strings into a single string\n// Examples:\n//   concatenate([]) == \"\"\n//   concatenate([\"a\", \"b\", \"c\"]) == \"abc\"\nfn concatenate(strings: List[Str]) -> Str {\n  join(strings, \"\")\n}\n"
+}
