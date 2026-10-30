@@ -94,7 +94,7 @@ fn unreachable_precondition_is_w0004() {
 fn recursive_types_stay_within_the_depth_limit() {
     let out = ov_test(&workdir("tree"), &[&fixture("fuzz_tree.ov"), "--json", "--seed", "9", "--cases", "500"]);
     assert_eq!(out.status.code(), Some(0), "{}", stdout(&out));
-    for f in ["height", "shallow", "count"] {
+    for f in ["height", "shallow", "node_count"] {
         let v = fuzz_line(&out, f);
         assert_eq!(v["status"], "ok", "{v}");
         assert_eq!(v["cases"], 500);
@@ -121,7 +121,7 @@ fn name_restricts_fuzzing_to_its_closure() {
     let dir = workdir("name");
     let out = ov_test(&dir, &[&fixture("fuzz_tree.ov"), "--name", "shallow", "--seed", "1"]);
     let s = stdout(&out);
-    assert!(s.contains("fuzz shallow ok") && s.contains("fuzz height ok") && !s.contains("fuzz count"), "{s}");
+    assert!(s.contains("fuzz shallow ok") && s.contains("fuzz height ok") && !s.contains("fuzz node_count"), "{s}");
     let bad = ov_test(&dir, &[&fixture("fuzz_tree.ov"), "--name", "nope"]);
     assert_eq!(bad.status.code(), Some(1));
     assert!(stdout(&bad).contains("E0000"));
