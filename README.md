@@ -18,12 +18,16 @@ Python or Rust, even with no training data for the language.
 
 ## Status
 
-Working, one day in. Programs compile to native binaries through C; the
+Working, two days in. Programs compile to native binaries through C; the
 content-addressed store, typechecker, effect checker, exhaustiveness
 checker, contracts and the JSON diagnostics all work; the first real
 program, an HTTP todo app over SQLite in 178 lines, is in
-[examples/todo](examples/todo). Fuzzing of contracts and the evaluation
-runs are next. See the ledger at the end of the plan for spend.
+[examples/todo](examples/todo), with a Python port for the maintenance
+benchmark. `ov test` fuzzes every contracted function and found an overflow
+in the spec's own example. The evaluation harness holds 155 HumanEval tasks
+in Python, Rust and Overlang and 25 maintenance tasks; the measured runs are
+next. [docs/RESULTS.md](docs/RESULTS.md) has the predictions, and the
+ledger at the end of the plan has the spend.
 
 ```
 ov add app.ov        # typecheck, hash and store every definition
