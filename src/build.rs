@@ -26,7 +26,8 @@ const GEN_WARN: &[&str] = &["-Wall", "-Wextra", "-Werror", "-Wno-unused-paramete
 
 pub enum Target<'s> {
     Entry(&'s str),
-    Tests,
+    /// Every test block; fuzz targets restricted to this name's closure if given.
+    Tests(Option<&'s str>),
 }
 
 fn error(code: &str, message: String) -> Diag {
@@ -36,6 +37,11 @@ fn error(code: &str, message: String) -> Diag {
 /// Build `files` for `target`; the path of the executable. Each file's
 /// directory is on the C include path, for `foreign c` headers.
 pub fn build(files: &[PathBuf], target: Target, out: Option<&Path>) -> Result<PathBuf, Vec<Diag>> {
+    build_with_fuzz(files, target, out).map(|(exe, _)| exe)
+}
+
+/// `build`, plus the fuzz targets of a test build (spec section 7.1).
+pub fn build_with_fuzz(files: &[PathBuf], target: Target, out: Option<&Path>) -> Result<(PathBuf, Vec<emit::FuzzTarget>), Vec<Diag>> {
     let cwd = std::env::current_dir().map_err(|e| vec![error("E0000", format!("no current directory: {e}"))])?;
     let include: Vec<PathBuf> = files.iter().map(|f| cwd.join(f.parent().unwrap_or(Path::new("")))).collect();
     build_sources(&read_sources(files)?, None, &include, target, out)
@@ -67,7 +73,8 @@ fn file_hashes(checked: &Checked) -> Result<HashMap<String, String>, Vec<Diag>> 
 /// Build checked-together `sources` for `target`. `store` is set when the
 /// sources were rendered from the store: its hashes name the definitions
 /// and its `cache` table holds their emitted C. `include` is the C include path.
-pub fn build_sources(sources: &[(String, String)], store: Option<(&Store, HashMap<String, String>)>, include: &[PathBuf], target: Target, out: Option<&Path>) -> Result<PathBuf, Vec<Diag>> {
+/// Also returns the fuzz targets of a test build (spec section 7.1).
+pub fn build_sources(sources: &[(String, String)], store: Option<(&Store, HashMap<String, String>)>, include: &[PathBuf], target: Target, out: Option<&Path>) -> Result<(PathBuf, Vec<emit::FuzzTarget>), Vec<Diag>> {
     let (checked, diags) = types::check_sources(sources);
     let errors: Vec<Diag> = diags.into_iter().filter(|d| d.severity == Severity::Error).collect();
     if !errors.is_empty() {
@@ -79,12 +86,12 @@ pub fn build_sources(sources: &[(String, String)], store: Option<(&Store, HashMa
         None => hashes.extend(file_hashes(&checked)?),
     }
     let defs = Defs::new(&checked, hashes);
-    let (dir_name, root, mode) = match target {
+    let (dir_name, root, mode, only) = match target {
         Target::Entry(e) => {
             check_entry(&checked.typed, &defs, e)?;
-            (e.to_string(), Root::Entry(e), Mode::Run(e))
+            (e.to_string(), Root::Entry(e), Mode::Run(e), None)
         }
-        Target::Tests => ("test".to_string(), Root::Tests, Mode::Test),
+        Target::Tests(only) => ("test".to_string(), Root::Tests, Mode::Test, only),
     };
     let insts = mono::collect(&checked, &defs, root)?;
     let cache = store.map(|s| s.0);
@@ -92,9 +99,18 @@ pub fn build_sources(sources: &[(String, String)], store: Option<(&Store, HashMa
     if let Some(s) = cache {
         db(s.begin())?;
     }
-    let output = emit::emit(&checked, &defs, &insts, mode, cache);
+    let mut output = emit::emit(&checked, &defs, &insts, mode, cache);
     if let Some(s) = cache {
         db(s.commit())?;
+    }
+    let mut fuzz = std::mem::take(&mut output.fuzz);
+    if let Some(name) = only {
+        let roots: Vec<&str> = insts.iter().filter(|i| i.name == name).map(|i| i.c_name.as_str()).collect();
+        if roots.is_empty() {
+            return Err(vec![error("E0000", format!("`{name}` is not a function or test reached by the test blocks"))]);
+        }
+        let keep = emit::reach(&output.files, &insts, &roots);
+        fuzz.retain(|t| keep.contains(&t.c_name));
     }
 
     let cwd = std::env::current_dir().map_err(|e| vec![error("E0000", format!("no current directory: {e}"))])?;
@@ -136,7 +152,7 @@ pub fn build_sources(sources: &[(String, String)], store: Option<(&Store, HashMa
     let mut jobs = Vec::new();
     for (n, text, generated) in all.iter().filter(|(n, _, _)| n.ends_with(".c")) {
         let flags: Vec<&str> = CFLAGS.iter().chain(if *generated { GEN_WARN } else { &[] }).copied().chain(inc.iter().map(String::as_str)).collect();
-        let key = mono::fnv64(&format!("{}\0{text}\0{headers}\0{}", flags.join(" "), emit::HEADER_PREAMBLE));
+        let key = mono::fnv64(&format!("{}\0{text}\0{headers}\0{}{}", flags.join(" "), emit::HEADER_PREAMBLE, emit::FUZZ_H));
         let obj = format!("obj/{key:016x}.o");
         if !dir.join(&obj).exists() {
             jobs.push((n.clone(), obj.clone(), flags));
@@ -157,7 +173,7 @@ pub fn build_sources(sources: &[(String, String)], store: Option<(&Store, HashMa
     if !res.status.success() {
         return Err(vec![error("E0000", format!("link failed\n{}", String::from_utf8_lossy(&res.stderr)))]);
     }
-    Ok(exe)
+    Ok((exe, fuzz))
 }
 
 /// Spec section 8: no parameters, returns Unit or Result[Unit, E].

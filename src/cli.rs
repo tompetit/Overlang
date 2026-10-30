@@ -4,7 +4,7 @@
 use crate::ast::{Program, Span};
 use crate::diag::Diag;
 use crate::diag::Severity;
-use crate::{build, parser, printer, store_cli, types};
+use crate::{build, fuzz, parser, printer, store_cli, types};
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
@@ -47,8 +47,14 @@ enum Command {
         #[arg(last = true)]
         args: Vec<String>,
     },
-    /// Build and run every test block in order: `ok <name>` per passing block.
-    Test { files: Vec<PathBuf> },
+    /// Build and run every test block in order (`ok <name>` per passing block),
+    /// then fuzz every contracted function they reach (`fuzz <fn> ...`).
+    /// With a store, the argument is an optional stored name.
+    Test {
+        files: Vec<PathBuf>,
+        #[command(flatten)]
+        fuzz: Fuzz,
+    },
     /// Parse a file and dump its AST.
     Parse {
         file: PathBuf,
@@ -59,6 +65,24 @@ enum Command {
     /// Store commands (add, view, edit, rm, ls, deps, dependents, ctx, history, diff).
     #[command(flatten)]
     Store(crate::store_cli::StoreCommand),
+}
+
+/// `ov test` fuzzing options (spec section 7.1).
+#[derive(clap::Args)]
+struct Fuzz {
+    /// Fuzz only the functions in this function's or test's closure (with a
+    /// store, the positional name does this too).
+    #[arg(long)]
+    name: Option<String>,
+    /// Generated inputs per function.
+    #[arg(long, default_value_t = 200)]
+    cases: u64,
+    /// Generator seed; default `OV_SEED`, else the clock.
+    #[arg(long)]
+    seed: Option<u64>,
+    /// Print JSON lines only.
+    #[arg(long)]
+    json: bool,
 }
 
 /// Runs the CLI and returns the process exit code.
@@ -129,14 +153,14 @@ pub fn run() -> i32 {
                 Err(diags) => report(&diags),
             }
         }
-        Command::Test { files } => {
+        Command::Test { files, fuzz: f } => {
             let built = match stored_name(&files) {
-                Some(name) => store_cli::test_build(name),
+                Some(name) => store_cli::test_build(name.or(f.name.as_deref())),
                 None if files.is_empty() => Err(vec![driver_error("no files given and no store in the current directory".into(), None)]),
-                None => build::build(&files, build::Target::Tests, None),
+                None => build::build_with_fuzz(&files, build::Target::Tests(f.name.as_deref()), None),
             };
-            match built {
-                Ok(exe) => execute(&exe, &[]),
+            match built.and_then(|(exe, targets)| fuzz::test(&exe, &targets, f.cases, f.seed, f.json)) {
+                Ok(code) => code,
                 Err(diags) => report(&diags),
             }
         }

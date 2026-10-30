@@ -85,11 +85,14 @@ fn every_runnable_fixture_matches_its_expect_file() {
 
 #[test]
 fn ov_test_runs_test_blocks() {
+    // Test blocks first, then one fuzz line per contracted function (tests/fuzz.rs covers fuzzing).
     let out = ov(&workdir("test_records"), &["test", programs().join("records.ov").to_str().unwrap()], b"");
-    assert_eq!(String::from_utf8_lossy(&out.stdout), "ok total_of_empty_order\n", "{}", String::from_utf8_lossy(&out.stderr));
+    let s = String::from_utf8_lossy(&out.stdout);
+    assert!(s.starts_with("ok total_of_empty_order\nfuzz total ok (200 cases, "), "{s}{}", String::from_utf8_lossy(&out.stderr));
     assert_eq!(out.status.code(), Some(0));
     let out = ov(&workdir("test_two"), &["test", programs().join("two_tests.ov").to_str().unwrap()], b"");
-    assert_eq!(String::from_utf8_lossy(&out.stdout), "ok clamp_inside\nok clamp_edges\n", "{}", String::from_utf8_lossy(&out.stderr));
+    let s = String::from_utf8_lossy(&out.stdout);
+    assert!(s.starts_with("ok clamp_inside\nok clamp_edges\nfuzz clamp ok (200 cases, "), "{s}{}", String::from_utf8_lossy(&out.stderr));
     assert_eq!(out.status.code(), Some(0));
 }
 

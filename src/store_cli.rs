@@ -6,6 +6,7 @@ use crate::ast::{Item, Span, TypeBody, TypeDef, TypeExpr, TypeKind};
 use crate::build::{self, Target};
 use crate::cli::{driver_error, load, report};
 use crate::diag::{Diag, Severity};
+use crate::emit::FuzzTarget;
 use crate::hash::{hash_items, item_name, nearest, prelude, tarjan, Scope};
 use crate::parser;
 use crate::printer::{print_signature, Printer};
@@ -354,31 +355,37 @@ pub fn build(target: Target, out: Option<&Path>) -> Result<PathBuf, Vec<Diag>> {
     let store = open()?;
     let roots = match target {
         Target::Entry(n) => vec![resolve(&store, n)?],
-        Target::Tests => db(store.names(Some("test")))?.into_iter().map(|n| n.1).collect(),
+        Target::Tests(_) => db(store.names(Some("test")))?.into_iter().map(|n| n.1).collect(),
     };
-    build_roots(&store, &roots, target, out)
+    build_roots(&store, &roots, target, out).map(|(exe, _)| exe)
 }
 
-fn build_roots(store: &Store, roots: &[String], target: Target, out: Option<&Path>) -> Result<PathBuf, Vec<Diag>> {
+fn build_roots(store: &Store, roots: &[String], target: Target, out: Option<&Path>) -> Result<(PathBuf, Vec<FuzzTarget>), Vec<Diag>> {
     let (sources, hashes) = closure_sources(store, roots, &HashSet::new())?;
     // An entry given by hash runs under its current name.
     let entry = match target {
         Target::Entry(_) => name_of(store, &roots[0])?,
-        Target::Tests => String::new(),
+        Target::Tests(_) => String::new(),
     };
-    let target = if entry.is_empty() { Target::Tests } else { Target::Entry(&entry) };
+    let target = match target {
+        Target::Tests(only) => Target::Tests(only),
+        Target::Entry(_) => Target::Entry(&entry),
+    };
     // Foreign headers of stored code are looked up in the project root.
     let cwd = std::env::current_dir().map_err(|e| vec![driver_error(format!("no current directory: {e}"), None)])?;
     build::build_sources(&sources, Some((store, hashes)), &[cwd], target, out).map_err(store_diags)
 }
 
 /// `ov test [name]` from the store: every bound test, or with `name`, the
-/// test `name` or every bound test that depends on `name`.
-pub fn test_build(name: Option<&str>) -> Result<PathBuf, Vec<Diag>> {
+/// test `name` or every bound test that depends on `name`, fuzzing only
+/// `name`'s closure. Also returns the fuzz targets (spec section 7.1).
+pub fn test_build(name: Option<&str>) -> Result<(PathBuf, Vec<FuzzTarget>), Vec<Diag>> {
     let store = open()?;
     let mut tests: Vec<String> = db(store.names(Some("test")))?.into_iter().map(|n| n.1).collect();
+    let mut only = None;
     if let Some(n) = name {
         let h = resolve(&store, n)?;
+        only = Some(name_of(&store, &h)?);
         let mut keep = Vec::new();
         for t in tests {
             if t == h || db(store.closure(&t, false))?.iter().any(|c| c.0 == h) {
@@ -387,7 +394,7 @@ pub fn test_build(name: Option<&str>) -> Result<PathBuf, Vec<Diag>> {
         }
         tests = keep;
     }
-    build_roots(&store, &tests, Target::Tests, None)
+    build_roots(&store, &tests, Target::Tests(only.as_deref()), None)
 }
 
 // ---------------------------------------------------------------- add, edit

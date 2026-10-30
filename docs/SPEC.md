@@ -232,21 +232,93 @@ For `bounds`, `overflow`, `div_zero`, `assert`, `todo`, `unimplemented`:
 
 ### 7.1 Fuzzing
 
-`ov test` runs every `test` block and then fuzzes every function that has at
-least one contract. `ov` derives a generator from each parameter type:
-integers biased toward small magnitudes and boundaries, strings from a small
-alphabet, lists up to length 16, sums choosing constructors uniformly,
-records and tuples componentwise. Generated inputs that fail `requires` are
-discarded (up to a bound, then the function is reported as "unreachable
-precondition", warning W0004). An input that traps on `ensures` or any other
-kind is shrunk greedily (halve ints, drop list elements, shorten strings) and
-reported. A user may override generation for a type with
-`gen Name { expr }` returning `List[Name]` (**shortcut**: not in v0.1).
+`ov test [--name N] [--cases N] [--seed S] [--json]` runs every `test` block
+and, if they all pass, fuzzes every user function (prelude functions are not
+fuzzed) that has at least one `requires` or `ensures` and is reachable from
+the test blocks; with `--name N` (or, from the store, `ov test N`), only
+those also in the closure of the function or test `N`. Generic functions are fuzzed per instance, named
+`f[Int]`. Generators and shrinkers are generated into the test binary per
+parameter type; `ov` only drives it, running for each function
+`<binary> --fuzz <fn> --seed <s> --cases <n>`. The seed is `--seed`, else
+`OV_SEED`, else taken from the clock; cases default to 200.
 
-The compiled binary exposes `--fuzz <name>` which reads inputs as JSON lines
-on stdin and reports outcomes as JSON lines on stdout. Results are cached by
-hash: a function whose hash and whose dependencies' hashes are unchanged is
-not re-fuzzed.
+Generation, per parameter type (lengths are capped by a size that grows from
+1 to 16 over the cases, so early cases are small):
+
+- Int: one in four from `0, 1, -1, 2, -2, INT64_MIN, INT64_MAX`, one in two
+  uniform in `[-100, 100]`, one in four of any magnitude (log-uniform).
+- Float: likewise from `0.0, ±1.0, ±0.5, ±1e300`, small values, and any
+  magnitude. Never NaN or infinite.
+- Bool uniform; Unit `()`; Str of length 0 to 12 over `a-z`, `0-9`, space,
+  `é` and `日`.
+- List of length 0 to 16; Map and Set of 0 to 8 generated keys; tuples and
+  records componentwise.
+- Sums (Option and Result included) choose a constructor uniformly. Records
+  and sums count one level of depth; at depth 4 a sum picks a constructor
+  whose fields do not mention its own type if one exists, and lists, maps
+  and sets are empty, which ends any recursion through a container.
+- A parameter whose type contains a function type, a `declare`d function,
+  or a function with effects (fuzzing must not do IO) is not fuzzed: it is
+  reported `skipped` with the reason.
+
+Per case: generate the arguments and evaluate the `requires` clauses alone.
+If one is false (or traps), the case is rejected. Otherwise call the
+function; a failed `ensures` or any trap inside the call is a failure, and
+fuzzing that function stops. If more than 90% of the cases are rejected, `ov`
+emits warning W0004 (unreachable precondition) for the function.
+
+A failure is shrunk greedily. Candidates for a value, in order: Int halved
+toward 0; Float truncated, or halved and truncated if integral; Bool `false`;
+Str with one code point removed; List with one element removed, then each
+element shrunk; Map and Set with one key removed; tuples and records with
+one field shrunk; a sum value replaced by a nullary constructor, then by a
+field of its own type, then with one field shrunk. The first candidate of
+any argument that still satisfies `requires` and fails with the same trap
+`kind` replaces it, and the search starts again, until no candidate does
+(at most 10000 tries).
+
+`--fuzz` prints one JSON line:
+
+```json
+{"fn": "clamp", "hash": "…", "cases": 4, "rejected": 0, "status": "fail",
+ "failure": {"kind": "ensures", "detail": "result >= 0", "args": {"x": "-37"},
+             "shrunk_args": {"x": "-1"}, "seed": 7, "case": 3}}
+```
+
+`status` is `ok`, `fail` or `skipped` (with `reason`). `args` and
+`shrunk_args` hold `show` of each argument; `detail` is the clause for
+contract traps and the trap's detail otherwise; `case` is the failing case,
+and (seed, case) determines its input. `hash` is the definition's store
+hash, as in traps.
+
+Traps must not end the process while fuzzing. In test builds only, the
+generated `ov_types.h` redefines `ov_trap`, `ov_trap_contract` and the
+runtime calls that can trap (`ov_add`, `ov_sub`, `ov_mul`, `ov_div`, `ov_mod`,
+`ov_neg`, `ov_div_floor`, `ov_mod_floor`, `ov_list_get`, `ov_str_repeat`) as
+macros for wrappers in the generated `ov_fuzz.c`. The wrappers check the trap
+condition first and call `ovfz_trap`, which `longjmp`s to the jump buffer
+armed around the case if there is one, and otherwise calls the real
+`ov_trap`. The runtime and non-test builds are unchanged.
+
+`ov test` prints, after the `ok <test>` lines, one line per function:
+`fuzz <fn> ok (<cases> cases, <rejected> rejected)`, `fuzz <fn> FAIL
+<failure JSON>` or `fuzz <fn> skipped: <reason>`, plus any W0004 as a JSON
+diagnostic. With `--json` every line is JSON: `{"test": name, "status":
+"ok"}` per test block and the `--fuzz` lines verbatim. The exit code is 3 if
+a test block or any fuzzing failed. A `--fuzz` run that crashes or runs over
+60 seconds is a failure of kind `crash` or `timeout`.
+
+An `ok` result is cached in `.ovbuild/test/fuzz-cache.json`, keyed by a
+hash of the C text of the instance and of every instance it reaches: a
+function whose key, seed and case count are unchanged is not re-fuzzed, and
+its line ends `, cached)`. (**shortcut**: a JSON file next to
+the build; moves to the store with the rest of the build cache.) A user may
+override generation for a type with `gen Name { expr }` returning
+`List[Name]` (**shortcut**: not in v0.1).
+
+For example, fuzzing section 13's `total` finds an `overflow` once some
+`qty * unit_cents` exceeds the Int range; `tests/programs/records.ov` bounds
+both in `requires`.
 
 ## 8. Entry points
 

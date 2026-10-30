@@ -1,0 +1,14 @@
+// A function-typed parameter makes a function unfuzzable (tests/fuzz.rs).
+fn apply_pos(f: fn(Int) -> Int, x: Int) -> Int
+  requires x > 0
+{
+  f(x)
+}
+
+fn main() -> Unit !io {
+  println(show(apply_pos(|v| v * 2, 4)));
+}
+
+test apply {
+  assert_eq(apply_pos(|v| v + 1, 1), 2);
+}

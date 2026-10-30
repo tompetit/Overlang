@@ -55,8 +55,11 @@ fn run_and_test_from_the_store() {
     let dir = workdir("run_test");
     ov(&dir, &["add", &fixture("records.ov")]);
     assert_eq!(ov(&dir, &["run", "main"]), fs::read_to_string(fixture("records.expect")).unwrap());
-    assert_eq!(ov(&dir, &["test"]), "ok total_of_empty_order\n");
-    assert_eq!(ov(&dir, &["test", "total"]), "ok total_of_empty_order\n", "tests that depend on `total`");
+    // Test blocks, then fuzzing of the contracted functions they reach (spec section 7.1).
+    let all = ov(&dir, &["test"]);
+    assert!(all.starts_with("ok total_of_empty_order\nfuzz total ok (200 cases, "), "{all}");
+    let named = ov(&dir, &["test", "total"]);
+    assert!(named.starts_with("ok total_of_empty_order\nfuzz total ok (200 cases, "), "tests that depend on `total`: {named}");
     assert_eq!(ov(&dir, &["check", "main"]), "");
     assert_eq!(ov(&dir, &["check"]), "");
     // A file argument still means the file.
