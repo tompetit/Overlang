@@ -403,7 +403,12 @@ Tables:
   Re-adding a definition with the same hash replaces `ast` and `source`
   without adding a row. Every prelude definition is in `defs`, unbound in `names`;
   prelude names resolve without being bound.
-- `names(name TEXT PRIMARY KEY, hash TEXT, updated_at INTEGER)`.
+- `names(name TEXT PRIMARY KEY, hash TEXT, updated_at INTEGER, "order" INTEGER)`.
+  `order` is the position at which the name was bound: a name not bound
+  yet takes one more than the largest `order` in the table, a rebound name
+  (edit, propagation, re-add) keeps its own. `ov add` binds a file's
+  definitions in file order, so `ov ls` and `ov export` follow the files as
+  added. A name unbound by `ov rm` and bound again goes last.
 - `history(name TEXT, hash TEXT, at INTEGER)`. Append-only.
 - `deps(hash TEXT, dep_hash TEXT)`. Direct dependencies.
 - `cache(hash TEXT, kind TEXT, instance TEXT, blob BLOB, at INTEGER)`.
@@ -460,12 +465,18 @@ type.
 
 `ov add` and `ov edit` print the rebound dependents after the `name hash`
 lines, one `name old_hash new_hash` line each; with `--json` the output is
-`{"defs": [{name, hash}], "propagated": [{name, old, new}]}`. Only bound
+`{"defs": [{name, hash}], "propagated": [{name, old, new}], "dependents_diagnostics": [...]}`. Only bound
 dependents are re-hashed: old versions no name points to stay as they are.
 Dependents are re-hashed dependencies first, a cycle of dependents as one
 unit, so the result is what adding the edited code to an empty store gives.
 If a dependent no longer resolves (a constructor it uses was removed), the
 command fails with that diagnostic and stores nothing.
+
+A dependent that still resolves can still be ill-typed under the new hashes
+(a record that gained a field, a changed signature). After storing and
+propagating, `ov add` and `ov edit` therefore re-check every rebound
+dependent (section 10.2). Its errors do not undo the command: the edit was
+valid and is stored, and the errors say which callers to fix next.
 
 ### 10.1b Named AST and rendering
 
@@ -476,21 +487,32 @@ from the named AST, replacing each global reference by the name currently
 bound to the referenced hash (falling back to the name the definition was
 written with if the hash has no binding), so a renamed dependency shows its
 current name in every caller. Comments are kept in `defs.source`, the text as
-last written, which `ov view --raw` prints.
+last written, which `ov view --raw` prints; `ov view`, `ov ctx` and `ov export`
+render without them.
 
 ### 10.2 Commands
 
-All commands take `--json` for machine output. Without it, output is
-human-readable text with the same content. Diagnostics (section 11) are
-always JSON.
+The store commands except `ov export` (`add`, `view`, `edit`, `rm`, `ls`,
+`deps`, `dependents`, `ctx`, `history`, `diff`) take `--json` for machine
+output; so do `ov test` (JSON lines only) and `ov parse`. `ov check` always
+prints JSON; `ov build`, `ov run`, `ov fmt` and `ov export` have no `--json`.
+Without it, output is human-readable text with the same content.
+Diagnostics (section 11) are always JSON.
+
+Exit codes: 0 success; 1 an error diagnostic (nothing stored, nothing
+built); 2 `ov add` or `ov edit` stored the definitions but a rebound
+dependent has errors (below); 3 a trap, which under `ov test` includes a
+failing test block or fuzz case. `ov run` otherwise forwards the program's
+own exit code (1 for an `Err` from `main`, section 8).
 
 | Command | Behavior |
 |---|---|
 | `ov add <file.ov>...` | Parse and typecheck the files against the store, hash each definition, append to `defs`, bind names. A definition that already exists by hash is not duplicated; its name is rebound. Prints `name hash` per definition. |
 | `ov view <name-or-hash>` | Pretty-print the definition in canonical form. |
-| `ov edit <name> [--file f]` | Read one definition's text from the file or stdin, parse, typecheck, store, rebind the name. The definition's name in the text must match. |
+| `ov edit <name> [--file f]` | Read one definition's text from the file or stdin, parse, typecheck, store, rebind the name. `name` must be bound (else E0100, with a fix pointing to `ov add`: new definitions go through `ov add`), and the definition's name in the text must match. |
 | `ov rm <name>` | Unbind the name. The definition stays in `defs`. |
-| `ov ls [--kind k]` | List bound names with hashes. |
+| `ov ls [--kind k] [--sort order\|name]` | List bound names with hashes, by `names.order` (default) or alphabetically. |
+| `ov export [file]` | Every bound definition in canonical text under current names, in `ov ls` order, one blank line apart, to stdout or `file`: the store as one `.ov` file that `ov check` accepts. A hash bound to several names is written once, under its most recently bound name. Comments are not included (they are only in `defs.source`, see `ov view --raw`). |
 | `ov deps <name>` / `ov dependents <name>` | Transitive dependency graph by name and hash, as a list ordered by depth. |
 | `ov ctx <name> [--depth N]` | The minimal context for working on `name`: its full source, then the signature (including effects and contracts) of each definition it references directly, then the full definition of every type those signatures mention. `--depth 1` adds the bodies of direct dependencies. This is the command the agent uses instead of reading files. |
 | `ov check [name]` | Typecheck, effect-check, exhaustiveness-check one definition or the whole store. Emits diagnostics. Exit 0 if no errors. |
@@ -508,9 +530,17 @@ definition takes is left out. Any error aborts the command and stores
 nothing. Warnings do not abort; they are printed to stderr, one JSON object
 per line, so stdout stays the command's output. A diagnostic inside a stored
 definition carries its `hash` and no `file`, and its `span` is relative to
-that definition's canonical text. Dependents of an edited definition are
-re-hashed (10.1a) but not re-checked (**shortcut**: check them too when an
-edit that breaks a caller's types is a real problem; `ov check` reports it).
+that definition's canonical text.
+
+Re-checking dependents: after the new definitions are stored and propagated
+(10.1a), every rebound dependent is checked under its new hash, rendered with
+current names together with its closure. Its errors do not abort the
+command; they are printed on stdout after the `name hash` and
+`name old_hash new_hash` lines, one JSON diagnostic per line carrying the
+dependent's `name` and new `hash`, and the exit code is 2. With `--json` they
+are the `dependents_diagnostics` array of the output object (empty when there
+are none). Warnings are not repeated: propagation does not change a
+dependent's text, so they were reported when it was added.
 
 Names and files: `ov check`, `ov build`, `ov run` and `ov test` take `.ov`
 files, or, when `.ovstore/store.sqlite` exists in the current directory and

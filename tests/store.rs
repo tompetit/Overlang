@@ -99,9 +99,72 @@ fn edit_rebinds_and_grows_history() {
     assert!(diff.contains("+  sum(map(o.lines, |l| l.qty * l.unit_cents + 1))"), "{diff}");
     assert!(diff.contains("   ensures result >= 0"), "{diff}");
     // The name in the text must match.
-    let (code, out) = ov_in(&dir, &["edit", "other"], text);
+    let (code, out) = ov_in(&dir, &["edit", "main"], text);
     assert_eq!(code, 1);
     assert!(out.contains("\"E0000\""), "{out}");
+}
+
+#[test]
+fn edit_of_an_unbound_name_is_refused() {
+    let dir = workdir("edit_unbound");
+    ov(&dir, &["add", RECORDS]);
+    let (code, out) = ov_in(&dir, &["edit", "totl"], "fn totl() -> Int { 1 }\n");
+    assert_eq!(code, 1);
+    let d: Value = serde_json::from_str(out.trim()).unwrap();
+    assert_eq!(d["code"], "E0100");
+    let fixes = d["fixes"].as_array().unwrap();
+    assert!(fixes[0]["description"].as_str().unwrap().contains("ov add"), "{out}");
+    assert!(fixes.iter().any(|f| f["patch"] == "total"), "{out}");
+    assert!(!ov(&dir, &["ls"]).contains("totl "), "nothing is bound");
+}
+
+#[test]
+fn ls_and_export_keep_source_order() {
+    let dir = workdir("export");
+    let names: Vec<String> = added(&ov(&dir, &["add", RECORDS])).into_iter().map(|(n, _)| n).collect();
+    let listed: Vec<String> = added(&ov(&dir, &["ls"])).into_iter().map(|(n, _)| n).collect();
+    assert_eq!(listed, names);
+    let mut sorted = names.clone();
+    sorted.sort();
+    assert_eq!(added(&ov(&dir, &["ls", "--sort", "name"])).into_iter().map(|(n, _)| n).collect::<Vec<_>>(), sorted);
+    // Rebinding keeps a name's place.
+    let (code, out) = ov_in(&dir, &["edit", &names[0]], &ov(&dir, &["view", &names[0]]));
+    assert_eq!(code, 0, "{out}");
+    assert_eq!(added(&ov(&dir, &["ls"])).into_iter().map(|(n, _)| n).collect::<Vec<_>>(), names);
+    // The export is the file in canonical form, and it checks.
+    let text = ov(&dir, &["export"]);
+    assert_eq!(text, ov(&dir, &["fmt", RECORDS]));
+    let file = dir.join("exported.ov");
+    assert_eq!(ov(&dir, &["export", file.to_str().unwrap()]), "");
+    assert_eq!(fs::read_to_string(&file).unwrap(), text);
+    assert_eq!(ov(&dir, &["check", file.to_str().unwrap()]), "");
+}
+
+#[test]
+fn dependents_broken_by_an_edit_are_reported() {
+    let dir = workdir("recheck");
+    add_text(&dir, "todo.ov", "type Todo = { id: Int, title: Str }\nfn mk() -> Todo { Todo { id: 1, title: \"x\" } }\n");
+    let (code, out) = ov_in(&dir, &["edit", "Todo"], "type Todo = { id: Int, title: Str, done: Bool }\n");
+    assert_eq!(code, 2, "stored, but a dependent has errors: {out}");
+    let lines: Vec<&str> = out.lines().collect();
+    assert_eq!(lines.len(), 3, "{out}");
+    assert_eq!(lines[0], format!("Todo {}", hash_of(&dir, "Todo")));
+    let mk = hash_of(&dir, "mk");
+    assert!(lines[1].starts_with("mk ") && lines[1].ends_with(&mk), "{out}");
+    let d: Value = serde_json::from_str(lines[2]).unwrap();
+    assert_eq!((d["code"].as_str(), d["name"].as_str(), d["hash"].as_str()), (Some("E0102"), Some("mk"), Some(mk.as_str())));
+    // With --json, the same errors are in `dependents_diagnostics`.
+    let (code, out) = ov_in(&dir, &["edit", "Todo", "--json"], "type Todo = { id: Int, title: Str, done: Bool, n: Int }\n");
+    assert_eq!(code, 2, "{out}");
+    let v: Value = serde_json::from_str(&out).unwrap();
+    let ds = v["dependents_diagnostics"].as_array().unwrap();
+    assert_eq!(ds.len(), 1, "{out}");
+    assert_eq!((ds[0]["name"].as_str(), ds[0]["hash"].as_str()), (Some("mk"), Some(hash_of(&dir, "mk").as_str())));
+    // Fixing the dependent clears it.
+    let (code, out) = ov_in(&dir, &["edit", "mk"], "fn mk() -> Todo { Todo { id: 1, title: \"x\", done: false, n: 0 } }\n");
+    assert_eq!(code, 0, "{out}");
+    let (code, out) = ov_in(&dir, &["edit", "Todo", "--json"], "type Todo = { id: Int, title: Str, done: Bool, n: Int }\n");
+    assert_eq!((code, serde_json::from_str::<Value>(&out).unwrap()["dependents_diagnostics"].clone()), (0, serde_json::json!([])));
 }
 
 #[test]
@@ -282,8 +345,8 @@ fn editing_a_type_rebinds_what_mentions_it() {
     let dir = workdir("propagate_type");
     add_text(&dir, "p.ov", "type P = { x: Int }\nfn mk() -> P { P { x: 1 } }\nfn px(p: P) -> Int { p.x }\nfn other() -> Int { 3 }\n");
     let (code, out) = ov_in(&dir, &["edit", "P"], "type P = { x: Int, y: Int }\n");
-    assert_eq!(code, 0, "{out}");
-    let mut rebound: Vec<&str> = out.lines().skip(1).map(|l| l.split(' ').next().unwrap()).collect();
+    assert_eq!(code, 2, "mk now misses `y`: {out}");
+    let mut rebound: Vec<&str> = out.lines().skip(1).filter(|l| !l.starts_with('{')).map(|l| l.split(' ').next().unwrap()).collect();
     rebound.sort();
     assert_eq!(rebound, ["mk", "px"]);
 }

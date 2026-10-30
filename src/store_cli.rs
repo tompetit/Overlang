@@ -1,11 +1,11 @@
-//! Store commands (spec section 10.2): add, view, edit, rm, ls, deps,
-//! dependents, ctx, history, diff. Each prints text, or JSON with `--json`;
-//! failures are JSON diagnostics.
+//! Store commands (spec section 10.2): add, view, edit, rm, ls, export, deps,
+//! dependents, ctx, history, diff. Each prints text, or JSON with `--json`
+//! (all but export); failures are JSON diagnostics.
 
 use crate::ast::{Item, Span, TypeBody, TypeDef, TypeExpr, TypeKind};
 use crate::build::{self, Target};
 use crate::cli::{driver_error, load, report};
-use crate::diag::{Diag, Severity};
+use crate::diag::{Diag, Fix, Severity};
 use crate::emit::FuzzTarget;
 use crate::hash::{hash_items, item_name, nearest, prelude, tarjan, Scope};
 use crate::parser;
@@ -35,7 +35,7 @@ pub enum StoreCommand {
         #[arg(long)]
         json: bool,
     },
-    /// Replace one definition with text from a file or stdin.
+    /// Replace one bound definition with text from a file or stdin.
     Edit {
         name: String,
         #[arg(long)]
@@ -49,12 +49,20 @@ pub enum StoreCommand {
         #[arg(long)]
         json: bool,
     },
-    /// List bound names with hashes.
+    /// List bound names with hashes, in the order they were first bound.
     Ls {
         #[arg(long)]
         kind: Option<String>,
+        /// `name` lists alphabetically instead.
+        #[arg(long, value_parser = ["order", "name"], default_value = "order")]
+        sort: String,
         #[arg(long)]
         json: bool,
+    },
+    /// Print every bound definition in `ov ls` order, as one `.ov` file.
+    Export {
+        /// Write to this file instead of stdout.
+        file: Option<PathBuf>,
     },
     /// Transitive dependencies, ordered by depth.
     Deps {
@@ -100,9 +108,9 @@ pub fn run(cmd: StoreCommand) -> i32 {
         Err(d) => return report(&d),
     };
     match exec(&store, cmd) {
-        Ok(text) => {
+        Ok((text, code)) => {
             print!("{text}");
-            0
+            code
         }
         Err(diags) => report(&diags),
     }
@@ -123,19 +131,22 @@ fn db<T>(r: rusqlite::Result<T>) -> Result<T, Vec<Diag>> {
     r.map_err(|e| vec![driver_error(format!("store error: {e}"), None)])
 }
 
-fn exec(store: &Store, cmd: StoreCommand) -> Out {
-    match cmd {
-        StoreCommand::Add { files, json } => add(store, &files, json),
+/// The command's output and exit code.
+fn exec(store: &Store, cmd: StoreCommand) -> Result<(String, i32), Vec<Diag>> {
+    let out = match cmd {
+        StoreCommand::Add { files, json } => return add(store, &files, json),
+        StoreCommand::Edit { name, file, json } => return edit(store, &name, file.as_ref(), json),
         StoreCommand::View { target, raw, json } => view(store, &target, raw, json),
-        StoreCommand::Edit { name, file, json } => edit(store, &name, file.as_ref(), json),
         StoreCommand::Rm { name, json } => rm(store, &name, json),
-        StoreCommand::Ls { kind, json } => ls(store, kind.as_deref(), json),
+        StoreCommand::Ls { kind, sort, json } => ls(store, kind.as_deref(), sort == "name", json),
+        StoreCommand::Export { file } => export(store, file.as_ref()),
         StoreCommand::Deps { target, json } => graph(store, &target, false, json),
         StoreCommand::Dependents { target, json } => graph(store, &target, true, json),
         StoreCommand::Ctx { target, depth, json } => ctx(store, &target, depth, json),
         StoreCommand::History { name, json } => history(store, &name, json),
         StoreCommand::Diff { a, b, json } => diff(store, &a, &b, json),
-    }
+    };
+    out.map(|text| (text, 0))
 }
 
 fn json_out(v: Value) -> Out {
@@ -146,7 +157,7 @@ fn json_out(v: Value) -> Out {
 
 fn unknown(store: &Store, target: &str) -> Vec<Diag> {
     let mut d = Diag::error("E0100", Span::default(), format!("unknown name or hash `{target}`"));
-    let names: Vec<String> = store.names(None).map(|ns| ns.into_iter().map(|n| n.0).collect()).unwrap_or_default();
+    let names: Vec<String> = store.names(None, true).map(|ns| ns.into_iter().map(|n| n.0).collect()).unwrap_or_default();
     let fixes = nearest(target, names.iter());
     if !fixes.is_empty() {
         d.fixes = Some(fixes);
@@ -281,7 +292,7 @@ fn signature(store: &Store, d: &Def) -> Result<String, Vec<Diag>> {
 /// The prelude plus every bound name in the store.
 fn store_scope(store: &Store) -> Result<Scope, Vec<Diag>> {
     let mut scope = prelude().scope.clone();
-    for (name, hash, kind) in db(store.names(None))? {
+    for (name, hash, kind) in db(store.names(None, true))? {
         match kind.as_str() {
             "test" => {}
             "type" => scope.bind(&name, &hash, &item_of(&def(store, &hash)?)?),
@@ -343,7 +354,7 @@ pub fn check(name: Option<&str>) -> Result<Vec<Diag>, Vec<Diag>> {
     let store = open()?;
     let roots = match name {
         Some(n) => vec![resolve(&store, n)?],
-        None => db(store.names(None))?.into_iter().map(|n| n.1).collect(),
+        None => db(store.names(None, true))?.into_iter().map(|n| n.1).collect(),
     };
     let (sources, _) = closure_sources(&store, &roots, &HashSet::new())?;
     Ok(store_diags(crate::types::check_sources(&sources).1))
@@ -355,7 +366,7 @@ pub fn build(target: Target, out: Option<&Path>) -> Result<PathBuf, Vec<Diag>> {
     let store = open()?;
     let roots = match target {
         Target::Entry(n) => vec![resolve(&store, n)?],
-        Target::Tests(_) => db(store.names(Some("test")))?.into_iter().map(|n| n.1).collect(),
+        Target::Tests(_) => db(store.names(Some("test"), true))?.into_iter().map(|n| n.1).collect(),
     };
     build_roots(&store, &roots, target, out).map(|(exe, _)| exe)
 }
@@ -381,7 +392,7 @@ fn build_roots(store: &Store, roots: &[String], target: Target, out: Option<&Pat
 /// `name`'s closure. Also returns the fuzz targets (spec section 7.1).
 pub fn test_build(name: Option<&str>) -> Result<(PathBuf, Vec<FuzzTarget>), Vec<Diag>> {
     let store = open()?;
-    let mut tests: Vec<String> = db(store.names(Some("test")))?.into_iter().map(|n| n.1).collect();
+    let mut tests: Vec<String> = db(store.names(Some("test"), true))?.into_iter().map(|n| n.1).collect();
     let mut only = None;
     if let Some(n) = name {
         let h = resolve(&store, n)?;
@@ -401,8 +412,9 @@ pub fn test_build(name: Option<&str>) -> Result<(PathBuf, Vec<FuzzTarget>), Vec<
 
 /// Hash and typecheck `items`, parsed from `sources` (file name, text), then
 /// store and bind them all in one transaction. Checker errors store nothing;
-/// warnings go to stderr, one JSON object per line.
-fn store_items(store: &Store, items: &[Item], sources: &[(String, String)], file_of: &HashMap<String, String>, json: bool) -> Out {
+/// warnings go to stderr, one JSON object per line. Then re-check the rebound
+/// dependents: their errors follow the output and make the exit code 2.
+fn store_items(store: &Store, items: &[Item], sources: &[(String, String)], file_of: &HashMap<String, String>, json: bool) -> Result<(String, i32), Vec<Diag>> {
     let scope = store_scope(store)?;
     let hashed = hash_items(items, &scope);
     // Check the new definitions with the stored closure of what they reference
@@ -411,7 +423,7 @@ fn store_items(store: &Store, items: &[Item], sources: &[(String, String)], file
     let new_names: HashSet<String> = items.iter().filter_map(item_name).map(String::from).collect();
     let roots: Vec<String> = match &hashed {
         Ok(hs) => hs.iter().flat_map(|h| h.deps.iter()).filter(|d| !hs.iter().any(|h| &h.hash == *d)).cloned().collect(),
-        Err(_) => db(store.names(None))?.into_iter().map(|n| n.1).collect(),
+        Err(_) => db(store.names(None, true))?.into_iter().map(|n| n.1).collect(),
     };
     let (mut checked, _) = closure_sources(store, &roots, &new_names)?;
     checked.extend(sources.iter().cloned());
@@ -441,15 +453,39 @@ fn store_items(store: &Store, items: &[Item], sources: &[(String, String)], file
     }
     let propagated = propagate(store, changed)?;
     db(store.commit())?;
+    let broken = recheck(store, &propagated)?;
+    let code = if broken.is_empty() { 0 } else { 2 };
     if json {
-        return json_out(json!({
+        let v = json!({
             "defs": hashed.iter().map(|h| json!({ "name": h.name, "hash": h.hash })).collect::<Vec<_>>(),
             "propagated": propagated.iter().map(|(n, o, h)| json!({ "name": n, "old": o, "new": h })).collect::<Vec<_>>(),
-        }));
+            "dependents_diagnostics": broken,
+        });
+        return Ok((format!("{v}\n"), code));
     }
     let mut out: String = hashed.iter().map(|h| format!("{} {}\n", h.name, h.hash)).collect();
     out.extend(propagated.iter().map(|(n, o, h)| format!("{n} {o} {h}\n")));
-    Ok(out)
+    out.extend(broken.iter().map(|d| format!("{}\n", d.to_json())));
+    Ok((out, code))
+}
+
+/// Spec section 10.2: typecheck the rebound dependents (their new hashes) with
+/// their closure, rendered with current names; returns the errors, each with
+/// its definition's current name and hash. Warnings are left out: propagation
+/// does not change a dependent's text, so they were reported when it was added.
+fn recheck(store: &Store, propagated: &[(String, String, String)]) -> Result<Vec<Diag>, Vec<Diag>> {
+    if propagated.is_empty() {
+        return Ok(Vec::new());
+    }
+    let roots: Vec<String> = propagated.iter().map(|p| p.2.clone()).collect();
+    let (sources, _) = closure_sources(store, &roots, &HashSet::new())?;
+    let mut errors: Vec<Diag> = store_diags(crate::types::check_sources(&sources).1).into_iter().filter(|d| d.severity == Severity::Error).collect();
+    for d in &mut errors {
+        if let Some(h) = &d.hash {
+            d.name = Some(name_of(store, h)?);
+        }
+    }
+    Ok(errors)
 }
 
 /// Spec section 10.1a: re-hash every bound transitive dependent of the
@@ -521,7 +557,7 @@ fn propagate(store: &Store, mut map: HashMap<String, String>) -> Result<Vec<(Str
     Ok(out)
 }
 
-fn add(store: &Store, files: &[PathBuf], json: bool) -> Out {
+fn add(store: &Store, files: &[PathBuf], json: bool) -> Result<(String, i32), Vec<Diag>> {
     let mut items = Vec::new();
     let mut file_of = HashMap::new();
     let mut diags = Vec::new();
@@ -545,7 +581,16 @@ fn add(store: &Store, files: &[PathBuf], json: bool) -> Out {
     store_items(store, &items, &sources, &file_of, json)
 }
 
-fn edit(store: &Store, name: &str, file: Option<&PathBuf>, json: bool) -> Out {
+fn edit(store: &Store, name: &str, file: Option<&PathBuf>, json: bool) -> Result<(String, i32), Vec<Diag>> {
+    // A new definition goes through `ov add`; `ov edit` only replaces.
+    if db(store.hash_of_name(name))?.is_none() {
+        let mut d = unknown(store, name).remove(0);
+        d.message = format!("`ov edit` replaces a bound definition; no name `{name}` is bound");
+        let add = Fix { rank: 1, description: format!("to define `{name}`, put it in a file and run `ov add <file.ov>`"), patch: String::new() };
+        let near = d.fixes.take().unwrap_or_default().into_iter().map(|f| Fix { rank: f.rank + 1, ..f });
+        d.fixes = Some(std::iter::once(add).chain(near).collect());
+        return Err(vec![d]);
+    }
     let (items, file_name, sources) = match file {
         Some(f) => (load(f)?.items, Some(f.display().to_string()), build::read_sources(std::slice::from_ref(f))?),
         None => {
@@ -588,12 +633,29 @@ fn rm(store: &Store, name: &str, json: bool) -> Out {
     Ok(format!("{name} {hash}\n"))
 }
 
-fn ls(store: &Store, kind: Option<&str>, json: bool) -> Out {
-    let names = db(store.names(kind))?;
+fn ls(store: &Store, kind: Option<&str>, by_name: bool, json: bool) -> Out {
+    let names = db(store.names(kind, by_name))?;
     if json {
         return json_out(names.iter().map(|(n, h, k)| json!({ "name": n, "hash": h, "kind": k })).collect());
     }
     Ok(names.iter().map(|(n, h, _)| format!("{n} {h}\n")).collect())
+}
+
+/// Every bound definition in canonical text under current names, in `ov ls`
+/// order, one blank line apart; a hash bound to several names comes once.
+fn export(store: &Store, file: Option<&PathBuf>) -> Out {
+    let mut seen = HashSet::new();
+    let mut texts = Vec::new();
+    for (_, hash, _) in db(store.names(None, false))? {
+        if seen.insert(hash.clone()) {
+            texts.push(format!("{}\n", text(store, &def(store, &hash)?)?));
+        }
+    }
+    let out = texts.join("\n");
+    match file {
+        None => Ok(out),
+        Some(f) => std::fs::write(f, out).map(|_| String::new()).map_err(|e| vec![driver_error(format!("cannot write file: {e}"), Some(f))]),
+    }
 }
 
 fn history(store: &Store, name: &str, json: bool) -> Out {
