@@ -157,6 +157,13 @@ assume frontier-model pricing and a roughly $25 to $40 per agent-hour burn.
 | Reserve | Compiler bugs found in phase 5 always exist. | | $1,300 |
 | **Total** | | | **$12,300** |
 
+Phase 4 status (2026-10-30): the corpus is 155 validated HumanEval programs
+with tests (one task untypable), 30 fixtures and the todo app, rather than a
+1,500-program translation. No fine-tune is planned inside this budget, so the
+corpus's job is compiler stress testing and the language card, and both are
+served: two translation passes and the app found zero compiler bugs, and the
+gap lists drove language revisions 1 and 2.
+
 The C backend adds about $1,500 over the compile-to-Python version: the
 runtime, the monomorphizer, and the fuzz generator and shrinker. To hold $10,000, drop Map and Set from the runtime and cut the
 corpus to 1,000 programs.
@@ -275,4 +282,5 @@ are not included.
 | 2026-10-30 | Store merge and integration | Opus | 237k |
 | 2026-10-30 | Contract fuzzing | Opus | 308k |
 | 2026-10-30 | Language revision 1 | Sonnet | 126k |
-| | **Total so far** | | **2.37M** |
+| 2026-10-30 | HumanEval translations 40 to 155 | Sonnet | 238k |
+| | **Total so far** | | **2.61M** |
