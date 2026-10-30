@@ -204,6 +204,17 @@ Predictions, written down before running:
 If B's read-token prediction fails, the central hypothesis of the project is
 wrong and we say so.
 
+**Preliminary measurement (2026-10-30, before any agent run).** On the todo
+app (examples/todo, 6,854 bytes, 37 definitions in the store), `ov ctx`
+returns per definition: under 1% of the file for the 18 foreign bindings
+and types, 2% to 8% for most functions, 11% to 13% for `parse_rows`,
+`serve` and `main`, and 24% for `route`, the hub that calls everything.
+The mean is 304 bytes, 4.4% of the file. This is the upper bound on what the
+locality lever can save on this codebase: an agent that reads only what
+`ov ctx` returns, and reads it once per edited definition, reads about one
+twentieth of what an agent that opens the file reads. Whether agents behave
+that way is what Benchmark B measures.
+
 ## 7. Risks
 
 - **Familiarity tax swamps everything.** Most likely failure. Mitigation: syntax
