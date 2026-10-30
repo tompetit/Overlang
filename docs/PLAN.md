@@ -241,3 +241,22 @@ agents (Opus and Sonnet executing, a Fable overseer reviewing), one phase per
 milestone. Every compiler bug found by the corpus or
 the evaluation becomes a regression test before it is fixed. The plan document
 is updated at each phase boundary with what was actually spent.
+
+## 10. Spend ledger
+
+Subagent token totals as reported by the harness per agent (input plus
+output, all models), updated at phase boundaries. The overseer's own tokens
+are not included.
+
+| Date | Agent | Model | Tokens |
+|---|---|---|---|
+| 2026-10-29 | C runtime | Sonnet | 106k |
+| 2026-10-29 | Front end (lexer, parser, printer) | Opus | 163k |
+| 2026-10-29 | SQLite and HTTP shims | Sonnet | 94k |
+| 2026-10-29 | Evaluation harness | Sonnet | 133k |
+| 2026-10-29 | Store and hashing | Opus | 174k |
+| 2026-10-29 | Typechecker, effects, exhaustiveness | Opus | 272k |
+| 2026-10-29 | Store follow-up (propagation, rendering) | Opus | 155k |
+| 2026-10-29 | Language card | Sonnet | 95k |
+| 2026-10-29 | Monomorphization and C emitter | Opus | 254k |
+| | **Total so far** | | **1.45M** |
