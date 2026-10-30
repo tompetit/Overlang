@@ -632,8 +632,11 @@ type Line  = { sku: Str, qty: Int, unit_cents: Int }
 type Order = { id: Int, lines: List[Line], paid: Bool }
 type ChargeError = Declined(reason: Str) | Timeout | AlreadyPaid
 
+// The bounds are what make `ensures` sound: without them the fuzzer finds
+// an Int overflow in qty * unit_cents within a few hundred cases.
 fn total(o: Order) -> Int
-  requires all(o.lines, |l| l.qty > 0 && l.unit_cents >= 0)
+  requires all(o.lines, |l| l.qty > 0 && l.qty <= 1_000_000)
+  requires all(o.lines, |l| l.unit_cents >= 0 && l.unit_cents <= 1_000_000_000)
   ensures result >= 0
 {
   sum(map(o.lines, |l| l.qty * l.unit_cents))

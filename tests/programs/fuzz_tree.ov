@@ -18,19 +18,19 @@ fn shallow(t: Tree) -> Int
   height(t)
 }
 
-fn count(r: Rose) -> Int
+fn node_count(r: Rose) -> Int
   ensures result >= 1
 {
-  fold(r.kids, 1, |n, k| n + count(k))
+  fold(r.kids, 1, |n, k| n + node_count(k))
 }
 
 fn main() -> Unit !io {
   println(show(shallow(Node(Leaf, 3, Node(Leaf, 4, Leaf)))));
-  println(show(count(Rose { label: "a", kids: [Rose { label: "b", kids: [] }] })));
+  println(show(node_count(Rose { label: "a", kids: [Rose { label: "b", kids: [] }] })));
 }
 
 test heights {
   assert_eq(height(Leaf), 0);
   assert_eq(shallow(Node(Leaf, 1, Leaf)), 1);
-  assert_eq(count(Rose { label: "x", kids: [] }), 1);
+  assert_eq(node_count(Rose { label: "x", kids: [] }), 1);
 }
