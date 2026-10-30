@@ -18,7 +18,20 @@ Python or Rust, even with no training data for the language.
 
 ## Status
 
-Phase 0. Nothing compiles yet.
+Working, one day in. Programs compile to native binaries through C; the
+content-addressed store, typechecker, effect checker, exhaustiveness
+checker, contracts and the JSON diagnostics all work; the first real
+program, an HTTP todo app over SQLite in 178 lines, is in
+[examples/todo](examples/todo). Fuzzing of contracts and the evaluation
+runs are next. See the ledger at the end of the plan for spend.
+
+```
+ov add app.ov        # typecheck, hash and store every definition
+ov ctx route         # the minimal context to work on one definition
+ov edit route        # replace it; callers are re-hashed automatically
+ov test              # test blocks, then contract fuzzing
+ov run main          # build a native binary from the store and run it
+```
 
 ## Build
 
