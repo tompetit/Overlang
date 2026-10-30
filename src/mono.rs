@@ -175,7 +175,7 @@ pub fn walk_block<'e>(b: &'e Block, f: &mut impl FnMut(&'e Expr)) {
                 walk_expr(iter, f);
                 walk_block(body, f);
             }
-            StmtKind::Comment(_) => {}
+            StmtKind::Break | StmtKind::Continue | StmtKind::Comment(_) => {}
         }
     }
     if let Some(t) = &b.tail {

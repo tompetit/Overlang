@@ -298,6 +298,8 @@ impl Printer {
                 format!("for {} in {} {}", self.pat(pat), self.expr(iter, indent), self.block(body, indent))
             }
             StmtKind::Return(e) => format!("return {};", self.expr(e, indent)),
+            StmtKind::Break => "break;".to_string(),
+            StmtKind::Continue => "continue;".to_string(),
             StmtKind::Expr(e) if is_block_like(e) && !is_last => self.expr(e, indent),
             StmtKind::Expr(e) => format!("{};", self.stmt_expr(e, indent)),
             StmtKind::Comment(c) => format!("//{}", c.text),

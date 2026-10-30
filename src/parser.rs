@@ -12,7 +12,7 @@
 //!   in Rust) and need no `;` before the next statement.
 
 use crate::ast::*;
-use crate::diag::Diag;
+use crate::diag::{Diag, Fix};
 use crate::lexer::{lex, LexComment, Tok, Token};
 
 type PResult<T> = Result<T, Diag>;
@@ -99,6 +99,24 @@ const BINOP_TOKENS: [&str; 14] = ["||", "&&", "==", "!=", "<", "<=", ">", ">=", 
 
 const COMPARISON_PREC: u8 = 3;
 
+/// `Strongest_Extension` -> `strongest_extension`, `MinPath` -> `min_path`,
+/// `N` -> `n`; a keyword result gets a trailing `_`.
+pub(crate) fn value_name(name: &str) -> String {
+    let mut out = String::new();
+    let mut prev_lower = false;
+    for c in name.chars() {
+        if c.is_ascii_uppercase() && prev_lower {
+            out.push('_');
+        }
+        prev_lower = c.is_ascii_lowercase() || c.is_ascii_digit();
+        out.push(c.to_ascii_lowercase());
+    }
+    if crate::lexer::keyword(&out).is_some() {
+        out.push('_');
+    }
+    out
+}
+
 fn is_block_like(e: &Expr) -> bool {
     matches!(e.kind, ExprKind::If { .. } | ExprKind::Match { .. } | ExprKind::Block(_))
 }
@@ -181,7 +199,13 @@ impl Parser {
             return Ok(name);
         }
         self.expect_kind("identifier");
-        Err(self.error())
+        let mut d = self.error();
+        if let Tok::TypeName(name) = self.peek() {
+            let fix = value_name(name);
+            d.message = format!("`{name}` starts with an uppercase letter, which makes it a type or constructor name; value names (variables, parameters, functions, fields) start with a lowercase letter");
+            d.fixes = Some(vec![Fix { rank: 1, description: format!("rename `{name}` to `{fix}`"), patch: fix }]);
+        }
+        Err(d)
     }
 
     /// A binding name: an identifier or `_`.
@@ -507,6 +531,12 @@ impl Parser {
                 let value = self.expr()?;
                 self.expect(&Tok::Semi)?;
                 StmtKind::Return(value)
+            } else if self.eat(&Tok::Break) {
+                self.expect(&Tok::Semi)?;
+                StmtKind::Break
+            } else if self.eat(&Tok::Continue) {
+                self.expect(&Tok::Semi)?;
+                StmtKind::Continue
             } else if matches!(self.peek(), Tok::Ident(_)) && self.peek_at(1) == &Tok::Eq {
                 let name = self.ident()?;
                 self.bump(); // `=`

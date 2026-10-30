@@ -30,6 +30,8 @@ pub enum Tok {
     For,
     In,
     Return,
+    Break,
+    Continue,
     Requires,
     Ensures,
     Test,
@@ -96,6 +98,8 @@ impl Tok {
             Tok::For => "for",
             Tok::In => "in",
             Tok::Return => "return",
+            Tok::Break => "break",
+            Tok::Continue => "continue",
             Tok::Requires => "requires",
             Tok::Ensures => "ensures",
             Tok::Test => "test",
@@ -159,7 +163,7 @@ pub struct Lexed {
     pub diags: Vec<Diag>,
 }
 
-fn keyword(word: &str) -> Option<Tok> {
+pub fn keyword(word: &str) -> Option<Tok> {
     Some(match word {
         "fn" => Tok::Fn,
         "type" => Tok::Type,
@@ -176,6 +180,8 @@ fn keyword(word: &str) -> Option<Tok> {
         "for" => Tok::For,
         "in" => Tok::In,
         "return" => Tok::Return,
+        "break" => Tok::Break,
+        "continue" => Tok::Continue,
         "requires" => Tok::Requires,
         "ensures" => Tok::Ensures,
         "test" => Tok::Test,

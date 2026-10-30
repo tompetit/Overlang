@@ -585,6 +585,8 @@ impl Canon<'_> {
                     json!({ "for": pat, "in": iter, "body": body })
                 }
                 StmtKind::Return(e) => json!({ "return": self.expr(e) }),
+                StmtKind::Break => json!("break"),
+                StmtKind::Continue => json!("continue"),
                 StmtKind::Expr(e) => json!({ "expr": self.expr(e) }),
                 StmtKind::Comment(_) => continue,
             };
@@ -863,6 +865,21 @@ mod tests {
         assert_ne!(hashes(f)["f"], hashes(&f.replace("let x", "let x: Int"))["f"]);
         let g = "foreign c \"m.h\" fn g(x: Int) -> Int\n";
         assert_ne!(hashes(g)["g"], hashes(&format!("{} = \"c_g\"\n", g.trim_end()))["g"]);
+    }
+
+    #[test]
+    fn break_and_continue_are_in_the_canonical_form() {
+        let f = "fn f(xs: List[Int]) -> Int {\n  let mut n = 0;\n  for x in xs {\n    if x < 0 { break; }\n    n = n + x;\n  }\n  n\n}\n";
+        let h = hashes(f)["f"].clone();
+        let with_continue = hashes(&f.replace("break;", "continue;"))["f"].clone();
+        let with_return = hashes(&f.replace("break;", "return n;"))["f"].clone();
+        assert_ne!(h, with_continue);
+        assert_ne!(h, with_return);
+        assert_ne!(with_continue, with_return);
+        // Dropping the statement changes the hash; renaming locals around it does not.
+        assert_ne!(h, hashes(&f.replace("if x < 0 { break; }", "if x < 0 {}"))["f"]);
+        let renamed = "fn f(ys: List[Int]) -> Int {\n  let mut acc = 0;\n  for y in ys {\n    if y < 0 { break; }\n    acc = acc + y;\n  }\n  acc\n}\n";
+        assert_eq!(h, hashes(renamed)["f"]);
     }
 
     #[test]

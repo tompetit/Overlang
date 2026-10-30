@@ -284,4 +284,6 @@ are not included.
 | 2026-10-30 | Language revision 1 | Sonnet | 126k |
 | 2026-10-30 | HumanEval translations 40 to 155 | Sonnet | 238k |
 | 2026-10-30 | Benchmark B tasks and Python port | Sonnet | 245k |
-| | **Total so far** | | **2.86M** |
+| 2026-10-30 | Store revision: re-check dependents, export | Opus | 149k |
+| 2026-10-30 | Language revision 2 | Opus | 182k |
+| | **Total so far** | | **3.19M** |

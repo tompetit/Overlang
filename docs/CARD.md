@@ -80,7 +80,7 @@ test total_empty {
 | Test | `test name { ... }` (Unit body, any effects) |
 | Let | `let x = e;` `let x: T = e;` `let mut x = e;` `x = e;` `let (a, b) = t;` (pattern must be irrefutable) |
 | Lambda | `\|x, y\| e` `\|x: Int\| { block }`; captures by value |
-| Control | `if c { a } else { b }` (expression, branches agree) `while c { }` `for x in list { }` `return e;` (value required: `return ();`) |
+| Control | `if c { a } else { b }` (expression, branches agree) `while c { }` `for x in list { }` `break;` `continue;` (innermost loop, not from a lambda) `return e;` (value required: `return ();`) |
 | match | `match e { P => e, P if g => e, }` commas between arms |
 | Patterns | `_` `x` `1` `"s"` `true` `Ctor(p, q)` `Ctor` `P { x: p, .. }` `(p, q)` `[]` `[p, q]` `[p, ..rest]` `[..init, p]` `[p, ..]` `[.., p]` (bare `..` binds nothing) `p \| q` (same bindings) |
 | Tuples | `(1, "a")`, `t.0`, `t.1` |
@@ -97,7 +97,7 @@ A call is legal only if the callee's effects are a subset of the caller's declar
 
 Higher-order functions take one effect parameter `!e` in the same brackets as type parameters and use it on the function argument and the result: `fn map[T, U, !e](xs: List[T], f: fn(T) -> U !e) -> List[U] !e`. The caller pays for the effects of the lambda passed in.
 
-Error you will see: `E0105` with `expected: ["!io"]` and a fix whose `patch` is the full signature line with the label added, e.g. `fn greet(name: Str) -> Unit !io`. Apply it, then re-check callers (they need the label too, up to `main`).
+`E0105` has `expected: ["!io"]` and a fix `patch` that is the whole signature line with the label added. Apply it, then fix the callers, up to `main`.
 
 ## Contracts and traps
 
@@ -111,15 +111,15 @@ Error you will see: `E0105` with `expected: ["!io"]` and a fix whose `patch` is 
 
 All pure unless marked. Prelude names are always in scope.
 
-**List**: `len(List[T])->Int` `get(xs,i)->Option[T]` `push(xs,x)->List[T]` (new list) `concat(xs,ys)` `slice(xs,from,to)` `reverse` `take(xs,n)` `drop(xs,n)` `tail` `head->Option[T]` `last->Option[T]` `is_empty->Bool` `map(xs,fn(T)->U !e)->List[U] !e` `filter(xs,fn(T)->Bool !e) !e` `fold(xs,init:A,fn(A,T)->A !e)->A !e` `for_each(xs,fn(T)->Unit !e)->Unit !e` `any(xs,p)` `all(xs,p)` `flat_map(xs,fn(T)->List[U] !e)` `flatten(List[List[T]])` `sum(List[Int])->Int` `sum_float(List[Float])->Float` `range(a,b)->List[Int]` (half-open) `zip(xs,ys)->List[(A,B)]` `enumerate(xs)->List[(Int,T)]` `contains(xs,x)->Bool` `index_of(xs,x)->Option[Int]` `count(xs,p)->Int !e` `filter_map(xs,fn(T)->Option[U] !e)->List[U] !e` `take_while(xs,p)` `drop_while(xs,p)` `max_by(xs,key:fn(T)->Int)->Option[T]` `min_by` (first wins ties) `join(List[Str],sep)->Str` `sort(xs)` `min_of(xs)->Option[T]` `max_of(xs)->Option[T]` (sort, min_of, max_of: Int, Float, Str only) `sort_by(xs,key:fn(T)->Int)` `sort_by_str(xs,key:fn(T)->Str)` (both stable) `unique(xs)` (Int, Str, Bool only).
+**List**: `len(List[T])->Int` `get(xs,i)->Option[T]` `push(xs,x)->List[T]` (new list) `concat(xs,ys)` `slice(xs,from,to)` `reverse` `take(xs,n)` `drop(xs,n)` `tail` `head->Option[T]` `last->Option[T]` `is_empty->Bool` `map(xs,fn(T)->U !e)->List[U] !e` `filter(xs,fn(T)->Bool !e) !e` `fold(xs,init:A,fn(A,T)->A !e)->A !e` `for_each(xs,fn(T)->Unit !e)->Unit !e` `any(xs,p)` `all(xs,p)` `flat_map(xs,fn(T)->List[U] !e)` `flatten(List[List[T]])` `sum(List[Int])->Int` `sum_float(List[Float])->Float` `range(a,b)->List[Int]` (half-open) `zip(xs,ys)->List[(A,B)]` `enumerate(xs)->List[(Int,T)]` `contains(xs,x)->Bool` `index_of(xs,x)->Option[Int]` `count(xs,p)->Int !e` `filter_map(xs,fn(T)->Option[U] !e)->List[U] !e` `take_while(xs,p)` `drop_while(xs,p)` `max_by(xs,key:fn(T)->Int)->Option[T]` `min_by` (first wins ties) `count_by(xs,key:fn(T)->K)->Map[K,Int]` `sum_by(xs,fn(T)->Int !e)->Int !e` `join(List[Str],sep)->Str` `sort(xs)` `min_of(xs)->Option[T]` `max_of(xs)->Option[T]` (sort, min_of, max_of: Int, Float, Str only) `sort_by(xs,key:fn(T)->Int)` `sort_by_str(xs,key:fn(T)->Str)` (both stable) `unique(xs)` (Int, Str, Bool only).
 
-**Str**: `str_len(s)->Int` (code points) `chars(s)->List[Str]` `split(s,sep)->List[Str]` `trim` `to_upper` `to_lower` `starts_with(s,p)` `ends_with(s,p)` `str_contains(s,needle)` `replace(s,from,to)` `substr(s,from,to)` `repeat(s,n)` `char_at(s,i)->Option[Str]` `code_point(s)->Option[Int]` `from_code_point(Int)->Str` `parse_int(s)->Option[Int]` `parse_float(s)->Option[Float]` `split_once(s,sep)->Option[(Str,Str)]` `str_index_of(s,needle)->Option[Int]` (code points) `lines(s)->List[Str]` (drops one trailing empty line) `is_digit` `is_alpha` `is_alnum` `is_space` `is_upper` `is_lower` (Str->Bool, ASCII, first code point) `show[T](x:T)->Str` (any non-function type; Str shows quoted, `3.0` shows `3`; `println` takes Str, so `println(show(n))`).
+**Str**: `str_len(s)->Int` (code points) `chars(s)->List[Str]` `split(s,sep)->List[Str]` `trim` `to_upper` `to_lower` `starts_with(s,p)` `ends_with(s,p)` `str_contains(s,needle)` `replace(s,from,to)` `substr(s,from,to)` `repeat(s,n)` `char_at(s,i)->Option[Str]` `code_point(s)->Option[Int]` `from_code_point(Int)->Str` `parse_int(s)->Option[Int]` `parse_float(s)->Option[Float]` `split_once(s,sep)->Option[(Str,Str)]` `str_index_of(s,needle)->Option[Int]` (code points) `lines(s)->List[Str]` (drops one trailing empty line) `is_digit` `is_alpha` `is_alnum` `is_space` `is_upper` `is_lower` (Str->Bool, ASCII, first code point) `split_ws(s)` (runs of whitespace, no empty pieces) `show[T](x:T)->Str` (any non-function type; Str shows quoted, `3.0` shows `3`; `println` takes Str, so `println(show(n))`).
 
 **Map, Set** (keys Int, Str or Bool only; all immutable, updates return a new value): `map_new()` `map_get(m,k)->Option[V]` `map_set(m,k,v)` `map_remove(m,k)` `map_contains(m,k)` `map_keys(m)` `map_values(m)` `map_len(m)` `map_from_list(List[(K,V)])` `map_to_list(m)`; `set_new()` `set_add(s,x)` `set_remove(s,x)` `set_contains(s,x)` `set_len(s)` `set_to_list(s)` `set_from_list(xs)`.
 
 **Option, Result**: `unwrap_or(o,default)` `is_some` `is_none` `is_ok` `is_err` `ok_or(o:Option[T],e:E)->Result[T,E]` `option_map(o,f)` `result_map(r,f)`.
 
-**Math**: Int: `abs` `min` `max` `pow(base,exp)` (exp >= 0) `div_floor` `mod_floor`. Float: `fabs` `fmin` `fmax` `fpow` `sqrt` `floor` `ceil` `round` (all Float to Float). Convert: `to_float(Int)->Float`, `to_int(Float)->Int` (truncates).
+**Math**: Int: `abs` `min` `max` `pow(base,exp)` (exp >= 0) `div_floor` `mod_floor` `gcd` `lcm` `is_prime` `digits(n)->List[Int]` (of `abs(n)`, `[0]` for 0) `from_digits(ds)` `to_base(n,base)->Str` (2..36, lowercase) `from_base(s,base)->Option[Int]`. Float: `fabs` `fmin` `fmax` `fpow` `sqrt` `floor` `ceil` `round` (all Float to Float). Convert: `to_float(Int)->Float`, `to_int(Float)->Int` (truncates).
 
 **IO and env**: `print(s)` `println(s)` `flush()->Unit` `read_line()->Option[Str]` `read_all()->Str` `args()->List[Str]` (after `--`, no program name) all `!io`; stdout is block-buffered unless a terminal, so `flush()` before a server blocks; `exit(code)->Unit !exit`; `now_millis()->Int !time`; `random_int(lo,hi)->Int !rand`.
 
@@ -153,7 +153,8 @@ Diagnostics have `code`, `severity`, `name`, `span` (`line col end_line end_col`
 4. `let y = if c { 1 };`: `if` without `else` is Unit. Add `else { 0 }`.
 5. `xs[i]` when `i` may be out of range traps `bounds`. Use `get(xs, i)` and match `Some`/`None`.
 6. `let xs = [];` alone: E0107. Annotate: `let xs: List[Int] = [];`.
-7. `while true { ... return x; }` as the last statement still needs a tail expression (`0`). `assert_eq(max_of([]), None)` is E0107: annotate one side. `test` and `type` are keywords, not names. `for (i, x) in enumerate(xs)` works.
-8. Missing match arm: E0104; paste the fix `patch`. Also: assigning to a non-`mut` binding is E0112; `parse_int(s)?` in a fn returning `Int` is E0113.
+7. `while true { ... return x; }` as the last statement still needs a tail expression (`0`). `assert_eq(max_of([]), None)` is E0107: annotate one side. `test`, `type`, `break`, `continue` are keywords, not names. `for (i, x) in enumerate(xs)` works.
+8. `fn solve(N: Int)` or `fn Strongest_Extension(...)`: E0002. Capitalized names are types and constructors; values and functions are `snake_case` (`n`, `strongest_extension`; the fix `patch` has it).
+9. Missing match arm: E0104; paste the fix `patch`. Also: assigning to a non-`mut` binding is E0112; `parse_int(s)?` in a fn returning `Int` is E0113.
 
 <!-- token estimate: 3.5k by characters (chars / 3.7); code-heavy, so trust this over the word rule. -->

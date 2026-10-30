@@ -130,11 +130,13 @@ struct FnCx {
     declared: HashSet<String>,
     /// The type of `result` inside `ensures` (and lambdas there).
     result: Option<Ty>,
+    /// Enclosing loops, innermost last: (label suffix, break used, continue used).
+    loops: Vec<(String, bool, bool)>,
 }
 
 impl FnCx {
     fn new(def: &str, ret: Ty, map: HashMap<String, Ty>) -> FnCx {
-        FnCx { out: String::new(), indent: 1, map, def: def.to_string(), ret, ensures: false, label_used: false, scopes: vec![vec![]], declared: HashSet::new(), result: None }
+        FnCx { out: String::new(), indent: 1, map, def: def.to_string(), ret, ensures: false, label_used: false, scopes: vec![vec![]], declared: HashSet::new(), result: None, loops: vec![] }
     }
 }
 
@@ -618,8 +620,7 @@ impl<'a> Emitter<'a> {
                 self.open("while (1) {");
                 let c = self.expr(cond);
                 self.line(format!("if (!{c}) break;"));
-                self.block(body);
-                self.close();
+                self.loop_body(body);
             }
             StmtKind::For { pat, iter, body } => {
                 let Ty::List(el) = self.ty(iter.id) else { panic!("internal: for over a non-list") };
@@ -632,18 +633,46 @@ impl<'a> Emitter<'a> {
                 let v = self.unbox(&el, &format!("{l}->items[{i}]"));
                 let x = self.bind_tmp(&el, v);
                 self.bind_pat(pat, &x, &el, &HashMap::new());
-                self.block(body);
+                self.loop_body(body);
                 self.fx.scopes.pop();
-                self.close();
             }
             StmtKind::Return(e) => {
                 let a = self.expr(e);
                 self.ret(&a);
             }
+            StmtKind::Break | StmtKind::Continue => {
+                let brk = matches!(s.kind, StmtKind::Break);
+                let l = self.fx.loops.last_mut().expect("internal: break outside a loop");
+                if brk {
+                    l.1 = true;
+                } else {
+                    l.2 = true;
+                }
+                let target = format!("{}_{}", if brk { "ov_brk" } else { "ov_cont" }, l.0);
+                self.line(format!("goto {target};"));
+            }
             StmtKind::Expr(e) => {
                 self.expr(e);
             }
             StmtKind::Comment(_) => {}
+        }
+    }
+
+    /// A loop body, then the loop's closing brace. `break`/`continue` jump to
+    /// labels rather than using C `break`/`continue`, so they stay right inside
+    /// whatever C the lowering of `match` and `if` wraps around them. Labels
+    /// are emitted only when used (`-Wunused-label` is an error).
+    fn loop_body(&mut self, body: &Block) {
+        let id = self.tmp();
+        self.fx.loops.push((id, false, false));
+        self.block(body);
+        let (id, brk, cont) = self.fx.loops.pop().unwrap();
+        if cont {
+            self.line(format!("ov_cont_{id}: ;"));
+        }
+        self.close();
+        if brk {
+            self.line(format!("ov_brk_{id}: ;"));
         }
     }
 
