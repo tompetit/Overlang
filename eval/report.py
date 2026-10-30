@@ -19,7 +19,8 @@ import statistics
 from collections import defaultdict
 
 METRICS = ["input_tokens", "output_tokens", "cache_creation_input_tokens", "cache_read_input_tokens",
-           "total_tokens", "cache_hit_rate", "total_cost_usd", "duration_ms", "num_turns", "failed_rounds"]
+           "total_tokens", "cache_hit_rate", "total_cost_usd", "duration_ms", "num_turns", "failed_rounds",
+           "read_tokens"]
 
 
 def load(paths, include_errors=False):

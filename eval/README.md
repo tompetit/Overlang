@@ -1,7 +1,8 @@
 # Overlang evaluation harness
 
-Implements Benchmark A of `docs/PLAN.md` section 6 (single-function tasks, same
-problems in Python, Rust and Overlang). Standard library only (Python 3.14).
+Implements Benchmarks A and B of `docs/PLAN.md` section 6 (A: single-function tasks, same
+problems in Python, Rust and Overlang; B: maintenance tasks on one app, see the Benchmark B
+section). Standard library only (Python 3.14).
 Everything is testable with a mock agent; the Overlang adapter needs the built
 compiler (`cargo build --release`).
 
@@ -168,12 +169,125 @@ python3 eval/run.py --benchmark humaneval --lang overlang --agent mock --mock-so
 Only the first 40 tasks have Overlang versions; `--tasks` beyond that fails with
 a missing-file error.
 
+## Benchmark B: maintenance tasks
+
+The same todo app in two languages, 25 modification tasks, graded by language-agnostic HTTP checks.
+`--benchmark benchb --lang python|overlang`. Nothing is downloaded; all data is in `eval/benchb/`.
+
+```
+examples/todo/       the Overlang app (main.ov, 178 lines)      examples/todo_py/  its Python port
+eval/benchb/lib.sh   helpers sourced by every check             eval/benchb/validate.py
+eval/benchb/tasks/<id>/        task.md  check.sh  [probe.py probe.ov]  [setup/<lang>/...]
+eval/benchb/solutions/<id>/<lang>/   reference solution (full replacement files; rm.txt = names to unbind)
+```
+
+The Python port keeps the Overlang app's function names and decomposition (`db_init`, `parse_rows`,
+`list_todos`, `add_todo`, `toggle_todo`, `delete_todo`, `render_*`, `route`, `serve`, `main`), contracts as
+asserts, the three unit tests in `test_todo.py` (`python3 -I -m unittest`), and a curl-driven `test.sh`.
+Both apps pass their own `test.sh`.
+
+Tasks (statement = `task.md`, which goes into the agent prompt verbatim):
+
+| id | task | touches |
+|---|---|---|
+| b01_priority | priority 1..3 field, shown in both listings, `400 bad priority` | type, schema, parse, list, add, render x2, route, tests |
+| b02_due_date | optional `due` YYYY-MM-DD, `400 bad due date` | same breadth, plus a validator |
+| b03_notes | notes field, escaped `<small>` on the page, new `POST /notes` | same breadth plus a route |
+| b04_blank_422 | blank title answers 422 with a new body | route |
+| b05_missing_404 | toggle/delete of an unknown id is 404 | route, uses the rows-changed result |
+| b06_search | `POST /search`, case-insensitive substring | new pure fn, route |
+| b07_count | `GET /count` | new render fn, route |
+| b08_clear_done | `POST /clear-done` + `clear_done(db)` | db fn, route |
+| b09_rename | `POST /rename` | db fn (needs a string and an int bound), route |
+| b10_tsv_format | tab-separated `/todos.txt` | `render_text` |
+| b11_title_length | titles over 80 characters rejected (characters, not bytes) | route |
+| b12_duplicate_title | 409 on a duplicate title, case-insensitive | new fn, route |
+| b13_pure_respond_page | `respond_page(todos)` without the db | signature, 4 call sites |
+| b14_split_route | `route_get`, `route_post`, `route` dispatches | whole routing |
+| b15_add_ensures | postcondition on `add_todo` | contract; check looks at the trap |
+| b16_soft_delete | `deleted` column, `/undelete` | schema, delete, list, route |
+| b17_created_at | `created_at` column and page date | type, schema, parse, list, render, tests |
+| b18_bug_escape | planted bug: title unescaped on the page | `render_todo` |
+| b19_bug_toggle | planted bug: toggle never reopens | SQL in `toggle_todo` |
+| b20_bug_trim | planted bug: title stored untrimmed | `add_todo` |
+| b21_db_error_500 | failed writes answer 500 | route x3 |
+| b22_status_cycle | `done` flag becomes open/doing/done, toggle cycles | type, schema, parse, list, toggle, render x2, tests |
+| b23_max_todos | at most 20 todos, 409 `list full` | route |
+| b24_query_filter | `?done=1` filter; the query must be plumbed through `route` | route signature, serve, tests |
+| b25_db_path_arg | optional second CLI argument, pure `db_path_from` | `main`, new fn |
+
+Bug tasks (b18 to b20) have a `setup/<lang>/` directory with the app files that carry the planted bug (the
+same bug in both ports; the unit tests are adjusted so they do not catch it). Any file in `setup/<lang>/`
+replaces the base file of the same name when the workspace is built.
+
+### Checks
+
+`check.sh <app dir> <lang>` (or `check_<lang>.sh`; exit 0 = pass) sources `lib.sh`, which exports the Overlang
+store to a file if needed, builds (`ov build main.ov`) or runs `python3 main.py`, starts the server on a free
+port with cwd = a fresh scratch directory (so `todo.db` is new), and drives it with curl. A check asserts the
+new behavior, then that the old behavior holds (`bb_baseline`: add, toggle, delete, 404, blank title, restart
+persistence; skipped or adapted where the task changes it), then runs the app's own unit tests (`bb_unit`:
+`python3 -I -m unittest` / `ov test main.ov`). Unit-level tasks add `probe.py` / `probe.ov` (extra `test`
+blocks loaded with the app); b15 builds a separate Overlang program with `--entry` to observe the trap;
+b16/b21/b22 read or break the SQLite file directly with `bb_sql`. Scratch lives under `$BB_SCRATCH`
+(default `<app dir>/../scratch`); servers are killed on exit.
+
+```
+python3 eval/benchb/validate.py                         # every task, both languages, ~2 min
+python3 eval/benchb/validate.py --tasks b04_blank_422 --lang python -v
+```
+
+`validate.py` builds the real workspace with the adapter, requires the check to FAIL on it, applies the
+reference solution and requires the check to PASS. All 25 tasks pass this in both languages.
+
+### Workspaces
+
+Python: `main.py`, `test_todo.py`, `CLAUDE.md` (app overview, test command). The agent edits files.
+
+Overlang: the store is populated before the agent starts (`ov add` of the app, in the workspace), and there
+is no `main.ov` anywhere the agent can reach (the seed file is deleted; the only copy of the code is
+`.ovstore/`). `CLAUDE.md` is the language card plus the store workflow (`./ov ls|ctx|view|edit|add|rm|check|test`,
+`./ov build main`, `./ov run main -- 8080`) and a note on shims declared in the C runtime but not in the app
+(for example `ov_sqlite_exec_2s`). `./ov` is a wrapper around the compiler binary (`$OV_BIN`, else
+`target/release/ov`). Grading exports the store (`ov view` of every name in `ov ls` order) to
+`hidden/export/main.ov` and runs the check on it, so a store that does not typecheck or build fails.
+Comments are not kept by `ov view`, which does not matter for grading.
+
+The prompt is "Read CLAUDE.md, then make this change to the todo app: <task.md> Run `<test command>` before
+you stop." Test command: `python3 -I -m unittest` or `./ov test`. `failed_rounds` counts Bash calls with those
+markers (and `ov check`) that failed.
+
+### Running
+
+```
+python3 eval/run.py --benchmark benchb --lang python --agent mock --mock-solve --tasks 0:25 --runs 1 --out eval/runs/b-py.jsonl
+python3 eval/run.py --benchmark benchb --lang overlang --agent mock --mock-solve --tasks b04_blank_422,b17_created_at --runs 1 --out eval/runs/b-ov.jsonl
+python3 eval/run.py --benchmark benchb --lang overlang --model sonnet --tasks 0:25 --runs 3 --agent claude --out eval/runs/b-ov-sonnet.jsonl
+```
+
+`--tasks` is a start:stop slice of the sorted task ids or a comma-separated list of ids. `--mock-solve`
+applies the reference solution (Overlang: `ov add` of the solution file into the store, then `ov rm` of
+`rm.txt` names). Without it the mock leaves the task unsolved (the check must fail).
+
+### read_tokens
+
+Benchmark B's hypothesis is about reading. Every benchb record also has `read_tokens` and `read_calls`.
+A call is read-type if it is `Read`, `Grep`, `Glob`, or a `Bash` command using `cat head tail less grep rg ls
+find wc nl awk sed -n` or `ov ctx|view|ls|deps|dependents|history|diff`. `read_tokens` = sum, over assistant
+turns (merged by `message.id`) that directly follow a turn containing a read-type call, of
+`input_tokens + cache_creation_input_tokens` of that turn. Rationale: those are the fresh tokens the
+read result adds to the context; `cache_read_input_tokens` is excluded because it re-counts the whole
+conversation on every turn and would swamp the signal. Limits: it is an approximation (the fresh tokens of a
+following turn also include the model's own previous message and any other tool results in the same turn),
+it ignores that a long read result is then re-read from cache on every later turn, and it has only been tested
+on a hand-built fixture, not on a real transcript. `report.py` prints the median and mean per language.
+
 ## Not done / caveats
 
 - No real agent run has been exercised (no authentication); the stream-json
   parsing is tested against a hand-written fixture of the documented event
   shapes. Verify on the first real transcript that `Bash` `tool_result`s carry
   `is_error` for non-zero exits.
-- Benchmark B (maintenance tasks) is not part of this harness yet.
+- Benchmark B is implemented (below) but no real agent run has been exercised either.
 - The hidden tests are in a sibling directory of the agent's cwd, not
   sandboxed; an agent could in principle read `../hidden`.
