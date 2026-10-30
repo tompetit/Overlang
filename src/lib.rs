@@ -7,6 +7,7 @@ pub mod diag;
 pub mod emit;
 pub mod effects;
 pub mod exhaust;
+pub mod fuzz;
 pub mod lexer;
 pub mod mono;
 pub mod parser;

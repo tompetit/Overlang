@@ -1,0 +1,36 @@
+// Recursive parameter types fuzz within the depth limit (tests/fuzz.rs).
+type Tree = Leaf | Node(left: Tree, value: Int, right: Tree)
+type Rose = { label: Str, kids: List[Rose] }
+
+fn height(t: Tree) -> Int
+  ensures result >= 0
+{
+  match t {
+    Leaf => 0,
+    Node(l, _, r) => 1 + max(height(l), height(r)),
+  }
+}
+
+// Holds for every generated tree: generation stops at depth 4.
+fn shallow(t: Tree) -> Int
+  ensures result <= 4
+{
+  height(t)
+}
+
+fn count(r: Rose) -> Int
+  ensures result >= 1
+{
+  fold(r.kids, 1, |n, k| n + count(k))
+}
+
+fn main() -> Unit !io {
+  println(show(shallow(Node(Leaf, 3, Node(Leaf, 4, Leaf)))));
+  println(show(count(Rose { label: "a", kids: [Rose { label: "b", kids: [] }] })));
+}
+
+test heights {
+  assert_eq(height(Leaf), 0);
+  assert_eq(shallow(Node(Leaf, 1, Leaf)), 1);
+  assert_eq(count(Rose { label: "x", kids: [] }), 1);
+}

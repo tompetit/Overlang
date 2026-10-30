@@ -24,7 +24,8 @@ const GEN_WARN: &[&str] = &["-Wall", "-Wextra", "-Werror", "-Wno-unused-paramete
 
 pub enum Target<'s> {
     Entry(&'s str),
-    Tests,
+    /// Every test block; fuzz targets restricted to this name's closure if given.
+    Tests(Option<&'s str>),
 }
 
 fn error(code: &str, message: String) -> Diag {
@@ -33,6 +34,11 @@ fn error(code: &str, message: String) -> Diag {
 
 /// Build `files` for `target`; the path of the executable.
 pub fn build(files: &[PathBuf], target: Target, out: Option<&Path>) -> Result<PathBuf, Vec<Diag>> {
+    build_with_fuzz(files, target, out).map(|(exe, _)| exe)
+}
+
+/// `build`, plus the fuzz targets of a test build (spec section 7.1).
+pub fn build_with_fuzz(files: &[PathBuf], target: Target, out: Option<&Path>) -> Result<(PathBuf, Vec<emit::FuzzTarget>), Vec<Diag>> {
     let mut sources = Vec::new();
     for f in files {
         match std::fs::read_to_string(f) {
@@ -50,15 +56,24 @@ pub fn build(files: &[PathBuf], target: Target, out: Option<&Path>) -> Result<Pa
         return Err(errors);
     }
     let defs = Defs::new(&checked);
-    let (dir_name, root, mode) = match target {
+    let (dir_name, root, mode, only) = match target {
         Target::Entry(e) => {
             check_entry(&checked.typed, &defs, e)?;
-            (e.to_string(), Root::Entry(e), Mode::Run(e))
+            (e.to_string(), Root::Entry(e), Mode::Run(e), None)
         }
-        Target::Tests => ("test".to_string(), Root::Tests, Mode::Test),
+        Target::Tests(only) => ("test".to_string(), Root::Tests, Mode::Test, only),
     };
     let insts = mono::collect(&checked, &defs, root)?;
-    let output = emit::emit(&checked, &defs, &insts, mode);
+    let mut output = emit::emit(&checked, &defs, &insts, mode);
+    let mut fuzz = std::mem::take(&mut output.fuzz);
+    if let Some(name) = only {
+        let roots: Vec<&str> = insts.iter().filter(|i| i.name == name).map(|i| i.c_name.as_str()).collect();
+        if roots.is_empty() {
+            return Err(vec![error("E0000", format!("`{name}` is not a function or test reached by the test blocks"))]);
+        }
+        let keep = emit::reach(&output.files, &insts, &roots);
+        fuzz.retain(|t| keep.contains(&t.c_name));
+    }
 
     let cwd = std::env::current_dir().map_err(|e| vec![error("E0000", format!("no current directory: {e}"))])?;
     let dir = cwd.join(".ovbuild").join(&dir_name);
@@ -96,7 +111,7 @@ pub fn build(files: &[PathBuf], target: Target, out: Option<&Path>) -> Result<Pa
     let mut jobs = Vec::new();
     for (n, text, generated) in all.iter().filter(|(n, _, _)| n.ends_with(".c")) {
         let flags: Vec<&str> = CFLAGS.iter().chain(if *generated { GEN_WARN } else { &[] }).copied().collect();
-        let key = mono::fnv64(&format!("{}\0{text}\0{headers}\0{}", flags.join(" "), emit::HEADER_PREAMBLE));
+        let key = mono::fnv64(&format!("{}\0{text}\0{headers}\0{}{}", flags.join(" "), emit::HEADER_PREAMBLE, emit::FUZZ_H));
         let obj = format!("obj/{key:016x}.o");
         if !dir.join(&obj).exists() {
             jobs.push((n.clone(), obj.clone(), flags));
@@ -117,7 +132,7 @@ pub fn build(files: &[PathBuf], target: Target, out: Option<&Path>) -> Result<Pa
     if !res.status.success() {
         return Err(vec![error("E0000", format!("link failed\n{}", String::from_utf8_lossy(&res.stderr)))]);
     }
-    Ok(exe)
+    Ok((exe, fuzz))
 }
 
 /// Spec section 8: no parameters, returns Unit or Result[Unit, E].

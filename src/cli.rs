@@ -4,7 +4,7 @@
 use crate::ast::{Program, Span};
 use crate::diag::Diag;
 use crate::diag::Severity;
-use crate::{build, parser, printer, types};
+use crate::{build, fuzz, parser, printer, types};
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
@@ -46,10 +46,13 @@ enum Command {
         #[arg(long, default_value = "main")]
         entry: String,
     },
-    /// Build and run every test block in order: `ok <name>` per passing block.
+    /// Build and run every test block in order (`ok <name>` per passing block),
+    /// then fuzz every contracted function they reach (`fuzz <fn> ...`).
     Test {
         #[arg(required = true)]
         files: Vec<PathBuf>,
+        #[command(flatten)]
+        fuzz: Fuzz,
     },
     /// Parse a file and dump its AST.
     Parse {
@@ -58,6 +61,23 @@ enum Command {
         #[arg(long)]
         json: bool,
     },
+}
+
+/// `ov test` fuzzing options (spec section 7.1).
+#[derive(clap::Args)]
+struct Fuzz {
+    /// Fuzz only the functions in this function's or test's closure.
+    #[arg(long)]
+    name: Option<String>,
+    /// Generated inputs per function.
+    #[arg(long, default_value_t = 200)]
+    cases: u64,
+    /// Generator seed; default `OV_SEED`, else the clock.
+    #[arg(long)]
+    seed: Option<u64>,
+    /// Print JSON lines only.
+    #[arg(long)]
+    json: bool,
 }
 
 /// Runs the CLI and returns the process exit code.
@@ -115,8 +135,8 @@ pub fn run() -> i32 {
             Ok(exe) => execute(&exe),
             Err(diags) => report(&diags),
         },
-        Command::Test { files } => match build::build(&files, build::Target::Tests, None) {
-            Ok(exe) => execute(&exe),
+        Command::Test { files, fuzz: f } => match fuzz::test(&files, f.name.as_deref(), f.cases, f.seed, f.json) {
+            Ok(code) => code,
             Err(diags) => report(&diags),
         },
         Command::Parse { file, json } => {

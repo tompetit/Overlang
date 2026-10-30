@@ -1,0 +1,15 @@
+// A precondition almost no generated input meets: W0004 (tests/fuzz.rs).
+fn only_one(x: Int) -> Int
+  requires x == 12345
+  ensures result == 12346
+{
+  x + 1
+}
+
+fn main() -> Unit !io {
+  println(show(only_one(12345)));
+}
+
+test one {
+  assert_eq(only_one(12345), 12346);
+}
