@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_51_remove_vowels",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_51_remove_vowels",
+ "entry_point": "remove_vowels",
+ "prompt": "// remove_vowels is a function that takes string and returns string without vowels.\n// Examples:\n//   remove_vowels(\"\") == \"\"\n//   remove_vowels(\"abcdef\") == \"bcdf\"\n//   remove_vowels(\"aaaaa\") == \"\"\n//   remove_vowels(\"aaBAA\") == \"B\"\n//   remove_vowels(\"zbcd\") == \"zbcd\"\nfn remove_vowels(text: Str) -> Str {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(remove_vowels(\"\"), \"\");\n}\n\ntest check_2 {\n  assert_eq(remove_vowels(\"abcdef\\nghijklm\"), \"bcdf\\nghjklm\");\n}\n\ntest check_3 {\n  assert_eq(remove_vowels(\"fedcba\"), \"fdcb\");\n}\n\ntest check_4 {\n  assert_eq(remove_vowels(\"eeeee\"), \"\");\n}\n\ntest check_5 {\n  assert_eq(remove_vowels(\"acBAA\"), \"cB\");\n}\n\ntest check_6 {\n  assert_eq(remove_vowels(\"EcBOO\"), \"cB\");\n}\n\ntest check_7 {\n  assert_eq(remove_vowels(\"ybcd\"), \"ybcd\");\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(remove_vowels(\"\"), \"\");\n}\n",
+ "solution": "// remove_vowels is a function that takes string and returns string without vowels.\n// Examples:\n//   remove_vowels(\"\") == \"\"\n//   remove_vowels(\"abcdef\") == \"bcdf\"\n//   remove_vowels(\"aaaaa\") == \"\"\n//   remove_vowels(\"aaBAA\") == \"B\"\n//   remove_vowels(\"zbcd\") == \"zbcd\"\nfn remove_vowels(text: Str) -> Str {\n  join(filter(chars(text), |c| !contains([\"a\", \"e\", \"i\", \"o\", \"u\"], to_lower(c))), \"\")\n}\n"
+}

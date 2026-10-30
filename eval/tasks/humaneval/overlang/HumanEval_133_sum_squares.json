@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_133_sum_squares",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_133_sum_squares",
+ "entry_point": "sum_squares",
+ "prompt": "// You are given a list of numbers.\n// You need to return the sum of squared numbers in the given list,\n// round each element in the list to the upper int(Ceiling) first.\n// Examples:\n//   sum_squares([1.0, 2.0, 3.0]) == 14\n//   sum_squares([1.0, 4.0, 9.0]) == 98\n//   sum_squares([1.0, 3.0, 5.0, 7.0]) == 84\n//   sum_squares([1.4, 4.2, 0.0]) == 29\n//   sum_squares([-2.4, 1.0, 1.0]) == 6\nfn sum_squares(lst: List[Float]) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(sum_squares([1.0, 2.0, 3.0]), 14);\n}\n\ntest check_2 {\n  assert_eq(sum_squares([1.0, 2.0, 3.0]), 14);\n}\n\ntest check_3 {\n  assert_eq(sum_squares([1.0, 3.0, 5.0, 7.0]), 84);\n}\n\ntest check_4 {\n  assert_eq(sum_squares([1.4, 4.2, 0.0]), 29);\n}\n\ntest check_5 {\n  assert_eq(sum_squares([-2.4, 1.0, 1.0]), 6);\n}\n\ntest check_6 {\n  assert_eq(sum_squares([100.0, 1.0, 15.0, 2.0]), 10230);\n}\n\ntest check_7 {\n  assert_eq(sum_squares([10000.0, 10000.0]), 200000000);\n}\n\ntest check_8 {\n  assert_eq(sum_squares([-1.4, 4.6, 6.3]), 75);\n}\n\ntest check_9 {\n  assert_eq(sum_squares([-1.4, 17.9, 18.9, 19.9]), 1086);\n}\n\ntest check_10 {\n  assert_eq(sum_squares([0.0]), 0);\n}\n\ntest check_11 {\n  assert_eq(sum_squares([-1.0]), 1);\n}\n\ntest check_12 {\n  assert_eq(sum_squares([-1.0, 1.0, 0.0]), 2);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(sum_squares([1.0, 2.0, 3.0]), 14);\n}\n",
+ "solution": "// You are given a list of numbers.\n// You need to return the sum of squared numbers in the given list,\n// round each element in the list to the upper int(Ceiling) first.\n// Examples:\n//   sum_squares([1.0, 2.0, 3.0]) == 14\n//   sum_squares([1.0, 4.0, 9.0]) == 98\n//   sum_squares([1.0, 3.0, 5.0, 7.0]) == 84\n//   sum_squares([1.4, 4.2, 0.0]) == 29\n//   sum_squares([-2.4, 1.0, 1.0]) == 6\nfn sum_squares(lst: List[Float]) -> Int {\n  sum(map(lst, |x| { let c = to_int(ceil(x)); c * c }))\n}\n"
+}

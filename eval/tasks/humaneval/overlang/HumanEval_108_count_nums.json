@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_108_count_nums",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_108_count_nums",
+ "entry_point": "count_nums",
+ "prompt": "// Write a function count_nums which takes an array of integers and returns\n// the number of elements which has a sum of digits > 0.\n// If a number is negative, then its first signed digit will be negative:\n// e.g. -123 has signed digits -1, 2, and 3.\n// Examples:\n//   count_nums([]) == 0\n//   count_nums([-1, 11, -11]) == 1\n//   count_nums([1, 1, 2]) == 3\nfn count_nums(arr: List[Int]) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(count_nums([]), 0);\n}\n\ntest check_2 {\n  assert_eq(count_nums([-1, -2, 0]), 0);\n}\n\ntest check_3 {\n  assert_eq(count_nums([1, 1, 2, -2, 3, 4, 5]), 6);\n}\n\ntest check_4 {\n  assert_eq(count_nums([1, 6, 9, -6, 0, 1, 5]), 5);\n}\n\ntest check_5 {\n  assert_eq(count_nums([1, 100, 98, -7, 1, -1]), 4);\n}\n\ntest check_6 {\n  assert_eq(count_nums([12, 23, 34, -45, -56, 0]), 5);\n}\n\ntest check_7 {\n  assert_eq(count_nums([-0, 1]), 1);\n}\n\ntest check_8 {\n  assert_eq(count_nums([1]), 1);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(count_nums([]), 0);\n}\n",
+ "solution": "// Write a function count_nums which takes an array of integers and returns\n// the number of elements which has a sum of digits > 0.\n// If a number is negative, then its first signed digit will be negative:\n// e.g. -123 has signed digits -1, 2, and 3.\n// Examples:\n//   count_nums([]) == 0\n//   count_nums([-1, 11, -11]) == 1\n//   count_nums([1, 1, 2]) == 3\nfn count_nums(arr: List[Int]) -> Int {\n  len(filter(arr, |n| signed_digit_sum(n) > 0))\n}\n\nfn signed_digit_sum(n: Int) -> Int {\n  let ds = map(chars(show(abs(n))), |c| unwrap_or(parse_int(c), 0));\n  sum(ds) - (if n < 0 { 2 * ds[0] } else { 0 })\n}\n"
+}

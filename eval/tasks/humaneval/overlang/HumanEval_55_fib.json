@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_55_fib",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_55_fib",
+ "entry_point": "fib",
+ "prompt": "// Return n-th Fibonacci number.\n// Examples:\n//   fib(10) == 55\n//   fib(1) == 1\n//   fib(8) == 21\nfn fib(n: Int) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(fib(10), 55);\n}\n\ntest check_2 {\n  assert_eq(fib(1), 1);\n}\n\ntest check_3 {\n  assert_eq(fib(8), 21);\n}\n\ntest check_4 {\n  assert_eq(fib(11), 89);\n}\n\ntest check_5 {\n  assert_eq(fib(12), 144);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(fib(10), 55);\n}\n",
+ "solution": "// Return n-th Fibonacci number.\n// Examples:\n//   fib(10) == 55\n//   fib(1) == 1\n//   fib(8) == 21\nfn fib(n: Int) -> Int {\n  let mut a = 0;\n  let mut b = 1;\n  for _i in range(0, n) {\n    let t = a + b;\n    a = b;\n    b = t;\n  }\n  a\n}\n"
+}

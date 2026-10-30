@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_86_anti_shuffle",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_86_anti_shuffle",
+ "entry_point": "anti_shuffle",
+ "prompt": "// Write a function that takes a string and returns an ordered version of it.\n// Ordered version of string, is a string where all words (separated by space)\n// are replaced by a new word where all the characters arranged in\n// ascending order based on ascii value.\n// Note: You should keep the order of words and blank spaces in the sentence.\n//\n// Examples:\n//   anti_shuffle(\"Hi\") == \"Hi\"\n//   anti_shuffle(\"hello\") == \"ehllo\"\n//   anti_shuffle(\"Hello World!!!\") == \"Hello !!!Wdlor\"\nfn anti_shuffle(s: Str) -> Str {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(anti_shuffle(\"Hi\"), \"Hi\");\n}\n\ntest check_2 {\n  assert_eq(anti_shuffle(\"hello\"), \"ehllo\");\n}\n\ntest check_3 {\n  assert_eq(anti_shuffle(\"number\"), \"bemnru\");\n}\n\ntest check_4 {\n  assert_eq(anti_shuffle(\"abcd\"), \"abcd\");\n}\n\ntest check_5 {\n  assert_eq(anti_shuffle(\"Hello World!!!\"), \"Hello !!!Wdlor\");\n}\n\ntest check_6 {\n  assert_eq(anti_shuffle(\"\"), \"\");\n}\n\ntest check_7 {\n  assert_eq(anti_shuffle(\"Hi. My name is Mister Robot. How are you?\"), \".Hi My aemn is Meirst .Rboot How aer ?ouy\");\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(anti_shuffle(\"Hi\"), \"Hi\");\n}\n",
+ "solution": "// Write a function that takes a string and returns an ordered version of it.\n// Ordered version of string, is a string where all words (separated by space)\n// are replaced by a new word where all the characters arranged in\n// ascending order based on ascii value.\n// Note: You should keep the order of words and blank spaces in the sentence.\n//\n// Examples:\n//   anti_shuffle(\"Hi\") == \"Hi\"\n//   anti_shuffle(\"hello\") == \"ehllo\"\n//   anti_shuffle(\"Hello World!!!\") == \"Hello !!!Wdlor\"\nfn anti_shuffle(s: Str) -> Str {\n  join(map(split(s, \" \"), |w| join(sort(chars(w)), \"\")), \" \")\n}\n"
+}

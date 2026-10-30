@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_100_make_a_pile",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_100_make_a_pile",
+ "entry_point": "make_a_pile",
+ "prompt": "// Given a positive integer n, you have to make a pile of n levels of stones.\n// The first level has n stones.\n// The number of stones in the next level is:\n//     - the next odd number if n is odd.\n//     - the next even number if n is even.\n// Return the number of stones in each level in a list, where element at index\n// i represents the number of stones in the level (i+1).\n//\n// Examples:\n//   make_a_pile(3) == [3, 5, 7]\nfn make_a_pile(n: Int) -> List[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(make_a_pile(3), [3, 5, 7]);\n}\n\ntest check_2 {\n  assert_eq(make_a_pile(4), [4, 6, 8, 10]);\n}\n\ntest check_3 {\n  assert_eq(make_a_pile(5), [5, 7, 9, 11, 13]);\n}\n\ntest check_4 {\n  assert_eq(make_a_pile(6), [6, 8, 10, 12, 14, 16]);\n}\n\ntest check_5 {\n  assert_eq(make_a_pile(8), [8, 10, 12, 14, 16, 18, 20, 22]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(make_a_pile(3), [3, 5, 7]);\n}\n",
+ "solution": "// Given a positive integer n, you have to make a pile of n levels of stones.\n// The first level has n stones.\n// The number of stones in the next level is:\n//     - the next odd number if n is odd.\n//     - the next even number if n is even.\n// Return the number of stones in each level in a list, where element at index\n// i represents the number of stones in the level (i+1).\n//\n// Examples:\n//   make_a_pile(3) == [3, 5, 7]\nfn make_a_pile(n: Int) -> List[Int] {\n  map(range(0, n), |i| n + 2 * i)\n}\n"
+}

@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_89_encrypt",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_89_encrypt",
+ "entry_point": "encrypt",
+ "prompt": "// Create a function encrypt that takes a string as an argument and\n// returns a string encrypted with the alphabet being rotated.\n// The alphabet should be rotated in a manner such that the letters\n// shift down by two multiplied to two places.\n// Examples:\n//   encrypt(\"hi\") == \"lm\"\n//   encrypt(\"asdfghjkl\") == \"ewhjklnop\"\n//   encrypt(\"gf\") == \"kj\"\n//   encrypt(\"et\") == \"ix\"\nfn encrypt(s: Str) -> Str {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(encrypt(\"hi\"), \"lm\");\n}\n\ntest check_2 {\n  assert_eq(encrypt(\"asdfghjkl\"), \"ewhjklnop\");\n}\n\ntest check_3 {\n  assert_eq(encrypt(\"gf\"), \"kj\");\n}\n\ntest check_4 {\n  assert_eq(encrypt(\"et\"), \"ix\");\n}\n\ntest check_5 {\n  assert_eq(encrypt(\"faewfawefaewg\"), \"jeiajeaijeiak\");\n}\n\ntest check_6 {\n  assert_eq(encrypt(\"hellomyfriend\"), \"lippsqcjvmirh\");\n}\n\ntest check_7 {\n  assert_eq(encrypt(\"dxzdlmnilfuhmilufhlihufnmlimnufhlimnufhfucufh\"), \"hbdhpqrmpjylqmpyjlpmlyjrqpmqryjlpmqryjljygyjl\");\n}\n\ntest check_8 {\n  assert_eq(encrypt(\"a\"), \"e\");\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(encrypt(\"hi\"), \"lm\");\n}\n",
+ "solution": "// Create a function encrypt that takes a string as an argument and\n// returns a string encrypted with the alphabet being rotated.\n// The alphabet should be rotated in a manner such that the letters\n// shift down by two multiplied to two places.\n// Examples:\n//   encrypt(\"hi\") == \"lm\"\n//   encrypt(\"asdfghjkl\") == \"ewhjklnop\"\n//   encrypt(\"gf\") == \"kj\"\n//   encrypt(\"et\") == \"ix\"\nfn encrypt(s: Str) -> Str {\n  let abc = \"abcdefghijklmnopqrstuvwxyz\";\n  join(map(chars(s), |c| match index_of(chars(abc), c) {\n    Some(i) => unwrap_or(char_at(abc, (i + 4) % 26), c),\n    None => c,\n  }), \"\")\n}\n"
+}

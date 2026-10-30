@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_83_starts_one_ends",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_83_starts_one_ends",
+ "entry_point": "starts_one_ends",
+ "prompt": "// Given a positive integer n, return the count of the numbers of n-digit\n// positive integers that start or end with 1.\nfn starts_one_ends(n: Int) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(starts_one_ends(1), 1);\n}\n\ntest check_2 {\n  assert_eq(starts_one_ends(2), 18);\n}\n\ntest check_3 {\n  assert_eq(starts_one_ends(3), 180);\n}\n\ntest check_4 {\n  assert_eq(starts_one_ends(4), 1800);\n}\n\ntest check_5 {\n  assert_eq(starts_one_ends(5), 18000);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(starts_one_ends(1), 1);\n}\n",
+ "solution": "// Given a positive integer n, return the count of the numbers of n-digit\n// positive integers that start or end with 1.\nfn starts_one_ends(n: Int) -> Int {\n  if n == 1 { 1 } else { 18 * pow(10, n - 2) }\n}\n"
+}

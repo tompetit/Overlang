@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_155_even_odd_count",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_155_even_odd_count",
+ "entry_point": "even_odd_count",
+ "prompt": "// Given an integer. return a tuple that has the number of even and odd digits respectively.\n//\n//  Example:\n// Examples:\n//   even_odd_count(-12) == (1, 1)\n//   even_odd_count(123) == (1, 2)\nfn even_odd_count(num: Int) -> (Int, Int) {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(even_odd_count(7), (0, 1));\n}\n\ntest check_2 {\n  assert_eq(even_odd_count(-78), (1, 1));\n}\n\ntest check_3 {\n  assert_eq(even_odd_count(3452), (2, 2));\n}\n\ntest check_4 {\n  assert_eq(even_odd_count(346211), (3, 3));\n}\n\ntest check_5 {\n  assert_eq(even_odd_count(-345821), (3, 3));\n}\n\ntest check_6 {\n  assert_eq(even_odd_count(-2), (1, 0));\n}\n\ntest check_7 {\n  assert_eq(even_odd_count(-45347), (2, 3));\n}\n\ntest check_8 {\n  assert_eq(even_odd_count(0), (1, 0));\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(even_odd_count(7), (0, 1));\n}\n",
+ "solution": "// Given an integer. return a tuple that has the number of even and odd digits respectively.\n//\n//  Example:\n// Examples:\n//   even_odd_count(-12) == (1, 1)\n//   even_odd_count(123) == (1, 2)\nfn even_odd_count(num: Int) -> (Int, Int) {\n  let ds = map(chars(show(abs(num))), |c| unwrap_or(parse_int(c), 0));\n  (len(filter(ds, |d| d % 2 == 0)), len(filter(ds, |d| d % 2 == 1)))\n}\n"
+}

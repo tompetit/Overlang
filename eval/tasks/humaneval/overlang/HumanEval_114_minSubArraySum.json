@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_114_minSubArraySum",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_114_minSubArraySum",
+ "entry_point": "minSubArraySum",
+ "prompt": "// Given an array of integers nums, find the minimum sum of any non-empty sub-array\n// of nums.\n// Examples:\n//   minSubArraySum([2, 3, 4, 1, 2, 4]) == 1\n//   minSubArraySum([-1, -2, -3]) == -6\nfn minSubArraySum(nums: List[Int]) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(minSubArraySum([2, 3, 4, 1, 2, 4]), 1);\n}\n\ntest check_2 {\n  assert_eq(minSubArraySum([-1, -2, -3]), -6);\n}\n\ntest check_3 {\n  assert_eq(minSubArraySum([-1, -2, -3, 2, -10]), -14);\n}\n\ntest check_4 {\n  assert_eq(minSubArraySum([-9999999999999999]), -9999999999999999);\n}\n\ntest check_5 {\n  assert_eq(minSubArraySum([0, 10, 20, 1000000]), 0);\n}\n\ntest check_6 {\n  assert_eq(minSubArraySum([-1, -2, -3, 10, -5]), -6);\n}\n\ntest check_7 {\n  assert_eq(minSubArraySum([100, -1, -2, -3, 10, -5]), -6);\n}\n\ntest check_8 {\n  assert_eq(minSubArraySum([10, 11, 13, 8, 3, 4]), 3);\n}\n\ntest check_9 {\n  assert_eq(minSubArraySum([100, -33, 32, -1, 0, -2]), -33);\n}\n\ntest check_10 {\n  assert_eq(minSubArraySum([-10]), -10);\n}\n\ntest check_11 {\n  assert_eq(minSubArraySum([7]), 7);\n}\n\ntest check_12 {\n  assert_eq(minSubArraySum([1, -1]), -1);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(minSubArraySum([2, 3, 4, 1, 2, 4]), 1);\n}\n",
+ "solution": "// Given an array of integers nums, find the minimum sum of any non-empty sub-array\n// of nums.\n// Examples:\n//   minSubArraySum([2, 3, 4, 1, 2, 4]) == 1\n//   minSubArraySum([-1, -2, -3]) == -6\nfn minSubArraySum(nums: List[Int]) -> Int {\n  let mut best = nums[0];\n  let mut cur = nums[0];\n  for x in tail(nums) {\n    cur = min(x, cur + x);\n    best = min(best, cur);\n  }\n  best\n}\n"
+}

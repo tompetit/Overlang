@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_59_largest_prime_factor",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_59_largest_prime_factor",
+ "entry_point": "largest_prime_factor",
+ "prompt": "// Return the largest prime factor of n. Assume n > 1 and is not a prime.\n// Examples:\n//   largest_prime_factor(13195) == 29\n//   largest_prime_factor(2048) == 2\nfn largest_prime_factor(n: Int) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(largest_prime_factor(15), 5);\n}\n\ntest check_2 {\n  assert_eq(largest_prime_factor(27), 3);\n}\n\ntest check_3 {\n  assert_eq(largest_prime_factor(63), 7);\n}\n\ntest check_4 {\n  assert_eq(largest_prime_factor(330), 11);\n}\n\ntest check_5 {\n  assert_eq(largest_prime_factor(13195), 29);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(largest_prime_factor(15), 5);\n}\n",
+ "solution": "// Return the largest prime factor of n. Assume n > 1 and is not a prime.\n// Examples:\n//   largest_prime_factor(13195) == 29\n//   largest_prime_factor(2048) == 2\nfn largest_prime_factor(n: Int) -> Int {\n  let mut m = n;\n  let mut p = 2;\n  let mut best = 1;\n  while m > 1 {\n    if m % p == 0 {\n      best = p;\n      m = m / p;\n    } else {\n      p = p + 1;\n    }\n  }\n  best\n}\n"
+}

@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_157_right_angle_triangle",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_157_right_angle_triangle",
+ "entry_point": "right_angle_triangle",
+ "prompt": "// Given the lengths of the three sides of a triangle. Return True if the three\n// sides form a right-angled triangle, False otherwise.\n// A right-angled triangle is a triangle in which one angle is right angle or\n// 90 degree.\n// Examples:\n//   right_angle_triangle(3, 4, 5) == true\n//   right_angle_triangle(1, 2, 3) == false\nfn right_angle_triangle(a: Int, b: Int, c: Int) -> Bool {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(right_angle_triangle(3, 4, 5), true);\n}\n\ntest check_2 {\n  assert_eq(right_angle_triangle(1, 2, 3), false);\n}\n\ntest check_3 {\n  assert_eq(right_angle_triangle(10, 6, 8), true);\n}\n\ntest check_4 {\n  assert_eq(right_angle_triangle(2, 2, 2), false);\n}\n\ntest check_5 {\n  assert_eq(right_angle_triangle(7, 24, 25), true);\n}\n\ntest check_6 {\n  assert_eq(right_angle_triangle(10, 5, 7), false);\n}\n\ntest check_7 {\n  assert_eq(right_angle_triangle(5, 12, 13), true);\n}\n\ntest check_8 {\n  assert_eq(right_angle_triangle(15, 8, 17), true);\n}\n\ntest check_9 {\n  assert_eq(right_angle_triangle(48, 55, 73), true);\n}\n\ntest check_10 {\n  assert_eq(right_angle_triangle(1, 1, 1), false);\n}\n\ntest check_11 {\n  assert_eq(right_angle_triangle(2, 2, 10), false);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(right_angle_triangle(3, 4, 5), true);\n}\n",
+ "solution": "// Given the lengths of the three sides of a triangle. Return True if the three\n// sides form a right-angled triangle, False otherwise.\n// A right-angled triangle is a triangle in which one angle is right angle or\n// 90 degree.\n// Examples:\n//   right_angle_triangle(3, 4, 5) == true\n//   right_angle_triangle(1, 2, 3) == false\nfn right_angle_triangle(a: Int, b: Int, c: Int) -> Bool {\n  a * a + b * b == c * c || a * a + c * c == b * b || b * b + c * c == a * a\n}\n"
+}

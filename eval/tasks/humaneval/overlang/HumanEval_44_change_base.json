@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_44_change_base",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_44_change_base",
+ "entry_point": "change_base",
+ "prompt": "// Change numerical base of input number x to base.\n// return string representation after the conversion.\n// base numbers are less than 10.\n// Examples:\n//   change_base(8, 3) == \"22\"\n//   change_base(8, 2) == \"1000\"\n//   change_base(7, 2) == \"111\"\nfn change_base(x: Int, base: Int) -> Str {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(change_base(8, 3), \"22\");\n}\n\ntest check_2 {\n  assert_eq(change_base(9, 3), \"100\");\n}\n\ntest check_3 {\n  assert_eq(change_base(234, 2), \"11101010\");\n}\n\ntest check_4 {\n  assert_eq(change_base(16, 2), \"10000\");\n}\n\ntest check_5 {\n  assert_eq(change_base(8, 2), \"1000\");\n}\n\ntest check_6 {\n  assert_eq(change_base(7, 2), \"111\");\n}\n\ntest check_7 {\n  assert_eq(change_base(2, 3), \"2\");\n}\n\ntest check_8 {\n  assert_eq(change_base(3, 4), \"3\");\n}\n\ntest check_9 {\n  assert_eq(change_base(4, 5), \"4\");\n}\n\ntest check_10 {\n  assert_eq(change_base(5, 6), \"5\");\n}\n\ntest check_11 {\n  assert_eq(change_base(6, 7), \"6\");\n}\n\ntest check_12 {\n  assert_eq(change_base(7, 8), \"7\");\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(change_base(8, 3), \"22\");\n}\n",
+ "solution": "// Change numerical base of input number x to base.\n// return string representation after the conversion.\n// base numbers are less than 10.\n// Examples:\n//   change_base(8, 3) == \"22\"\n//   change_base(8, 2) == \"1000\"\n//   change_base(7, 2) == \"111\"\nfn change_base(x: Int, base: Int) -> Str {\n  let mut out = \"\";\n  let mut m = x;\n  while m > 0 {\n    out = show(m % base) ++ out;\n    m = m / base;\n  }\n  out\n}\n"
+}

@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_80_is_happy",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_80_is_happy",
+ "entry_point": "is_happy",
+ "prompt": "// You are given a string s.\n// Your task is to check if the string is happy or not.\n// A string is happy if its length is at least 3 and every 3 consecutive letters are distinct\n// Examples:\n//   is_happy(\"a\") == false\n//   is_happy(\"aa\") == false\n//   is_happy(\"abcd\") == true\n//   is_happy(\"aabb\") == false\n//   is_happy(\"adb\") == true\n//   is_happy(\"xyy\") == false\nfn is_happy(s: Str) -> Bool {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(is_happy(\"a\"), false);\n}\n\ntest check_2 {\n  assert_eq(is_happy(\"aa\"), false);\n}\n\ntest check_3 {\n  assert_eq(is_happy(\"abcd\"), true);\n}\n\ntest check_4 {\n  assert_eq(is_happy(\"aabb\"), false);\n}\n\ntest check_5 {\n  assert_eq(is_happy(\"adb\"), true);\n}\n\ntest check_6 {\n  assert_eq(is_happy(\"xyy\"), false);\n}\n\ntest check_7 {\n  assert_eq(is_happy(\"iopaxpoi\"), true);\n}\n\ntest check_8 {\n  assert_eq(is_happy(\"iopaxioi\"), false);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(is_happy(\"a\"), false);\n}\n",
+ "solution": "// You are given a string s.\n// Your task is to check if the string is happy or not.\n// A string is happy if its length is at least 3 and every 3 consecutive letters are distinct\n// Examples:\n//   is_happy(\"a\") == false\n//   is_happy(\"aa\") == false\n//   is_happy(\"abcd\") == true\n//   is_happy(\"aabb\") == false\n//   is_happy(\"adb\") == true\n//   is_happy(\"xyy\") == false\nfn is_happy(s: Str) -> Bool {\n  let cs = chars(s);\n  let n = len(cs);\n  if n < 3 {\n    return false;\n  }\n  for i in range(0, n - 2) {\n    if cs[i] == cs[i + 1] || cs[i] == cs[i + 2] || cs[i + 1] == cs[i + 2] {\n      return false;\n    }\n  }\n  true\n}\n"
+}

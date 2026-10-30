@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_104_unique_digits",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_104_unique_digits",
+ "entry_point": "unique_digits",
+ "prompt": "// Given a list of positive integers x. return a sorted list of all\n// elements that hasn't any even digit.\n//\n// Note: Returned list should be sorted in increasing order.\n//\n// Examples:\n//   unique_digits([15, 33, 1422, 1]) == [1, 15, 33]\n//   unique_digits([152, 323, 1422, 10]) == []\nfn unique_digits(x: List[Int]) -> List[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(unique_digits([15, 33, 1422, 1]), [1, 15, 33]);\n}\n\ntest check_2 {\n  assert_eq(unique_digits([152, 323, 1422, 10]), []);\n}\n\ntest check_3 {\n  assert_eq(unique_digits([12345, 2033, 111, 151]), [111, 151]);\n}\n\ntest check_4 {\n  assert_eq(unique_digits([135, 103, 31]), [31, 135]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(unique_digits([15, 33, 1422, 1]), [1, 15, 33]);\n}\n",
+ "solution": "// Given a list of positive integers x. return a sorted list of all\n// elements that hasn't any even digit.\n//\n// Note: Returned list should be sorted in increasing order.\n//\n// Examples:\n//   unique_digits([15, 33, 1422, 1]) == [1, 15, 33]\n//   unique_digits([152, 323, 1422, 10]) == []\nfn unique_digits(x: List[Int]) -> List[Int] {\n  sort(filter(x, |n| all(chars(show(n)), |c| contains([\"1\", \"3\", \"5\", \"7\", \"9\"], c))))\n}\n"
+}

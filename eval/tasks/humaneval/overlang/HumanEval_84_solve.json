@@ -1,0 +1,14 @@
+{
+ "id": "HumanEval_84_solve",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_84_solve",
+ "entry_point": "solve",
+ "prompt": "// Given a positive integer N, return the total sum of its digits in binary.\n//\n// Examples:\n//   solve(1000) == \"1\"\n//   solve(150) == \"110\"\n//   solve(147) == \"1100\"\n//\n// Variables:\n//     @N integer\n//          Constraints: 0 ≤ N ≤ 10000.\n// Output:\n//      a string of binary number\nfn solve(n: Int) -> Str {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(solve(1000), \"1\");\n}\n\ntest check_2 {\n  assert_eq(solve(150), \"110\");\n}\n\ntest check_3 {\n  assert_eq(solve(147), \"1100\");\n}\n\ntest check_4 {\n  assert_eq(solve(333), \"1001\");\n}\n\ntest check_5 {\n  assert_eq(solve(963), \"10010\");\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(solve(1000), \"1\");\n}\n",
+ "solution": "// Given a positive integer N, return the total sum of its digits in binary.\n//\n// Examples:\n//   solve(1000) == \"1\"\n//   solve(150) == \"110\"\n//   solve(147) == \"1100\"\n//\n// Variables:\n//     @N integer\n//          Constraints: 0 ≤ N ≤ 10000.\n// Output:\n//      a string of binary number\nfn solve(n: Int) -> Str {\n  let mut m = sum(map(chars(show(n)), |c| unwrap_or(parse_int(c), 0)));\n  if m == 0 {\n    return \"0\";\n  }\n  let mut bits = \"\";\n  while m > 0 {\n    bits = show(m % 2) ++ bits;\n    m = m / 2;\n  }\n  bits\n}\n",
+ "renamed_params": {
+  "N": "n"
+ }
+}

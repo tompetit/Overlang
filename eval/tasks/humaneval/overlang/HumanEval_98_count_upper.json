@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_98_count_upper",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_98_count_upper",
+ "entry_point": "count_upper",
+ "prompt": "// Given a string s, count the number of uppercase vowels in even indices.\n//\n// Examples:\n//   count_upper(\"aBCdEf\") == 1\n//   count_upper(\"abcdefg\") == 0\n//   count_upper(\"dBBE\") == 0\nfn count_upper(s: Str) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(count_upper(\"aBCdEf\"), 1);\n}\n\ntest check_2 {\n  assert_eq(count_upper(\"abcdefg\"), 0);\n}\n\ntest check_3 {\n  assert_eq(count_upper(\"dBBE\"), 0);\n}\n\ntest check_4 {\n  assert_eq(count_upper(\"B\"), 0);\n}\n\ntest check_5 {\n  assert_eq(count_upper(\"U\"), 1);\n}\n\ntest check_6 {\n  assert_eq(count_upper(\"\"), 0);\n}\n\ntest check_7 {\n  assert_eq(count_upper(\"EEEE\"), 2);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(count_upper(\"aBCdEf\"), 1);\n}\n",
+ "solution": "// Given a string s, count the number of uppercase vowels in even indices.\n//\n// Examples:\n//   count_upper(\"aBCdEf\") == 1\n//   count_upper(\"abcdefg\") == 0\n//   count_upper(\"dBBE\") == 0\nfn count_upper(s: Str) -> Int {\n  len(filter(enumerate(chars(s)), |p| p.0 % 2 == 0 && contains([\"A\", \"E\", \"I\", \"O\", \"U\"], p.1)))\n}\n"
+}

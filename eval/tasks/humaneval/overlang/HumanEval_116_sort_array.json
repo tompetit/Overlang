@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_116_sort_array",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_116_sort_array",
+ "entry_point": "sort_array",
+ "prompt": "// In this Kata, you have to sort an array of non-negative integers according to\n// number of ones in their binary representation in ascending order.\n// For similar number of ones, sort based on decimal value.\n//\n// It must be implemented like this:\n// Examples:\n//   sort_array([1, 5, 2, 3, 4]) == [1, 2, 3, 4, 5]\n//   sort_array([-2, -3, -4, -5, -6]) == [-6, -5, -4, -3, -2]\n//   sort_array([1, 0, 2, 3, 4]) == [0, 1, 2, 3, 4]\nfn sort_array(arr: List[Int]) -> List[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(sort_array([1, 5, 2, 3, 4]), [1, 2, 4, 3, 5]);\n}\n\ntest check_2 {\n  assert_eq(sort_array([-2, -3, -4, -5, -6]), [-4, -2, -6, -5, -3]);\n}\n\ntest check_3 {\n  assert_eq(sort_array([1, 0, 2, 3, 4]), [0, 1, 2, 4, 3]);\n}\n\ntest check_4 {\n  assert_eq(sort_array([]), []);\n}\n\ntest check_5 {\n  assert_eq(sort_array([2, 5, 77, 4, 5, 3, 5, 7, 2, 3, 4]), [2, 2, 4, 4, 3, 3, 5, 5, 5, 7, 77]);\n}\n\ntest check_6 {\n  assert_eq(sort_array([3, 6, 44, 12, 32, 5]), [32, 3, 5, 6, 12, 44]);\n}\n\ntest check_7 {\n  assert_eq(sort_array([2, 4, 8, 16, 32]), [2, 4, 8, 16, 32]);\n}\n\ntest check_8 {\n  assert_eq(sort_array([2, 4, 8, 16, 32]), [2, 4, 8, 16, 32]);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(sort_array([1, 5, 2, 3, 4]), [1, 2, 4, 3, 5]);\n}\n",
+ "solution": "// In this Kata, you have to sort an array of non-negative integers according to\n// number of ones in their binary representation in ascending order.\n// For similar number of ones, sort based on decimal value.\n//\n// It must be implemented like this:\n// Examples:\n//   sort_array([1, 5, 2, 3, 4]) == [1, 2, 3, 4, 5]\n//   sort_array([-2, -3, -4, -5, -6]) == [-6, -5, -4, -3, -2]\n//   sort_array([1, 0, 2, 3, 4]) == [0, 1, 2, 3, 4]\nfn sort_array(arr: List[Int]) -> List[Int] {\n  sort_by(sort(arr), |x| popcount(abs(x)))\n}\n\nfn popcount(n: Int) -> Int {\n  if n == 0 { 0 } else { n % 2 + popcount(n / 2) }\n}\n"
+}

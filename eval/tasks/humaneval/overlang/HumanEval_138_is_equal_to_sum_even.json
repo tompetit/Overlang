@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_138_is_equal_to_sum_even",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_138_is_equal_to_sum_even",
+ "entry_point": "is_equal_to_sum_even",
+ "prompt": "// Evaluate whether the given number n can be written as the sum of exactly 4 positive even numbers\n// Examples:\n//   is_equal_to_sum_even(4) == false\n//   is_equal_to_sum_even(6) == false\n//   is_equal_to_sum_even(8) == true\nfn is_equal_to_sum_even(n: Int) -> Bool {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(is_equal_to_sum_even(4), false);\n}\n\ntest check_2 {\n  assert_eq(is_equal_to_sum_even(6), false);\n}\n\ntest check_3 {\n  assert_eq(is_equal_to_sum_even(8), true);\n}\n\ntest check_4 {\n  assert_eq(is_equal_to_sum_even(10), true);\n}\n\ntest check_5 {\n  assert_eq(is_equal_to_sum_even(11), false);\n}\n\ntest check_6 {\n  assert_eq(is_equal_to_sum_even(12), true);\n}\n\ntest check_7 {\n  assert_eq(is_equal_to_sum_even(13), false);\n}\n\ntest check_8 {\n  assert_eq(is_equal_to_sum_even(16), true);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(is_equal_to_sum_even(4), false);\n}\n",
+ "solution": "// Evaluate whether the given number n can be written as the sum of exactly 4 positive even numbers\n// Examples:\n//   is_equal_to_sum_even(4) == false\n//   is_equal_to_sum_even(6) == false\n//   is_equal_to_sum_even(8) == true\nfn is_equal_to_sum_even(n: Int) -> Bool {\n  n >= 8 && n % 2 == 0\n}\n"
+}

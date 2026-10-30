@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_163_generate_integers",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_163_generate_integers",
+ "entry_point": "generate_integers",
+ "prompt": "// Given two positive integers a and b, return the even digits between a\n// and b, in ascending order.\n//\n// Examples:\n//   generate_integers(2, 8) == [2, 4, 6, 8]\n//   generate_integers(8, 2) == [2, 4, 6, 8]\n//   generate_integers(10, 14) == []\nfn generate_integers(a: Int, b: Int) -> List[Int] {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(generate_integers(2, 10), [2, 4, 6, 8]);\n}\n\ntest check_2 {\n  assert_eq(generate_integers(10, 2), [2, 4, 6, 8]);\n}\n\ntest check_3 {\n  assert_eq(generate_integers(132, 2), [2, 4, 6, 8]);\n}\n\ntest check_4 {\n  assert_eq(generate_integers(17, 89), []);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(generate_integers(2, 10), [2, 4, 6, 8]);\n}\n",
+ "solution": "// Given two positive integers a and b, return the even digits between a\n// and b, in ascending order.\n//\n// Examples:\n//   generate_integers(2, 8) == [2, 4, 6, 8]\n//   generate_integers(8, 2) == [2, 4, 6, 8]\n//   generate_integers(10, 14) == []\nfn generate_integers(a: Int, b: Int) -> List[Int] {\n  filter(range(max(2, min(a, b)), min(8, max(a, b)) + 1), |i| i % 2 == 0)\n}\n"
+}

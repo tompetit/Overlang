@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_140_fix_spaces",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_140_fix_spaces",
+ "entry_point": "fix_spaces",
+ "prompt": "// Given a string text, replace all spaces in it with underscores,\n// and if a string has more than 2 consecutive spaces,\n// then replace all consecutive spaces with -\n//\n// Examples:\n//   fix_spaces(\"Example\") == \"Example\"\n//   fix_spaces(\"Example 1\") == \"Example_1\"\n//   fix_spaces(\" Example 2\") == \"_Example_2\"\n//   fix_spaces(\" Example   3\") == \"_Example-3\"\nfn fix_spaces(text: Str) -> Str {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(fix_spaces(\"Example\"), \"Example\");\n}\n\ntest check_2 {\n  assert_eq(fix_spaces(\"Mudasir Hanif \"), \"Mudasir_Hanif_\");\n}\n\ntest check_3 {\n  assert_eq(fix_spaces(\"Yellow Yellow  Dirty  Fellow\"), \"Yellow_Yellow__Dirty__Fellow\");\n}\n\ntest check_4 {\n  assert_eq(fix_spaces(\"Exa   mple\"), \"Exa-mple\");\n}\n\ntest check_5 {\n  assert_eq(fix_spaces(\"   Exa 1 2 2 mple\"), \"-Exa_1_2_2_mple\");\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(fix_spaces(\"Example\"), \"Example\");\n}\n",
+ "solution": "// Given a string text, replace all spaces in it with underscores,\n// and if a string has more than 2 consecutive spaces,\n// then replace all consecutive spaces with -\n//\n// Examples:\n//   fix_spaces(\"Example\") == \"Example\"\n//   fix_spaces(\"Example 1\") == \"Example_1\"\n//   fix_spaces(\" Example 2\") == \"_Example_2\"\n//   fix_spaces(\" Example   3\") == \"_Example-3\"\nfn fix_spaces(text: Str) -> Str {\n  let mut out = \"\";\n  let mut run = 0;\n  for c in chars(text) {\n    if c == \" \" {\n      run = run + 1;\n    } else {\n      out = out ++ blanks(run) ++ c;\n      run = 0;\n    }\n  }\n  out ++ blanks(run)\n}\n\nfn blanks(k: Int) -> Str {\n  if k > 2 { \"-\" } else { repeat(\"_\", k) }\n}\n"
+}

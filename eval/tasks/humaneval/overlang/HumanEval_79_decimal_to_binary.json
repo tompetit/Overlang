@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_79_decimal_to_binary",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_79_decimal_to_binary",
+ "entry_point": "decimal_to_binary",
+ "prompt": "// You will be given a number in decimal form and your task is to convert it to\n// binary format. The function should return a string, with each character representing a binary\n// number. Each character in the string will be '0' or '1'.\n//\n// There will be an extra couple of characters 'db' at the beginning and at the end of the string.\n// The extra characters are there to help with the format.\n//\n// Examples:\n//   decimal_to_binary(15) == \"db1111db\"\n//   decimal_to_binary(32) == \"db100000db\"\nfn decimal_to_binary(decimal: Int) -> Str {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(decimal_to_binary(0), \"db0db\");\n}\n\ntest check_2 {\n  assert_eq(decimal_to_binary(32), \"db100000db\");\n}\n\ntest check_3 {\n  assert_eq(decimal_to_binary(103), \"db1100111db\");\n}\n\ntest check_4 {\n  assert_eq(decimal_to_binary(15), \"db1111db\");\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(decimal_to_binary(0), \"db0db\");\n}\n",
+ "solution": "// You will be given a number in decimal form and your task is to convert it to\n// binary format. The function should return a string, with each character representing a binary\n// number. Each character in the string will be '0' or '1'.\n//\n// There will be an extra couple of characters 'db' at the beginning and at the end of the string.\n// The extra characters are there to help with the format.\n//\n// Examples:\n//   decimal_to_binary(15) == \"db1111db\"\n//   decimal_to_binary(32) == \"db100000db\"\nfn decimal_to_binary(decimal: Int) -> Str {\n  let mut bits = \"\";\n  let mut m = decimal;\n  while m > 0 {\n    bits = show(m % 2) ++ bits;\n    m = m / 2;\n  }\n  \"db\" ++ (if bits == \"\" { \"0\" } else { bits }) ++ \"db\"\n}\n"
+}

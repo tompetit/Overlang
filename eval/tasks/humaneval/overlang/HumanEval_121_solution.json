@@ -1,0 +1,11 @@
+{
+ "id": "HumanEval_121_solution",
+ "benchmark": "humaneval",
+ "lang": "overlang",
+ "name": "HumanEval_121_solution",
+ "entry_point": "solution",
+ "prompt": "// Given a non-empty list of integers, return the sum of all of the odd elements that are in even positions.\n//\n//\n// Examples:\n//   solution([5, 8, 7, 1]) == 12\n//   solution([3, 3, 3, 3, 3]) == 9\n//   solution([30, 13, 24, 321]) == 0\nfn solution(lst: List[Int]) -> Int {\n  todo()\n}\n",
+ "tests": "test check_1 {\n  assert_eq(solution([5, 8, 7, 1]), 12);\n}\n\ntest check_2 {\n  assert_eq(solution([3, 3, 3, 3, 3]), 9);\n}\n\ntest check_3 {\n  assert_eq(solution([30, 13, 24, 321]), 0);\n}\n\ntest check_4 {\n  assert_eq(solution([5, 9]), 5);\n}\n\ntest check_5 {\n  assert_eq(solution([2, 4, 8]), 0);\n}\n\ntest check_6 {\n  assert_eq(solution([30, 13, 23, 32]), 23);\n}\n\ntest check_7 {\n  assert_eq(solution([3, 13, 2, 9]), 3);\n}\n",
+ "visible_test": "test check_1 {\n  assert_eq(solution([5, 8, 7, 1]), 12);\n}\n",
+ "solution": "// Given a non-empty list of integers, return the sum of all of the odd elements that are in even positions.\n//\n//\n// Examples:\n//   solution([5, 8, 7, 1]) == 12\n//   solution([3, 3, 3, 3, 3]) == 9\n//   solution([30, 13, 24, 321]) == 0\nfn solution(lst: List[Int]) -> Int {\n  sum(map(filter(enumerate(lst), |p| p.0 % 2 == 0 && p.1 % 2 != 0), |p| p.1))\n}\n"
+}
