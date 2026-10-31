@@ -25,9 +25,13 @@ program, an HTTP todo app over SQLite in 178 lines, is in
 [examples/todo](examples/todo), with a Python port for the maintenance
 benchmark. `ov test` fuzzes every contracted function and found an overflow
 in the spec's own example. The evaluation harness holds 155 HumanEval tasks
-in Python, Rust and Overlang and 25 maintenance tasks; the measured runs are
-next. [docs/RESULTS.md](docs/RESULTS.md) has the predictions, and the
-ledger at the end of the plan has the spend.
+in Python, Rust and Overlang and 25 maintenance tasks, and both have been
+run once with Sonnet as the agent: 100% pass in every language on both
+benchmarks, but the locality prediction failed, because the agents read the
+whole program instead of using `ov ctx` and paid an 8k-token language card
+per task on top. [docs/RESULTS.md](docs/RESULTS.md) has the numbers and
+what they do and do not show; the ledger at the end of the plan has the
+spend.
 
 ```
 ov add app.ov        # typecheck, hash and store every definition

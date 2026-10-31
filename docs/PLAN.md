@@ -287,4 +287,5 @@ are not included.
 | 2026-10-30 | Store revision: re-check dependents, export | Opus | 149k |
 | 2026-10-30 | Language revision 2 | Opus | 182k |
 | 2026-10-30 | Re-validation after revision 2, card pass | Sonnet | 160k |
-| | **Total so far** | | **3.35M** |
+| | **Build total** | | **3.35M** |
+| 2026-10-31 | Evaluation: 349 agent runs (Benchmarks A and B, one run each), 84% cache reads, about $57 at list rates | Sonnet | 64.0M |
