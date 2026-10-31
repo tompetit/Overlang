@@ -107,6 +107,25 @@ Unauthenticated `claude -p` exits 1 with a `result` record `is_error: true`,
 refreshed"`, zero usage. The harness records that as `agent_error`, and
 `report.py` excludes such runs (unless `--include-errors`).
 
+### Driving the agent from an interactive Claude Code session
+
+`--agent subagent` is for a box where `claude -p` cannot authenticate but an
+interactive Claude Code session can spawn subagents. The same command is run
+twice. The first time it writes each workspace plus `<run>/prompt.txt` and prints
+`PENDING ev <out-stem> <task> <run>`. The session then spawns one subagent per
+pending run (Agent tool or a Workflow script) with that prompt and with the
+description/label set to the exact key. The second time, with `--transcripts`
+pointing at the session's `subagents/` directory
+(`~/.claude/projects/<project>/<session>/subagents`, scanned recursively so
+workflow runs count), it finds each finished transcript by key, copies it to
+`<run>/transcript.jsonl`, derives the metrics from the per-message `usage`
+records, grades, and appends the record. `total_cost_usd` is 0 in this mode.
+Caveats: every subagent carries the session's ~50k-token system prompt
+(same for all languages, so it cancels in comparisons but inflates absolute
+totals); there is no `--max-turns` or timeout; the agent's cwd is the
+session's, so the prompt tells it to `cd` into the workspace. This is how the
+numbers in `docs/RESULTS.md` were produced.
+
 ## Metrics recorded (one JSON line per run)
 
 `benchmark, lang, task, run, model, agent, passed, num_turns, total_cost_usd,

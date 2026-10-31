@@ -81,25 +81,92 @@ def parse_transcript(text, markers):
                     body = " ".join(b.get("text", "") for b in body if isinstance(b, dict))
                 if block.get("is_error") or str(body).startswith("Exit code"):
                     failed += 1
-    usage = (result or {}).get("usage") or {}
+    if result is None:
+        result = aggregate_usage(text)
+    usage = result.get("usage") or {}
     return {
-        "num_turns": (result or {}).get("num_turns", 0),
-        "total_cost_usd": (result or {}).get("total_cost_usd", 0.0),
-        "duration_ms": (result or {}).get("duration_ms", 0),
+        "num_turns": result.get("num_turns", 0),
+        "total_cost_usd": result.get("total_cost_usd", 0.0),
+        "duration_ms": result.get("duration_ms", 0),
         **{f: usage.get(f, 0) for f in FIELDS},
         "failed_rounds": failed,
         "test_rounds": test_rounds,
-        "agent_error": (result or {}).get("result") if (result or {}).get("is_error") else
-                       (None if result else "no result record"),
+        "agent_error": result.get("result") if result.get("is_error") else
+                       (None if result.get("usage") else "no result record"),
     }
 
 
-def run_claude(adapter, task, work, args):
+def aggregate_usage(text):
+    """A session transcript (subagent .jsonl) has no final result record: sum the usage
+    of each distinct assistant API message instead. Cost is unknown there (0)."""
+    seen, times = {}, []
+    for line in text.splitlines():
+        try:
+            ev = json.loads(line)
+        except ValueError:
+            continue
+        if not isinstance(ev, dict):
+            continue
+        if ev.get("timestamp"):
+            times.append(ev["timestamp"])
+        if ev.get("type") != "assistant":
+            continue
+        msg = ev.get("message") or {}
+        if msg.get("usage"):
+            seen.setdefault(msg.get("id") or f"anon{len(seen)}", msg["usage"])
+    if not seen:
+        return {}
+    usage = {f: sum(u.get(f, 0) for u in seen.values()) for f in FIELDS}
+    ms = 0
+    if len(times) > 1:
+        from datetime import datetime
+        t = [datetime.fromisoformat(x.replace("Z", "+00:00")) for x in (min(times), max(times))]
+        ms = int((t[1] - t[0]).total_seconds() * 1000)
+    return {"usage": usage, "num_turns": len(seen), "duration_ms": ms, "total_cost_usd": 0.0}
+
+
+def instruction_for(adapter, task):
     if hasattr(adapter, "instruction"):  # benchb: the task statement goes in the prompt
-        instruction = adapter.instruction(task)
-    else:
-        instruction = (f"Read CLAUDE.md, then implement the function stub in {adapter.SOLUTION}. "
-                       f"Run `{adapter.test_command()}` until it passes, then stop.")
+        return adapter.instruction(task)
+    return (f"Read CLAUDE.md, then implement the function stub in {adapter.SOLUTION}. "
+            f"Run `{adapter.test_command()}` until it passes, then stop.")
+
+
+def run_subagent(adapter, task, work, args, key):
+    """Agent runs are driven from an interactive Claude Code session via its Agent tool
+    (used when `claude -p` cannot authenticate). First call: write the workspace and
+    prompt.txt, return None (pending). Later calls: find the finished subagent transcript
+    whose description is `key` under --transcripts and grade it."""
+    prompt = work.parent / "prompt.txt"
+    if not prompt.exists():
+        prompt.write_text(f"You are solving one coding task. The workspace is {work.resolve()}. "
+                          f"First `cd` there; run every command in that directory and only read or "
+                          f"edit files inside it. Do not read, use or modify anything outside it "
+                          f"(not the parent repository, not /tmp). Reply with one line when done.\n\n"
+                          + instruction_for(adapter, task))
+        return None
+    for jl in sorted(Path(args.transcripts).rglob("agent-*.jsonl")):
+        meta = jl.with_name(jl.name[:-len(".jsonl")] + ".meta.json")
+        m = json.loads(meta.read_text()) if meta.exists() else None
+        # workflow agents' meta has no `finished`; they are judged after the workflow ends
+        if m is not None and not (m.get("description") == key and (m.get("finished") or "workflowPhase" in m)):
+            continue
+        with jl.open() as f:  # workflow agents have no meta file: match the prompt's workspace path
+            first = f.readline()
+        if m is None and str(work.resolve()) not in first:
+            continue
+        if True:
+            out = jl.read_text()
+            (work.parent / "transcript.jsonl").write_text(out)
+            rec = parse_transcript(out, adapter.TEST_MARKERS)
+            if args.benchmark == "benchb":
+                rec.update(adapters.get("benchb").read_tokens(out))
+            return rec
+    return None
+
+
+def run_claude(adapter, task, work, args):
+    instruction = instruction_for(adapter, task)
     env = dict(os.environ, CLAUDE_CODE_DISABLE_AUTO_MEMORY="1")
     start = time.time()
     _, out, timed_out = adapters.run(claude_cmd(args.model, args.max_turns, instruction, args.bare),
@@ -134,7 +201,8 @@ def main():
     ap.add_argument("--model", default="sonnet")
     ap.add_argument("--tasks", default="0:5", help="start:stop slice of the shared task list (default 0:5)")
     ap.add_argument("--runs", type=int, default=3, help="runs per task")
-    ap.add_argument("--agent", choices=["claude", "mock"], default="claude")
+    ap.add_argument("--agent", choices=["claude", "mock", "subagent"], default="claude")
+    ap.add_argument("--transcripts", type=Path, help="subagent transcript dir (<project>/<session>/subagents)")
     ap.add_argument("--mock-solve", action="store_true", help="mock agent writes the dataset's reference solution if any")
     ap.add_argument("--max-turns", type=int, default=30)
     ap.add_argument("--agent-timeout", type=int, default=900, help="seconds per agent run")
@@ -166,11 +234,20 @@ def main():
                     print(f"skip {task['id']} run {run} (already in {args.out})")
                     continue
                 run_dir = runs_dir / task["id"] / str(run)
-                shutil.rmtree(run_dir, ignore_errors=True)
                 work = run_dir / "work"
-                adapter.workspace(task, work)
-                rec = (run_claude(adapter, task, work, args) if args.agent == "claude"
-                       else run_mock(adapter, task, work, args))
+                key = f"ev {args.out.stem} {task['id']} {run}"  # unique per output file
+                if args.agent == "subagent":
+                    if not work.exists():
+                        adapter.workspace(task, work)
+                    rec = run_subagent(adapter, task, work, args, key)
+                    if rec is None:
+                        print(f"PENDING {key}")
+                        continue
+                else:
+                    shutil.rmtree(run_dir, ignore_errors=True)
+                    adapter.workspace(task, work)
+                    rec = (run_claude(adapter, task, work, args) if args.agent == "claude"
+                           else run_mock(adapter, task, work, args))
                 graded = adapter.grade(work, args.grade_timeout)
                 rec = {"benchmark": args.benchmark, "lang": args.lang, "task": task["id"], "run": run,
                        "model": args.model, "agent": args.agent, "passed": graded["passed"], **rec,

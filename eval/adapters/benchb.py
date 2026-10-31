@@ -180,7 +180,7 @@ class Adapter:
         (seed / "main.ov").write_text(files["main.ov"])
         (work / "ov").write_text(f'#!/bin/sh\nexec "{ovmod.ov_bin()}" "$@"\n')
         (work / "ov").chmod(0o755)
-        self._ov(work, "add", str(seed / "main.ov"))
+        self._ov(work, "add", str((seed / "main.ov").resolve()))  # ov runs with cwd=work
         shutil.rmtree(seed)  # the store must be the only copy of the code the agent can reach
         (work / "CLAUDE.md").write_text(OV_MD.format(
             card=ovmod.card(), overview=APP_OVERVIEW, command=self.test_command()))
