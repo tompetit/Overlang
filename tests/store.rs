@@ -517,3 +517,19 @@ fn rendering_a_new_name_renames_a_local_it_would_capture() {
     add_text(&fresh, "all.ov", &ov(&dir, &["export"]));
     assert_eq!(hash_of(&fresh, "main"), main);
 }
+
+#[test]
+fn a_dependent_that_no_longer_resolves_is_reported_in_its_canonical_text() {
+    let dir = workdir("removed_ctor_diag");
+    add_text(&dir, "a.ov", "type T = A | B\nfn f() -> T { B }\n");
+    let f = hash_of(&dir, "f");
+    assert_eq!(ov(&dir, &["view", "f"]), "fn f() -> T {\n  B\n}\n");
+    let (code, out) = ov_in(&dir, &["edit", "T"], "type T = A\n");
+    assert_eq!(code, 1, "{out}");
+    assert_eq!(out.lines().count(), 1, "{out}");
+    let d: Value = serde_json::from_str(&out).unwrap();
+    assert_eq!((d["code"].as_str(), d["name"].as_str(), d["hash"].as_str()), (Some("E0103"), Some("f"), Some(f.as_str())), "{out}");
+    assert_eq!((d["span"]["line"].as_u64(), d["span"]["col"].as_u64()), (Some(2), Some(3)), "{out}");
+    assert_eq!(d["fixes"][0]["patch"], "A", "{out}");
+    assert_eq!(hash_of(&dir, "f"), f, "nothing is stored");
+}

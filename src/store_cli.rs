@@ -314,6 +314,43 @@ fn render(store: &Store, d: &Def) -> Result<(Item, Printer), Vec<Diag>> {
     Ok((item, Printer { records }))
 }
 
+/// The named AST of `d` with the spans of its canonical text (what `ov view`
+/// prints), so diagnostics found while re-hashing it point into that text.
+fn spanned_item(store: &Store, d: &Def) -> Result<Item, Vec<Diag>> {
+    fn copy_spans(to: &mut Value, from: &Value) {
+        match (to, from) {
+            (Value::Object(t), Value::Object(f)) => {
+                if let Some(s) = f.get("span") {
+                    t.insert("span".into(), s.clone());
+                }
+                for (k, v) in t.iter_mut() {
+                    match (k.as_str(), v, f.get(k)) {
+                        // Record fields print in declaration order: pair them by name.
+                        ("fields", Value::Array(ts), Some(Value::Array(fs))) => {
+                            for x in ts {
+                                if let Some(y) = fs.iter().find(|y| y.get("name").is_some() && y.get("name") == x.get("name")) {
+                                    copy_spans(x, y);
+                                }
+                            }
+                        }
+                        (_, v, Some(fv)) => copy_spans(v, fv),
+                        _ => {}
+                    }
+                }
+            }
+            (Value::Array(t), Value::Array(f)) => t.iter_mut().zip(f).for_each(|(t, f)| copy_spans(t, f)),
+            _ => {}
+        }
+    }
+    let (rendered, printer) = render(store, d)?;
+    let (parsed, _) = parser::parse(&printer.item(&rendered));
+    let mut v = ast(d)?["item"].take();
+    if let Some(p) = parsed.items.first() {
+        copy_spans(&mut v, &serde_json::to_value(p).expect("AST always serializes"));
+    }
+    serde_json::from_value(v).map_err(|e| vec![driver_error(format!("store error: bad AST for {}: {e}", d.hash), None)])
+}
+
 /// Canonical text of a definition under the current names.
 fn text(store: &Store, d: &Def) -> Result<String, Vec<Diag>> {
     let (item, printer) = render(store, d)?;
@@ -568,6 +605,7 @@ fn propagate(store: &Store, mut map: HashMap<String, String>) -> Result<Vec<(Str
         // shortcut: one scope for the whole cycle, so two members that wrote
         // one name for different hashes would clash; never produced by `ov add`.
         let mut scope = Scope::default();
+        let mut near = HashMap::new();
         let mut items = Vec::new();
         // The field calls each member was hashed with (none recorded: decided by name).
         let mut fields: Vec<Option<HashSet<NodeId>>> = Vec::new();
@@ -576,7 +614,7 @@ fn propagate(store: &Store, mut map: HashMap<String, String>) -> Result<Vec<(Str
             fields.push(v["refs"]["fields"].as_array().map(|ids| ids.iter().filter_map(|i| i.as_u64()).map(|i| i as NodeId).collect()));
             let new = |h: &str| map.get(h).cloned().unwrap_or_else(|| h.to_string());
             // A name now bound to another kind of definition (a function's name
-            // taken by a test or a type) no longer resolves and is reported unknown.
+            // taken by a test or a schema) no longer resolves and is reported unknown.
             let kind = |h: &str| db(store.get(h)).map(|d| d.map(|d| d.kind).unwrap_or_default());
             for (n, h) in pairs(&v["refs"], "values") {
                 if !matches!(kind(&new(h))?.as_str(), "test" | "type" | "schema") {
@@ -594,17 +632,37 @@ fn propagate(store: &Store, mut map: HashMap<String, String>) -> Result<Vec<(Str
                     scope.schemas.insert(n.to_string(), (new(h), Vec::new()));
                 }
             }
-            // A constructor that the new type no longer has is reported as unknown.
+            // A constructor that the new type no longer has is reported as unknown,
+            // with the type's other constructors as the nearest names.
             for (n, h) in pairs(&v["refs"], "ctors") {
-                if let Item::Type(TypeDef { body: TypeBody::Sum(vs), .. }) = item_of(&def(store, &new(h))?)?
-                    && let Some(i) = vs.iter().position(|v| v.name == n)
-                {
-                    scope.ctors.insert(n.to_string(), (new(h), i));
+                if let Item::Type(TypeDef { body: TypeBody::Sum(vs), .. }) = item_of(&def(store, &new(h))?)? {
+                    near.extend(vs.iter().enumerate().map(|(i, v)| (v.name.clone(), (new(h), i))));
+                    if let Some(i) = vs.iter().position(|v| v.name == n) {
+                        scope.ctors.insert(n.to_string(), (new(h), i));
+                    }
                 }
             }
             items.push(item_of(d)?);
         }
-        let hashed = hash_items(&items, &scope, &fields.iter().map(Option::as_ref).collect::<Vec<_>>())?;
+        for (n, c) in near {
+            scope.ctors.entry(n).or_insert(c);
+        }
+        let fields: Vec<Option<&HashSet<NodeId>>> = fields.iter().map(Option::as_ref).collect();
+        let hashed = match hash_items(&items, &scope, &fields) {
+            Ok(h) => h,
+            // Report them again in each dependent's canonical text, with its hash.
+            Err(first) => {
+                let spanned = defs.iter().map(|d| spanned_item(store, d)).collect::<Result<Vec<_>, _>>()?;
+                let mut diags = hash_items(&spanned, &scope, &fields).err().unwrap_or(first);
+                for x in &mut diags {
+                    if let Some(i) = spanned.iter().position(|it| item_name(it) == x.name.as_deref()) {
+                        x.hash = Some(defs[i].hash.clone());
+                        x.name = Some(name_of(store, &defs[i].hash)?);
+                    }
+                }
+                return Err(diags);
+            }
+        };
         for (d, h) in defs.iter().zip(&hashed) {
             if h.hash == d.hash {
                 continue;
