@@ -303,6 +303,15 @@ fn missing_list_shapes() {
 }
 
 #[test]
+fn exhaustiveness_is_not_exponential_in_tuple_columns() {
+    // 57 arms on an 8-tuple of an 8-variant sum took about a minute when every column split on every constructor.
+    let src = fs::read_to_string("tests/programs/exhaust_tuple_columns.ov").unwrap();
+    let start = std::time::Instant::now();
+    assert_clean(&src);
+    assert!(start.elapsed() < std::time::Duration::from_secs(2), "took {:?}", start.elapsed());
+}
+
+#[test]
 fn guarded_arms_do_not_count() {
     let d = only_error("fn f(o: Option[Int]) -> Int { match o { Some(x) if x > 0 => x, None => 0 } }", "E0104");
     assert_eq!(d.expected.unwrap(), vec!["Some(_)"]);

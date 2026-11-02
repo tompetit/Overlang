@@ -197,8 +197,14 @@ pub fn useful(rows: &[Vec<P>], v: &[P], tys: &[Ty], types: &Types) -> bool {
     let mut heads: Vec<&P> = rows.iter().map(|r| &r[0]).collect();
     heads.push(&v[0]);
     let cs = ctors(&tys[0], &heads, types);
+    // Maranget: split only when the heads use every constructor; otherwise a value
+    // with an unused constructor escapes iff the wildcard rows (the default matrix)
+    // miss its tail. List heads stand for several length classes, so they always split.
+    let complete = |cs: &[(Ctor, Vec<Ty>)]| {
+        cs.iter().all(|(c, _)| rows.iter().any(|r| matches!(&r[0], P::Ctor(c2, _) if c2 == c) || matches!(r[0], P::List(..))))
+    };
     match (&v[0], cs) {
-        (P::Wild, Some(cs)) if has_ctor_heads(&rows) => cs.iter().any(|(c, ftys)| {
+        (P::Wild, Some(cs)) if has_ctor_heads(&rows) && complete(&cs) => cs.iter().any(|(c, ftys)| {
             let v2: Vec<P> = vec![P::Wild; ftys.len()].into_iter().chain(v[1..].iter().cloned()).collect();
             useful(&spec_rows(&rows, c, ftys.len()), &v2, &cons(ftys, &tys[1..]), types)
         }),
@@ -222,6 +228,11 @@ pub fn useful(rows: &[Vec<P>], v: &[P], tys: &[Ty], types: &Types) -> bool {
 pub fn missing(rows: &[Vec<P>], tys: &[Ty], types: &Types, top: bool) -> Vec<Vec<P>> {
     if tys.is_empty() {
         return if rows.is_empty() { vec![vec![]] } else { vec![] };
+    }
+    // Descend only where a witness exists, so the work is bounded by LIMIT witnesses
+    // rather than by every constructor of every column.
+    if !useful(rows, &vec![P::Wild; tys.len()], tys, types) {
+        return vec![];
     }
     let rows = expand(rows);
     let heads: Vec<&P> = rows.iter().map(|r| &r[0]).collect();
