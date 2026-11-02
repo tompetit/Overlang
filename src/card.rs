@@ -84,6 +84,9 @@ pub fn constructs(item: &Item, body: bool, out: &mut BTreeSet<String>) {
             w.tag("foreign");
             w.sig(&f.sig);
         }
+        Item::Schema(_) => {
+            w.tag("schema");
+        }
         Item::Type(t) => {
             if !t.params.is_empty() {
                 w.tag("type-params");
