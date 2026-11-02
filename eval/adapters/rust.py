@@ -85,4 +85,4 @@ def grade(dir, timeout=120):
 
 
 def reference(task):
-    return None  # the dataset ships no Rust reference solutions
+    return task.get("solution")  # None for HumanEval/MBPP (no Rust references); ahard ships them
