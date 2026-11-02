@@ -289,3 +289,7 @@ are not included.
 | 2026-10-30 | Re-validation after revision 2, card pass | Sonnet | 160k |
 | | **Build total** | | **3.35M** |
 | 2026-10-31 | Evaluation: 349 agent runs (Benchmarks A and B, one run each), 84% cache reads, about $57 at list rates | Sonnet | 64.0M |
+| 2026-11-02 | Evaluation: runs 2 and 3 of A and B, Haiku and Opus on A and B, forced-context variant, A-hard on three models: 1,741 further runs, 85% cache reads, about $600 at list rates | Haiku, Sonnet, Opus | 394M |
+| 2026-11-02 | Benchmark C: 360 runs on the tracker, three models, three variants | Haiku, Sonnet, Opus | see RESULTS.md |
+| 2026-11-02 | Tracker spec and build (11 agents), 40 tracker tasks and 80 solutions, 30 A-hard tasks | Opus | 13.2M |
+| 2026-11-02 | Bug hunt (8 finders, 56 verifiers) and 7 fixers; lazy card, sql literals, site generator | Opus | 5.8M |
