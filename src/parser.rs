@@ -39,6 +39,7 @@ pub fn parse_with(src: &str, allow_intrinsic: bool, first_id: NodeId) -> (Progra
         in_ensures: false,
         allow_intrinsic,
         depth: 0,
+        comparison_end: usize::MAX,
     };
     let mut diags = lexed.diags;
     let mut items = Vec::new();
@@ -76,6 +77,9 @@ struct Parser {
     allow_intrinsic: bool,
     /// Current nesting, bounded by `MAX_DEPTH`. Errors leave it raised; each item resets it.
     depth: usize,
+    /// Token position just after the right operand of the last comparison. A
+    /// comparison operator there would chain, at whatever level it is met.
+    comparison_end: usize,
 }
 
 fn binop(tok: &Tok) -> Option<(BinOp, u8)> {
@@ -633,7 +637,6 @@ impl Parser {
     fn binary(&mut self, min_prec: u8) -> PResult<Expr> {
         let start = self.span();
         let mut lhs = self.unary()?;
-        let mut saw_comparison = false;
         let depth = self.depth;
         loop {
             let Some((op, prec)) = binop(self.peek()) else {
@@ -642,13 +645,15 @@ impl Parser {
                 }
                 break;
             };
-            if prec < min_prec || (prec == COMPARISON_PREC && saw_comparison) {
+            if prec < min_prec || (prec == COMPARISON_PREC && self.pos == self.comparison_end) {
                 break;
             }
-            saw_comparison |= prec == COMPARISON_PREC;
             self.enter()?;
             self.bump();
             let rhs = self.binary(prec + 1)?;
+            if prec == COMPARISON_PREC {
+                self.comparison_end = self.pos;
+            }
             lhs = self.expr_node(ExprKind::Binary { op, lhs: Box::new(lhs), rhs: Box::new(rhs) }, start);
         }
         self.depth = depth;
