@@ -76,23 +76,35 @@ impl EffVars {
 
     /// `actual` is used where `expected` is required. Grows the first open
     /// variable of `expected` by what is missing. Fails if a label or param
-    /// is missing and `expected` has no variable to absorb it.
-    /// shortcut: a variable in `actual` with no counterpart is accepted as is;
-    /// fine for the shapes the prelude uses, revisit with effect-heavy code.
-    pub fn flow(&mut self, expected: &EffSet, actual: &EffSet) -> bool {
+    /// is missing and `expected` has no variable to absorb it. If only
+    /// variables of `actual` are missing and `expected` is closed, the answer
+    /// waits for their solutions: `Later`, and the caller checks again at
+    /// the end of the body (`within`).
+    pub fn flow(&mut self, expected: &EffSet, actual: &EffSet) -> Flow {
         let exp = self.resolve(expected, true);
         let act = self.resolve(actual, true);
         let missing: EffSet = act.difference(&exp).cloned().collect();
         if missing.is_empty() {
-            return true;
+            return Flow::Ok;
         }
         if let Some(Eff::Var(v)) = exp.iter().find(|e| matches!(e, Eff::Var(_))) {
             let v = *v as usize;
             self.sol[v].extend(missing);
-            return true;
+            return Flow::Ok;
         }
-        missing.iter().all(|e| matches!(e, Eff::Var(_)))
+        if missing.iter().all(|e| matches!(e, Eff::Var(_))) { Flow::Later } else { Flow::Fail }
     }
+
+    /// Final check of a `Later` flow: the solved `actual` is within `expected`.
+    pub fn within(&self, expected: &EffSet, actual: &EffSet) -> bool {
+        self.resolve(actual, false).is_subset(&self.resolve(expected, false))
+    }
+}
+
+pub enum Flow {
+    Ok,
+    Fail,
+    Later,
 }
 
 /// One call inside a body: what it charges to the enclosing function.
