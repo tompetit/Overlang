@@ -19,7 +19,7 @@ transcript in `eval/runs/` (not committed).
 | A: total tokens | Overlang 20% to 50% above Python | +9% in total; the card is the difference | met |
 | B: read tokens | Overlang 30% or more below Python | 2.26x above Python over 75 runs; the same with Haiku and Opus; the same with `ov ctx` as the only read path | failed |
 | B: pass rate | Overlang at or above Python | Sonnet 75/75 vs 75/75; Haiku 25/25 vs 25/25; Opus 23/25 vs 25/25 | met for two models |
-| C: read tokens on a 10x program | (no prediction written in advance) | see Benchmark C | |
+| C: read tokens on a 10x program | (no prediction written in advance) | Overlang 1.9x Python (Sonnet), 1.3x (Opus), 1.5x (Haiku); agents still enumerate every name | locality not observed |
 
 The one-line reading: the correctness levers the design bet on (mandatory
 signatures and effects, no null, exhaustive match, contracts) cannot be
@@ -112,8 +112,43 @@ the full view.
 
 ## Benchmark C: 40 maintenance tasks on the tracker
 
-(To be filled from the Benchmark C runs when judged: Haiku, Sonnet and Opus,
-each in Python, Overlang and Overlang with `ov ctx` only.)
+| Sonnet, n=40 | Python | Overlang | Overlang, `ov ctx` only |
+|---|---|---|---|
+| pass rate | 100% | 100% | 100% |
+| failed test rounds, total | 0 | 5 | 2 |
+| turns | 7 | 9.5 | 12 |
+| output tokens | 3,174 | 4,628 | 5,303 |
+| read tokens | 13,914 | 27,018 | 30,763 |
+
+| | Opus Py / Ov / Ov-ctx (n=40) | Haiku Py / Ov (n=40 / 27) |
+|---|---|---|
+| pass rate | 100 / 100 / 100 | 100 / 100 |
+| turns | 7 / 10 / 11.5 | 10.5 / 16 |
+| read tokens | 18,768 / 25,004 / 30,218 | 37,626 / 54,605 |
+
+Every run of every model passed every task, including Haiku's; the tasks
+the authors aimed at a 60 to 80% pass rate are at the ceiling too. The
+read-token ratio on the 10x program is 1.9x for Sonnet, 1.3x for Opus and
+1.5x for Haiku: narrower than the 2.2x on the todo app, because the card is a
+smaller share of a bigger read, but nowhere near the predicted saving. The
+attribution for Sonnet's 40 Overlang runs: 55% of read tokens were `ov view`
+and `ov ls` output (66 shell loops over every bound name in 40 runs), 29%
+the card, 13% files the agent wrote itself, 1% `ov ctx`. With `ov ctx` as
+the only read path the agents loop over `ov ctx` instead and read more, not
+less, since every slice repeats its dependencies: 49% of read tokens were
+`ov ctx` output and the median run took 12 turns against Python's 7. The
+Haiku set was stopped after 67 of 120 agents (its 40 Python and 27 Overlang
+runs are judged; none of its forced-context runs ran) because it was taking
+an hour longer than the other two.
+
+So the locality lever did not fire at 1,464 lines either. Agents given a
+program they have never seen the language of enumerate it; the compiler's
+computed context is not what decides how much they read. What would change
+that is either a program too big to enumerate (the Python agents read 16k
+tokens per task here, so "too big" means tens of thousands of lines), a
+model that has learned to ask for slices, or a workspace that returns
+slices by default and makes enumeration the thing that costs an extra
+step.
 
 The program: an issue tracker over SQLite with users, projects, issues,
 labels, comments, an activity log, filters, search, pagination, text, JSON
@@ -194,7 +229,7 @@ programs.
 
 ## What it cost
 
-2,090 judged evaluation runs before Benchmark C, 458M tokens as measured by
+2,397 judged evaluation runs (307 of them Benchmark C), about 490M tokens as measured by
 the harness, 85% of them cache reads of the system prompt: 221M on Sonnet,
 142M on Haiku, 95M on Opus. At list rates that is roughly $200 for Sonnet,
 $40 for Haiku and $420 for Opus. The build and authoring agents of this
