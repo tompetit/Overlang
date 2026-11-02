@@ -481,3 +481,22 @@ fn rebinding_a_called_name_to_a_test_is_refused() {
     assert_eq!(code, 1, "{out}");
     assert_eq!(ov(&dir, &["ls"]), before, "nothing is stored");
 }
+
+#[test]
+fn a_field_call_hashes_the_same_whatever_globals_exist() {
+    let src = "type R = { f: fn(Int) -> Int }\nfn use_it(r: R) -> Int { r.f(1) }\n";
+    let x = workdir("field_call_alone");
+    add_text(&x, "m.ov", src);
+    let y = workdir("field_call_with_global");
+    add_text(&y, "m.ov", &format!("{src}fn f() -> Int {{ 0 }}\n"));
+    assert_eq!(hash_of(&x, "use_it"), hash_of(&y, "use_it"));
+    let deps: Vec<Value> = json(&y, &["deps", "use_it"]).as_array().unwrap().iter().map(|d| d["name"].clone()).collect();
+    assert_eq!(deps, ["R"], "no dependency on the global `f`");
+    // Editing the unrelated global re-hashes nothing, and an export re-added gives the same hashes.
+    let (code, out) = ov_in(&y, &["edit", "f", "--json"], "fn f() -> Int { 1 }\n");
+    assert_eq!(code, 0, "{out}");
+    assert_eq!(serde_json::from_str::<Value>(&out).unwrap()["propagated"], serde_json::json!([]));
+    let fresh = workdir("field_call_export");
+    add_text(&fresh, "all.ov", &ov(&y, &["export"]));
+    assert_eq!(hash_of(&fresh, "use_it"), hash_of(&x, "use_it"));
+}

@@ -468,7 +468,8 @@ Tables:
   `{"item": ..., "refs": ...}`: `refs` is its resolution table, the hash each
   global name written in it resolved to (`values`, `types`, and `ctors`
   mapping to the constructor's type), plus the ids of the expressions that
-  are global references; `schemas` maps the tables its `sql` literals
+  are global references (`vars`) and of the `a.f(b)` calls of a field
+  (`fields`); `schemas` maps the tables its `sql` literals
   mention to their schemas. `kind` is `fn`, `type`, `declare`, `foreign`,
   `test` or `schema`, or `intrinsic` for prelude bindings. `source` is the definition's
   canonical text as last written, comments included (`ov view --raw`).
@@ -507,7 +508,10 @@ canonical form is the AST serialized as JSON with:
   hash to their name; for hashing, `Option` and `Result` count as built-in,
   and their constructors are `("Option", 0)` for `Some` and so on);
 - constructor references replaced by `(type hash, constructor index)`;
-- record field names kept (they are part of the type's identity);
+- record field names kept (they are part of the type's identity), including
+  in `a.f(b)` when the checker resolves it to a call of `a`'s field `f`
+  (section 4): that is never a reference to a top-level `f`, whatever is
+  defined;
 - type parameter names replaced by position;
 - all source positions and comments removed.
 

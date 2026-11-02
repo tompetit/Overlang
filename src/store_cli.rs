@@ -2,12 +2,12 @@
 //! dependents, ctx, history, diff. Each prints text, or JSON with `--json`
 //! (all but export); failures are JSON diagnostics.
 
-use crate::ast::{Item, Span, TypeBody, TypeDef, TypeExpr, TypeKind};
+use crate::ast::{Item, NodeId, Span, TypeBody, TypeDef, TypeExpr, TypeKind};
 use crate::build::{self, Target};
 use crate::cli::{driver_error, load, report};
 use crate::diag::{Diag, Fix, Severity};
 use crate::emit::FuzzTarget;
-use crate::hash::{hash_items, item_name, nearest, prelude, tarjan, Scope};
+use crate::hash::{field_calls, hash_items, item_name, nearest, prelude, tarjan, Scope};
 use crate::parser;
 use crate::printer::{print_signature, Printer};
 use crate::store::{Def, Store};
@@ -420,7 +420,9 @@ pub fn test_build(name: Option<&str>) -> Result<(PathBuf, Vec<FuzzTarget>), Vec<
 /// dependents: their errors follow the output and make the exit code 2.
 fn store_items(store: &Store, items: &[Item], sources: &[(String, String)], file_of: &HashMap<String, String>, json: bool) -> Result<(String, i32), Vec<Diag>> {
     let scope = store_scope(store)?;
-    let hashed = hash_items(items, &scope);
+    // Hashed by name first, for the closure to check; the checker then decides
+    // which `a.f(b)` calls are field calls, and the hashes follow it.
+    let hashed = hash_items(items, &scope, &[]);
     // Check the new definitions with the stored closure of what they reference
     // (the whole store if a name does not resolve, so the checker reports every
     // error); a stored definition they replace (by name) is left out.
@@ -439,14 +441,17 @@ fn store_items(store: &Store, items: &[Item], sources: &[(String, String)], file
     }
     let (mut checked, _) = closure_sources(store, &roots, &new_names)?;
     checked.extend(sources.iter().cloned());
-    let (errors, warnings): (Vec<Diag>, Vec<Diag>) = store_diags(crate::types::check_sources(&checked).1).into_iter().partition(|d| d.severity == Severity::Error);
+    let (result, diags) = crate::types::check_sources(&checked);
+    let (errors, warnings): (Vec<Diag>, Vec<Diag>) = store_diags(diags).into_iter().partition(|d| d.severity == Severity::Error);
     if !errors.is_empty() {
         return Err(errors);
     }
     for w in &warnings {
         eprintln!("{}", w.to_json());
     }
-    let hashed = hashed.map_err(|mut ds| {
+    let fields = field_calls(&result.typed);
+    let new_items: Vec<Item> = result.files[result.files.len() - sources.len()..].iter().flat_map(|(_, p)| p.items.iter().cloned()).collect();
+    let hashed = hash_items(&new_items, &scope, &vec![Some(&fields); new_items.len()]).map_err(|mut ds| {
         for d in &mut ds {
             d.file = d.name.as_ref().and_then(|n| file_of.get(n)).cloned();
         }
@@ -531,8 +536,11 @@ fn propagate(store: &Store, mut map: HashMap<String, String>) -> Result<Vec<(Str
         // one name for different hashes would clash; never produced by `ov add`.
         let mut scope = Scope::default();
         let mut items = Vec::new();
+        // The field calls each member was hashed with (none recorded: decided by name).
+        let mut fields: Vec<Option<HashSet<NodeId>>> = Vec::new();
         for d in &defs {
             let v = ast(d)?;
+            fields.push(v["refs"]["fields"].as_array().map(|ids| ids.iter().filter_map(|i| i.as_u64()).map(|i| i as NodeId).collect()));
             let new = |h: &str| map.get(h).cloned().unwrap_or_else(|| h.to_string());
             // A name now bound to another kind of definition (a function's name
             // taken by a test or a type) no longer resolves and is reported unknown.
@@ -563,7 +571,7 @@ fn propagate(store: &Store, mut map: HashMap<String, String>) -> Result<Vec<(Str
             }
             items.push(item_of(d)?);
         }
-        let hashed = hash_items(&items, &scope)?;
+        let hashed = hash_items(&items, &scope, &fields.iter().map(Option::as_ref).collect::<Vec<_>>())?;
         for (d, h) in defs.iter().zip(&hashed) {
             if h.hash == d.hash {
                 continue;

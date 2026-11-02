@@ -67,7 +67,8 @@ pub fn read_sources(files: &[PathBuf]) -> Result<Vec<(String, String)>, Vec<Diag
 /// what `ov add` of these files would store them under.
 fn file_hashes(checked: &Checked) -> Result<HashMap<String, String>, Vec<Diag>> {
     let items: Vec<_> = checked.files.iter().flat_map(|(_, p)| p.items.iter().cloned()).collect();
-    Ok(crate::hash::hash_items(&items, &crate::hash::prelude().scope)?.into_iter().map(|h| (h.name, h.hash)).collect())
+    let fields = crate::hash::field_calls(&checked.typed);
+    Ok(crate::hash::hash_items(&items, &crate::hash::prelude().scope, &vec![Some(&fields); items.len()])?.into_iter().map(|h| (h.name, h.hash)).collect())
 }
 
 /// Build checked-together `sources` for `target`. `store` is set when the
