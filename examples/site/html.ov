@@ -1,0 +1,197 @@
+// A small HTML and CSS builder in the spirit of Elm's Html: pages are data, render is a pure function.
+// Build with main.ov: ov build examples/site/html.ov examples/site/main.ov
+
+type Attr = { name: Str, value: Str }
+type Node = Element(tag: Str, attrs: List[Attr], children: List[Node]) | Text(s: Str) | Raw(html: Str)
+type Css = Rule(selector: Str, decls: List[(Str, Str)]) | Media(query: Str, rules: List[Css])
+
+// ---- escaping and rendering ----
+// Escapes for both text content and double-quoted attribute values.
+fn escape(s: Str) -> Str
+  ensures !str_contains(result, "<")
+  ensures !str_contains(result, "\"")
+{
+  replace(replace(replace(replace(s, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"), "\"", "&quot;")
+}
+
+fn is_tag_name(tag: Str) -> Bool {
+  str_len(tag) > 0 && all(chars(tag), |c| is_alnum(c))
+}
+
+fn is_void(tag: Str) -> Bool {
+  contains(["meta", "link", "img", "br", "hr", "input"], tag)
+}
+
+fn is_text(n: Node) -> Bool {
+  match n {
+    Text(_) => true,
+    _ => false,
+  }
+}
+
+fn render_attrs(attrs: List[Attr]) -> Str {
+  join(map(attrs, |a| " " ++ a.name ++ "=\"" ++ escape(a.value) ++ "\""), "")
+}
+
+fn render(n: Node) -> Str
+  ensures !is_text(n) || !str_contains(result, "<")
+{
+  match n {
+    Text(s) => escape(s),
+    Raw(html) => html,
+    Element(tag, attrs, children) => {
+      let open = "<" ++ tag ++ render_attrs(attrs) ++ ">";
+      if is_void(tag) { open } else { open ++ join(map(children, |c| render(c)), "") ++ "</" ++ tag ++ ">" }
+    },
+  }
+}
+
+fn page(title: Str, head_extras: List[Node], body: List[Node]) -> Str {
+  let head_nodes = [
+    meta([attr("charset", "utf-8")]),
+    meta([attr("name", "viewport"), attr("content", "width=device-width, initial-scale=1")]),
+    el("title", [], [text(title)]),
+  ];
+  "<!doctype html>\n"
+    ++ render(el("html", [attr("lang", "en")], [el("head", [], head_nodes ++ head_extras), el("body", [], body)]))
+    ++ "\n"
+}
+
+// ---- builders ----
+fn attr(name: Str, value: Str) -> Attr {
+  Attr { name: name, value: value }
+}
+
+fn class(c: Str) -> Attr {
+  attr("class", c)
+}
+
+fn href(url: Str) -> Attr {
+  attr("href", url)
+}
+
+fn id(name: Str) -> Attr {
+  attr("id", name)
+}
+
+fn el(tag: Str, attrs: List[Attr], children: List[Node]) -> Node
+  requires is_tag_name(tag)
+{
+  Element(tag, attrs, children)
+}
+
+fn text(s: Str) -> Node {
+  Text(s)
+}
+
+fn raw(html: Str) -> Node {
+  Raw(html)
+}
+
+fn div(attrs: List[Attr], children: List[Node]) -> Node { el("div", attrs, children) }
+fn p(attrs: List[Attr], children: List[Node]) -> Node { el("p", attrs, children) }
+fn h1(attrs: List[Attr], children: List[Node]) -> Node { el("h1", attrs, children) }
+fn h2(attrs: List[Attr], children: List[Node]) -> Node { el("h2", attrs, children) }
+fn h3(attrs: List[Attr], children: List[Node]) -> Node { el("h3", attrs, children) }
+fn a(attrs: List[Attr], children: List[Node]) -> Node { el("a", attrs, children) }
+fn ul(attrs: List[Attr], children: List[Node]) -> Node { el("ul", attrs, children) }
+fn li(attrs: List[Attr], children: List[Node]) -> Node { el("li", attrs, children) }
+fn pre(attrs: List[Attr], children: List[Node]) -> Node { el("pre", attrs, children) }
+fn code(attrs: List[Attr], children: List[Node]) -> Node { el("code", attrs, children) }
+fn section(attrs: List[Attr], children: List[Node]) -> Node { el("section", attrs, children) }
+fn nav(attrs: List[Attr], children: List[Node]) -> Node { el("nav", attrs, children) }
+fn header(attrs: List[Attr], children: List[Node]) -> Node { el("header", attrs, children) }
+fn footer(attrs: List[Attr], children: List[Node]) -> Node { el("footer", attrs, children) }
+fn table(attrs: List[Attr], children: List[Node]) -> Node { el("table", attrs, children) }
+fn tr(attrs: List[Attr], children: List[Node]) -> Node { el("tr", attrs, children) }
+fn td(attrs: List[Attr], children: List[Node]) -> Node { el("td", attrs, children) }
+fn th(attrs: List[Attr], children: List[Node]) -> Node { el("th", attrs, children) }
+fn img(attrs: List[Attr]) -> Node { el("img", attrs, []) }
+fn meta(attrs: List[Attr]) -> Node { el("meta", attrs, []) }
+// `link` is a keyword (foreign c ... link "lib"), hence the suffix.
+fn link_el(attrs: List[Attr]) -> Node { el("link", attrs, []) }
+
+// ---- components ----
+fn code_block(lang: Str, source: Str) -> Node {
+  el("figure", [class("code")], [
+    el("figcaption", [], [text(lang)]),
+    pre([], [code([class("language-" ++ lang)], [text(source)])]),
+  ])
+}
+
+fn card(title: Str, body: List[Node]) -> Node {
+  div([class("card")], [h3([], [text(title)]), p([], body)])
+}
+
+// A table of plain text cells, wrapped so it scrolls sideways on a narrow screen.
+fn data_table(head: List[Str], rows: List[List[Str]]) -> Node {
+  div([class("scroll")], [
+    table([], [tr([], map(head, |h| th([], [text(h)])))] ++ map(rows, |r| tr([], map(r, |c| td([], [text(c)]))))),
+  ])
+}
+
+// Two columns compared row by row: (measure, left value, right value).
+fn comparison(measure: Str, left: Str, right: Str, rows: List[(Str, Str, Str)]) -> Node {
+  data_table([measure, left, right], map(rows, |r| [r.0, r.1, r.2]))
+}
+
+fn nav_bar(brand: Str, links: List[(Str, Str)]) -> Node {
+  nav([class("nav")], [
+    a([href("#top"), class("brand")], [text(brand)]),
+    ul([], map(links, |l| li([], [a([href(l.1)], [text(l.0)])]))),
+  ])
+}
+
+// ---- css ----
+fn render_css(sheet: List[Css]) -> Str {
+  join(map(sheet, |r| render_rule(r)), "")
+}
+
+fn render_rule(r: Css) -> Str {
+  match r {
+    Rule(selector, decls) => selector ++ " { " ++ join(map(decls, |d| d.0 ++ ": " ++ d.1 ++ ";"), " ") ++ " }\n",
+    Media(query, rules) => "@media " ++ query ++ " {\n" ++ render_css(rules) ++ "}\n",
+  }
+}
+
+// ---- tests ----
+test escape_covers_markup {
+  assert_eq(escape("<a href=\"x\">&</a>"), "&lt;a href=&quot;x&quot;&gt;&amp;&lt;/a&gt;");
+  assert_eq(escape("&lt;"), "&amp;lt;");
+}
+
+test render_text_and_raw {
+  assert_eq(render(text("1 < 2 & 3")), "1 &lt; 2 &amp; 3");
+  assert_eq(render(raw("<br>")), "<br>");
+}
+
+test render_elements_and_attrs {
+  assert_eq(render(el("p", [class("x"), attr("title", "a\"b")], [text("hi")])), "<p class=\"x\" title=\"a&quot;b\">hi</p>");
+  assert_eq(render(div([], [])), "<div></div>");
+  assert_eq(render(meta([attr("charset", "utf-8")])), "<meta charset=\"utf-8\">");
+  assert_eq(render(img([attr("src", "a.png"), attr("alt", "")])), "<img src=\"a.png\" alt=\"\">");
+  assert_eq(render(link_el([attr("rel", "stylesheet"), href("site.css")])), "<link rel=\"stylesheet\" href=\"site.css\">");
+  assert_eq(render(a([href("/?a=1&b=2")], [text("go")])), "<a href=\"/?a=1&amp;b=2\">go</a>");
+  assert_eq(render(section([id("s")], [header([], [h1([], [text("t")])]), footer([], [])])), "<section id=\"s\"><header><h1>t</h1></header><footer></footer></section>");
+  assert_eq(render(ul([], [li([], [code([], [text("x")])])])), "<ul><li><code>x</code></li></ul>");
+  assert_eq(render(h2([], [text("b")])) ++ render(h3([], [text("c")])), "<h2>b</h2><h3>c</h3>");
+}
+
+test page_wraps_document {
+  let html = page("A & B", [link_el([attr("rel", "stylesheet"), href("site.css")])], [p([], [text("x")])]);
+  assert(starts_with(html, "<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\">"));
+  assert(str_contains(html, "<title>A &amp; B</title><link rel=\"stylesheet\" href=\"site.css\"></head>"));
+  assert(ends_with(html, "<body><p>x</p></body></html>\n"));
+}
+
+test components_render {
+  assert_eq(render(code_block("overlang", "a < b")), "<figure class=\"code\"><figcaption>overlang</figcaption><pre><code class=\"language-overlang\">a &lt; b</code></pre></figure>");
+  assert_eq(render(card("T", [text("b")])), "<div class=\"card\"><h3>T</h3><p>b</p></div>");
+  assert_eq(render(comparison("m", "L", "R", [("x", "1", "2")])), "<div class=\"scroll\"><table><tr><th>m</th><th>L</th><th>R</th></tr><tr><td>x</td><td>1</td><td>2</td></tr></table></div>");
+  assert_eq(render(nav_bar("O", [("Spec", "s.html")])), "<nav class=\"nav\"><a href=\"#top\" class=\"brand\">O</a><ul><li><a href=\"s.html\">Spec</a></li></ul></nav>");
+}
+
+test css_renders {
+  let sheet = [Rule("body", [("margin", "0"), ("color", "red")]), Media("(max-width: 40rem)", [Rule("p", [("margin", "0")])])];
+  assert_eq(render_css(sheet), "body { margin: 0; color: red; }\n@media (max-width: 40rem) {\np { margin: 0; }\n}\n");
+}

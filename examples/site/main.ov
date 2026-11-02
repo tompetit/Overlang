@@ -1,0 +1,249 @@
+// The Overlang home page, built with html.ov. `site` prints docs/index.html, `site css` prints docs/site.css.
+// Every number on the page is taken from docs/RESULTS.md or docs/PLAN.md.
+
+fn repo(path: Str) -> Str {
+  "https://github.com/tompetit/Overlang" ++ path
+}
+
+fn para(s: Str) -> Node {
+  p([], [text(s)])
+}
+
+fn mono(s: Str) -> Node {
+  code([], [text(s)])
+}
+
+fn heading(anchor: Str, title: Str) -> Node {
+  h2([id(anchor)], [text(title)])
+}
+
+// Verbatim from examples/todo/main.ov.
+fn hero_sample() -> Str {
+  join([
+    "type Todo = { id: Int, title: Str, done: Bool }",
+    "",
+    "fn add_todo(db: Int, title: Str) -> Int !fs",
+    "  requires str_len(trim(title)) > 0",
+    "{",
+    "  sqlite_exec_1s(db, \"insert into todos (title) values (?)\", trim(title))",
+    "}",
+    "",
+    "fn render_todo(t: Todo) -> Str {",
+    "  let mark = if t.done { \"[x] \" } else { \"[ ] \" };",
+    "  \"<li>\" ++ mark ++ html_escape(t.title) ++ \" \"",
+    "    ++ id_form(\"/toggle\", t.id, \"toggle\") ++ \" \"",
+    "    ++ id_form(\"/delete\", t.id, \"delete\") ++ \"</li>\"",
+    "}",
+  ], "\n")
+}
+
+fn hero() -> Node {
+  header([class("hero")], [
+    h1([], [text("Overlang")]),
+    p([class("lede")], [
+      text("A programming language designed for coding agents rather than people. Types, effects and contracts are written out in every signature, code lives in a content-addressed store instead of files, and the compiler answers in JSON. It compiles to C."),
+    ]),
+    p([class("note")], [
+      text("This is an experiment, built in two days by Claude agents, to test one hypothesis. It is not a product, and the first measurement went against the central idea. The numbers are below."),
+    ]),
+    p([class("source")], [text("From the todo app, "), mono("examples/todo/main.ov"), text(":")]),
+    code_block("overlang", hero_sample()),
+  ])
+}
+
+fn hypothesis() -> Node {
+  section([], [
+    heading("what", "What it tests"),
+    para("Hypothesis: a language designed for agents lets a coding agent finish the same tasks with fewer tokens and fewer failed rounds than Python or Rust, even though the agent has never seen the language in training."),
+    para("Two levers were expected to carry it. Locality: agents spend most of their tokens reading, so a store that hands the agent exactly the definitions it needs should cut that cost. First-pass correctness: mandatory signatures, effects, exhaustive matching and contracts move errors to compile time, where they are cheap. A negative result was declared a result in advance: it would mean the familiarity tax dominates for a language no model was trained on."),
+  ])
+}
+
+fn command(cmd: Str, what: Str) -> Node {
+  li([], [mono(cmd), text(" " ++ what)])
+}
+
+fn commands() -> Node {
+  section([], [
+    heading("commands", "Five commands"),
+    para("Code is added to a store, not saved in files. The agent works on definitions by name:"),
+    ul([class("commands")], [
+      command("ov add app.ov", "typechecks, hashes and stores every definition."),
+      command("ov ctx route", "prints the minimal context to work on one definition: its source, the signatures it calls, the types they mention."),
+      command("ov edit route", "replaces one definition; its callers are re-hashed and re-checked automatically."),
+      command("ov test", "runs the test blocks, then fuzzes every function that has a contract."),
+      command("ov run main", "builds a native binary from the store and runs it."),
+    ]),
+  ])
+}
+
+fn design() -> Node {
+  section([], [
+    heading("design", "Design decisions"),
+    div([class("cards")], [
+      card("Signatures and effects are mandatory", [text("Every top-level function states its parameter types, return type and effects (!io, !fs, !net). Nothing is inferred at the top level, and a pure function cannot call one with effects.")]),
+      card("No null, no exceptions", [text("Option and Result are ordinary sum types, ? propagates them, and every match must be exhaustive. The only panics are contract failures and traps such as overflow, reported as JSON.")]),
+      card("A content-addressed store", [text("Each definition is keyed by the SHA-256 of its canonical form, with names kept as metadata. Renaming never changes a hash; editing a definition propagates the new hash to its dependents.")]),
+      card("JSON diagnostics", [text("The compiler's reader is a model, so every error is one JSON object with a code, a span, expected and actual values, and ranked fixes, often as text ready to insert.")]),
+      card("Contracts fuzzed by the compiler", [text("requires and ensures clauses are checked at runtime, and ov test generates inputs per type, shrinks failures and reports them. It found an overflow in the spec's own example.")]),
+      card("Compiles to C", [text("Monomorphized generics, one C file per definition cached by hash, Boehm GC, and overflow-trapping Int. The compiler is one Rust binary, ov.")]),
+    ]),
+  ])
+}
+
+fn results() -> Node {
+  section([], [
+    heading("results", "What the first evaluation found"),
+    para("Both benchmarks were run once per task on 2026-10-31 with Claude Sonnet 5.5 as the agent. Benchmark A is 100 HumanEval tasks in Python, Rust and Overlang; benchmark B is 25 maintenance changes to a 178-line HTTP todo app in Python and Overlang. The predictions were written down before the runs."),
+    data_table(["Measure", "Prediction", "Result", ""], [
+      ["A: pass rate", "Overlang within 10 points of Python, above Rust", "100.0% Overlang, 100.0% Python, 99.0% Rust", "met"],
+      ["A: compile-fix rounds", "Overlang below Rust", "0 failed test rounds in every run of every language", "not testable, ceiling"],
+      ["A: total tokens", "Overlang 20% to 50% above Python", "+9% in total; 5.8x in what the agent pulled in itself", "see below"],
+      ["B: read tokens", "Overlang 30% or more below Python", "2.1x above Python (12.8k vs 6.1k median)", "failed"],
+      ["B: pass rate", "Overlang at or above Python", "100% Overlang, 100% Python", "met"],
+    ]),
+    h3([], [text("The locality prediction failed")]),
+    para("The central hypothesis, that a content-addressed store with a minimal-context command cuts what an agent reads on a maintenance task, failed at this scale. Overlang agents read 2.1 times as much as Python agents, for two measured reasons."),
+    ul([], [
+      li([], [text("The card tax. A language the model has never seen costs about 8k tokens of reference card per task before any work starts: 58% of Overlang's read tokens in benchmark B. Every fresh agent pays it again.")]),
+      li([], [text("The agents did not use the locality tool. "), mono("ov ctx"), text(" was called once in 25 runs. The typical agent listed the store and viewed most definitions in a loop, reading the whole program, and paid 63% more for it than the Python agent paid to read main.py.")]),
+    ]),
+    comparison("Benchmark B", "Python", "Overlang", [
+      ("pass rate", "100%", "100%"),
+      ("turns", "5", "4"),
+      ("read calls", "3.6", "4.6"),
+      ("read tokens", "6,085", "12,755"),
+      ("output tokens", "1,304", "1,298"),
+      ("total tokens", "269,847", "241,130"),
+      ("wall time", "15.3 s", "18.5 s"),
+    ]),
+    h3([], [text("What held up")]),
+    para("Sonnet solved 99 of 99 HumanEval tasks in a language it had never seen, from a 3.5k-token card, with zero failed test rounds and three turns each. First-pass correctness in a new language was not the problem. In benchmark B the store workflow (edit by name, dependents re-checked, build from the store) worked first time in 24 of 25 runs, and no agent hit a compiler bug."),
+    p([], [
+      text("What it does not show: whether "), mono("ov ctx"),
+      text(" saves tokens, because the agents did not take it. The next test is a program ten times larger, or a workspace where the store is the only interface. HumanEval is at the ceiling for this model in all three languages. Details and caveats are in "),
+      a([href(repo("/blob/main/docs/RESULTS.md"))], [text("RESULTS.md")]),
+      text("."),
+    ]),
+  ])
+}
+
+fn agents() -> Node {
+  section([], [
+    heading("agents", "Built by agents"),
+    para("Overlang was built on 2026-10-29 and 2026-10-30 by Claude agents: Opus and Sonnet implementing, Fable overseeing and writing the spec. The plan budgeted $12,300 in tokens. The build agents used 3.35M tokens in total (the ledger in the plan has them per agent, and does not count the overseer). The evaluation was 349 agent runs and 64.0M tokens, 84% of them cache reads, about $57 at Sonnet list rates."),
+    para("What came out: the ov compiler in Rust, a C runtime with SQLite and HTTP shims, the content-addressed store, contract fuzzing with shrinking, JSON diagnostics with ranked fixes, the todo app, and an evaluation harness with 155 HumanEval tasks in three languages and 25 maintenance tasks."),
+    p([], [
+      text("This page is generated by an Overlang program too: a small HTML builder and the page content, in "),
+      a([href(repo("/tree/main/examples/site"))], [text("examples/site")]),
+      text("."),
+    ]),
+  ])
+}
+
+fn site_footer() -> Node {
+  footer([], [
+    ul([], [
+      li([], [a([href(repo(""))], [text("GitHub")])]),
+      li([], [a([href(repo("/blob/main/docs/SPEC.md"))], [text("Spec")])]),
+      li([], [a([href(repo("/blob/main/docs/PLAN.md"))], [text("Plan")])]),
+      li([], [a([href(repo("/blob/main/docs/RESULTS.md"))], [text("Results")])]),
+    ]),
+    para("MIT licensed. An experiment, not a product. No tracking, no scripts."),
+  ])
+}
+
+fn index() -> Str {
+  page(
+    "Overlang: a programming language for coding agents",
+    [
+      meta([attr("name", "description"), attr("content", "An experimental programming language designed for coding agents, and what the first evaluation found.")]),
+      meta([attr("name", "color-scheme"), attr("content", "light dark")]),
+      link_el([attr("rel", "stylesheet"), href("site.css")]),
+    ],
+    [
+      nav_bar("Overlang", [("Commands", "#commands"), ("Design", "#design"), ("Results", "#results"), ("GitHub", repo(""))]),
+      el("main", [id("top")], [hero(), hypothesis(), commands(), design(), results(), agents()]),
+      site_footer(),
+    ],
+  )
+}
+
+fn stylesheet() -> List[Css] {
+  [
+    Rule(":root", [
+      ("--bg", "#fbfaf7"), ("--fg", "#1d1d1b"), ("--muted", "#5e5c57"), ("--line", "#dedbd3"),
+      ("--panel", "#f1efe9"), ("--accent", "#2b5fb3"), ("--warn", "#9a4b00"),
+      ("color-scheme", "light dark"),
+    ]),
+    Media("(prefers-color-scheme: dark)", [
+      Rule(":root", [
+        ("--bg", "#151614"), ("--fg", "#e6e4de"), ("--muted", "#a19e96"), ("--line", "#34352f"),
+        ("--panel", "#1f201d"), ("--accent", "#86aef0"), ("--warn", "#f0a860"),
+      ]),
+    ]),
+    Rule("*", [("box-sizing", "border-box")]),
+    Rule("body", [
+      ("margin", "0"), ("background", "var(--bg)"), ("color", "var(--fg)"),
+      ("font", "17px/1.6 system-ui, -apple-system, \"Segoe UI\", sans-serif"),
+    ]),
+    Rule("main, footer", [("max-width", "46rem"), ("margin", "0 auto"), ("padding", "0 1rem")]),
+    Rule("a", [("color", "var(--accent)")]),
+    Rule("h1", [("font-size", "2.6rem"), ("margin", "2.5rem 0 0.5rem"), ("letter-spacing", "-0.02em")]),
+    Rule("h2", [("margin-top", "3rem"), ("padding-top", "1rem"), ("border-top", "1px solid var(--line)")]),
+    Rule("h3", [("margin", "1.6rem 0 0.4rem")]),
+    Rule(".lede", [("font-size", "1.15rem")]),
+    Rule(".note", [("color", "var(--warn)"), ("border-left", "3px solid var(--warn)"), ("padding-left", "0.8rem")]),
+    Rule(".nav", [
+      ("display", "flex"), ("flex-wrap", "wrap"), ("align-items", "center"), ("gap", "0.5rem 1.2rem"),
+      ("padding", "0.7rem 1rem"), ("border-bottom", "1px solid var(--line)"), ("background", "var(--panel)"),
+    ]),
+    Rule(".nav ul, footer ul", [("display", "flex"), ("flex-wrap", "wrap"), ("gap", "0.3rem 1.2rem"), ("list-style", "none"), ("margin", "0"), ("padding", "0")]),
+    Rule(".nav .brand", [("font-weight", "700"), ("color", "var(--fg)"), ("text-decoration", "none")]),
+    Rule("code, pre", [("font-family", "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"), ("font-size", "0.88em")]),
+    Rule(":not(pre) > code", [("background", "var(--panel)"), ("padding", "0.1em 0.3em"), ("border-radius", "4px")]),
+    Rule("figure.code", [("margin", "1.5rem 0"), ("border", "1px solid var(--line)"), ("border-radius", "8px"), ("background", "var(--panel)")]),
+    Rule("figcaption", [("font-size", "0.8rem"), ("color", "var(--muted)"), ("padding", "0.4rem 0.9rem"), ("border-bottom", "1px solid var(--line)")]),
+    Rule("pre", [("margin", "0"), ("padding", "0.9rem"), ("overflow-x", "auto"), ("line-height", "1.45")]),
+    Rule(".commands li", [("margin", "0.4rem 0")]),
+    Rule(".cards", [("display", "grid"), ("grid-template-columns", "repeat(auto-fit, minmax(14rem, 1fr))"), ("gap", "1rem")]),
+    Rule(".card", [("border", "1px solid var(--line)"), ("border-radius", "8px"), ("padding", "0 1rem"), ("background", "var(--panel)")]),
+    Rule(".card p", [("color", "var(--muted)"), ("font-size", "0.95rem")]),
+    Rule(".scroll", [("overflow-x", "auto"), ("margin", "1.2rem 0")]),
+    Rule("table", [("border-collapse", "collapse"), ("font-size", "0.92rem"), ("min-width", "100%")]),
+    Rule("th, td", [("text-align", "left"), ("vertical-align", "top"), ("padding", "0.4rem 0.6rem"), ("border-bottom", "1px solid var(--line)")]),
+    Rule("th", [("color", "var(--muted)"), ("font-weight", "600")]),
+    Rule("footer", [("margin-top", "3rem"), ("padding-bottom", "2rem"), ("border-top", "1px solid var(--line)"), ("padding-top", "1rem"), ("color", "var(--muted)"), ("font-size", "0.9rem")]),
+    Media("(max-width: 40rem)", [
+      Rule("body", [("font-size", "16px")]),
+      Rule("h1", [("font-size", "2rem")]),
+    ]),
+  ]
+}
+
+fn main() -> Unit !io {
+  match args() {
+    ["css"] => print(render_css(stylesheet())),
+    _ => print(index()),
+  }
+}
+
+// ---- tests ----
+test index_has_every_section {
+  let html = index();
+  for anchor in ["what", "commands", "design", "results", "agents"] {
+    assert(str_contains(html, "<h2 id=\"" ++ anchor ++ "\">"));
+  }
+  assert(str_contains(html, "experiment"));
+  assert(!str_contains(html, "<script"));
+}
+
+test hero_code_is_escaped {
+  let html = index();
+  assert(str_contains(html, "&quot;&lt;li&gt;&quot; ++ mark"));
+  assert(!str_contains(html, "\"<li>\" ++ mark"));
+}
+
+test stylesheet_has_dark_mode {
+  assert(str_contains(render_css(stylesheet()), "@media (prefers-color-scheme: dark) {"));
+}
