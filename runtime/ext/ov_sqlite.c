@@ -138,7 +138,7 @@ int64_t ov_sqlite_exec_1i(int64_t db, const char* sql, int64_t p1) {
     param ps[] = {{NULL, p1, 0}};
     return do_exec(db, sql, ps, 1, 1);
 }
-const char* ov_sqlite_query(int64_t db, const char* sql) { return do_query(db, sql, NULL, 0, 0); }
+const char* ov_sqlite_query(int64_t db, const char* sql) { return do_query(db, sql, NULL, 0, 1); }
 const char* ov_sqlite_query_1s(int64_t db, const char* sql, const char* p1) {
     param ps[] = {{p1, 0, 0}};
     return do_query(db, sql, ps, 1, 1);

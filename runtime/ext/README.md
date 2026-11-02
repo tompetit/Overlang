@@ -26,6 +26,8 @@ The Overlang name is free; the C symbol is `ov_` plus the name above (the compil
 - `sqlite_open` returns a handle >= 1 or -1; the reason is `sqlite_error(0)`.
 - `sqlite_exec*` return rows changed or -1 (reason: `sqlite_error(db)`). `sqlite_exec` runs a whole script; the
   bound variants run only their first statement.
+- `sqlite_query*` all run only their first statement: the encoding has room for one result, so run a script's
+  other statements with `sqlite_exec`.
 - `sqlite_query*` return text on success and NULL on error. Encoding: a header row of column names, then
   one row per result, all rows joined by `\x1e`, columns by `\x1f`, NULL as the empty string. A query with zero
   rows is just the header row. Split on `\x1e` first, then on `\x1f`. Values containing those two control
