@@ -768,9 +768,6 @@ impl<'a> Checker<'a> {
             if !seen.insert(f.name.clone()) {
                 self.diag("E0109", f.span, format!("field `{}` is declared twice", f.name));
             }
-            for d in effects::undeclared_params(&f.ty, &[]) {
-                self.def_diags.push(d);
-            }
             out.push((f.name.clone(), self.conv(&f.ty, params, None)));
         }
         out

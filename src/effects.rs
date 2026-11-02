@@ -157,8 +157,8 @@ pub fn check_contract(charges: &[Charge], vars: &EffVars) -> Vec<Diag> {
     out
 }
 
-/// E0111: at most one effect parameter, used only on function-typed
-/// parameters and the signature's own effect list (not in the return type).
+/// E0111: at most one effect parameter, not in the return type. A name the
+/// brackets do not declare is a label, whatever its length.
 pub fn check_signature(sig: &Signature) -> Vec<Diag> {
     let mut out = Vec::new();
     if sig.effect_params.len() > 1 {
@@ -168,38 +168,9 @@ pub fn check_signature(sig: &Signature) -> Vec<Diag> {
             format!("`{}` declares {} effect parameters; at most one is allowed", sig.name, sig.effect_params.len()),
         ));
     }
-    for p in &sig.params {
-        out.extend(undeclared_params(&p.ty, &sig.effect_params));
-    }
-    out.extend(undeclared_params(&sig.ret, &sig.effect_params));
-    if let Some(e) = sig.effects.iter().find(|e| e.len() == 1 && !sig.effect_params.contains(e)) {
-        out.push(Diag::error("E0111", sig.span, format!("effect parameter !{e} is not declared; add `!{e}` to the brackets after `{}`", sig.name)));
-    }
     for e in &sig.effect_params {
         if let Some(span) = mentions(&sig.ret, e) {
             out.push(Diag::error("E0111", span, format!("effect parameter !{e} cannot appear in the return type")));
-        }
-    }
-    out
-}
-
-/// E0111 for a one-letter effect name that is not a declared effect
-/// parameter: labels are open, but `!e` is how parameters are written, so a
-/// one-letter label is taken to be a parameter used where it was not declared.
-pub fn undeclared_params(t: &TypeExpr, declared: &[String]) -> Vec<Diag> {
-    let mut out = Vec::new();
-    let mut stack = vec![t];
-    while let Some(t) = stack.pop() {
-        match &t.kind {
-            TypeKind::Named { args, .. } => stack.extend(args),
-            TypeKind::Tuple(ts) => stack.extend(ts),
-            TypeKind::Fn { params, ret, effects } => {
-                for e in effects.iter().filter(|e| e.len() == 1 && !declared.contains(e)) {
-                    out.push(Diag::error("E0111", t.span, format!("effect parameter !{e} is used here but not declared")));
-                }
-                stack.extend(params);
-                stack.push(ret);
-            }
         }
     }
     out

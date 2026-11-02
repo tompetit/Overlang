@@ -152,7 +152,9 @@ caller's declared effects. Violation is error E0105, whose fix suggestion is
 the exact label to add.
 
 Effect names are open: any identifier may be used, so a program can declare
-`!db` or `!gpu` for its own foreign functions. The prelude uses `io`
+`!db` or `!gpu` for its own foreign functions. A name is the effect parameter
+only where the signature's brackets declare it; elsewhere `!e` is a label like
+any other. The prelude uses `io`
 (console), `fs`, `net`, `rand`, `time`, `exit`.
 
 Function types carry effects: `fn(Int) -> Int !io`. A lambda's effects are
