@@ -280,6 +280,7 @@ impl Parser {
                 Tok::Eof | Tok::Type | Tok::Declare | Tok::Foreign | Tok::Test | Tok::Intrinsic => break,
                 // `fn name` starts a definition; `fn(` is a function type.
                 Tok::Fn if matches!(self.peek_at(1), Tok::Ident(_)) => break,
+                _ if self.is_schema() => break,
                 _ => {
                     self.bump();
                 }
@@ -337,6 +338,12 @@ impl Parser {
             let body = self.block()?;
             return Ok(Item::Test(TestDef { name, body, span: start.to(self.prev_span()) }));
         }
+        // `schema` is a keyword only at the start of a definition.
+        if self.is_schema() {
+            self.bump();
+            return self.schema_def(start);
+        }
+        self.expect_kind("schema");
         // Outside the prelude `intrinsic` is not even listed as expected.
         if self.allow_intrinsic && self.eat(&Tok::Intrinsic) {
             self.expect(&Tok::Fn)?;
@@ -410,6 +417,32 @@ impl Parser {
                 return Ok((requires, ensures));
             }
         }
+    }
+
+    fn is_schema(&self) -> bool {
+        matches!(self.peek(), Tok::Ident(s) if s == "schema") && matches!(self.peek_at(1), Tok::Ident(_))
+    }
+
+    /// After `schema`: `name { column: Int, ... }`, columns typed Int, Str, Float or Bool.
+    fn schema_def(&mut self, start: Span) -> PResult<Item> {
+        let name = self.ident()?;
+        self.expect(&Tok::LBrace)?;
+        if self.peek() == &Tok::RBrace {
+            self.expect_kind("identifier");
+            return Err(self.error());
+        }
+        let columns = self
+            .comma_list(&Tok::RBrace, |p| {
+                let f = p.field()?;
+                if !matches!(&f.ty.kind, TypeKind::Named { name, args } if args.is_empty() && ["Int", "Str", "Float", "Bool"].contains(&name.as_str())) {
+                    let mut d = Diag::error("E0002", f.ty.span, "a schema column is Int, Str, Float or Bool");
+                    d.expected = Some(["Int", "Str", "Float", "Bool"].map(String::from).to_vec());
+                    return Err(d);
+                }
+                Ok(f)
+            })?
+            .0;
+        Ok(Item::Schema(SchemaDef { name, columns, span: start.to(self.prev_span()) }))
     }
 
     /// After `type`.
@@ -663,6 +696,10 @@ impl Parser {
                 ExprKind::Str(s)
             }
             Tok::True | Tok::False => ExprKind::Bool(self.bump().tok == Tok::True),
+            Tok::Ident(name) if name == "sql" && matches!(self.peek_at(1), Tok::Str(_)) => {
+                self.bump();
+                ExprKind::Sql(self.string_lit()?)
+            }
             Tok::Ident(name) => {
                 self.bump();
                 if self.in_ensures && name == "result" { ExprKind::ResultRef } else { ExprKind::Var(name) }

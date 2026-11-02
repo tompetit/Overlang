@@ -1,0 +1,18 @@
+// `schema` declares a table; `sql` literals are checked against it and are plain Str values.
+schema todos { id: Int, title: Str, done: Int }
+schema tags { id: Int, todo_id: Int, name: Str }
+
+fn create() -> Str {
+  sql "create table if not exists todos (id integer primary key, title text, done integer)"
+}
+
+fn list() -> Str {
+  sql "select t.id, title, g.name from todos t join tags g on g.todo_id = t.id where done = ? order by t.id"
+}
+
+fn main() -> Unit !io {
+  println(create());
+  println(list());
+  println(sql "update todos set done = 1 - done where id = ?" ++ ";");
+  assert_eq(sql "delete from todos where id = ?", "delete from todos where id = ?");
+}

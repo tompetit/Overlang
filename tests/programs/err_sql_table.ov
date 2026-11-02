@@ -1,0 +1,5 @@
+schema todos { id: Int, title: Str, done: Int }
+
+fn list() -> Str {
+  sql "select id, title from todo order by id"
+}

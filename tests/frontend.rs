@@ -296,7 +296,7 @@ fn comparisons_do_not_chain() {
 #[test]
 fn bad_top_level_token_lists_definition_keywords() {
     let d = &errors("let x = 1;")[0];
-    assert_eq!(expected_of(d), vec!["fn", "type", "declare", "foreign", "test"]);
+    assert_eq!(expected_of(d), vec!["fn", "type", "declare", "foreign", "test", "schema"]);
 }
 
 #[test]
@@ -409,4 +409,16 @@ fn postfix_binds_tighter_than_unary() {
     let ExprKind::Index { base, .. } = &expr.kind else { panic!("{expr:?}") };
     let ExprKind::Try(inner) = &base.kind else { panic!() };
     assert!(matches!(&inner.kind, ExprKind::Call { ufcs: true, .. }));
+}
+
+#[test]
+fn schema_and_sql_round_trip_and_stay_contextual() {
+    let src = "schema todos { id: Int, title: Str, done: Bool }\n\nfn q(sql: Str) -> Str {\n  sql \"select id from todos\" ++ sql\n}\n";
+    let (p, diags) = parse(src);
+    assert!(diags.is_empty(), "{diags:?}");
+    assert!(matches!(&p.items[0], overlang::ast::Item::Schema(s) if s.columns.len() == 3));
+    assert_eq!(overlang::printer::print_program(&p), src);
+    // Only Int, Str, Float and Bool columns.
+    let d = &errors("schema t { xs: List[Int] }")[0];
+    assert_eq!((d.code.as_str(), expected_of(d)), ("E0002", vec!["Int".to_string(), "Str".into(), "Float".into(), "Bool".into()]));
 }

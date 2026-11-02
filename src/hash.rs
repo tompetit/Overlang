@@ -39,6 +39,8 @@ pub struct Scope {
     pub types: HashMap<String, String>,
     /// Constructor name to (type hash, constructor index).
     pub ctors: HashMap<String, (String, usize)>,
+    /// Schema name to (hash, columns).
+    pub schemas: HashMap<String, (String, Vec<String>)>,
 }
 
 impl Scope {
@@ -56,6 +58,9 @@ impl Scope {
             }
             Item::Fn(_) | Item::Declare(_) | Item::Foreign(_) | Item::Intrinsic(_) => {
                 self.values.insert(name.to_string(), hash.to_string());
+            }
+            Item::Schema(s) => {
+                self.schemas.insert(name.to_string(), (hash.to_string(), s.columns.iter().map(|c| c.name.clone()).collect()));
             }
             Item::Test(_) | Item::Comment(_) => {}
         }
@@ -86,6 +91,7 @@ pub fn item_name(item: &Item) -> Option<&str> {
         Item::Intrinsic(i) => Some(&i.sig.name),
         Item::Test(t) => Some(&t.name),
         Item::Type(t) => Some(&t.name),
+        Item::Schema(t) => Some(&t.name),
         Item::Comment(_) => None,
     }
 }
@@ -97,6 +103,7 @@ fn item_kind(item: &Item) -> &'static str {
         Item::Foreign(_) => "foreign",
         Item::Intrinsic(_) => "intrinsic",
         Item::Test(_) => "test",
+        Item::Schema(_) => "schema",
         Item::Type(_) | Item::Comment(_) => "type",
     }
 }
@@ -113,8 +120,12 @@ pub fn hash_items(items: &[Item], scope: &Scope) -> Result<Vec<Hashed>, Vec<Diag
     let mut local_types = HashMap::new();
     let mut local_ctors = HashMap::new();
     let mut records = HashMap::new();
+    let mut local_schemas = HashMap::new();
     for (i, item) in items.iter().enumerate() {
         match item {
+            Item::Schema(s) => {
+                local_schemas.insert(s.name.clone(), (i, s.columns.iter().map(|c| c.name.clone()).collect()));
+            }
             Item::Type(t) => {
                 local_types.insert(t.name.clone(), i);
                 match &t.body {
@@ -147,6 +158,7 @@ pub fn hash_items(items: &[Item], scope: &Scope) -> Result<Vec<Hashed>, Vec<Diag
             local_values: &local_values,
             local_types: &local_types,
             local_ctors: &local_ctors,
+            local_schemas: &local_schemas,
             def_name: item_name(item).unwrap().to_string(),
             locals: Vec::new(),
             tparams: Vec::new(),
@@ -211,7 +223,7 @@ pub fn hash_items(items: &[Item], scope: &Scope) -> Result<Vec<Hashed>, Vec<Diag
         let source = printer.item(item);
         let (table, vars) = &refs[i];
         // Pairs, not objects: a name could be `local`, which `subst` would take for a marker.
-        let mut resolved = json!({ "values": [], "types": [], "ctors": [], "vars": vars });
+        let mut resolved = json!({ "values": [], "types": [], "ctors": [], "schemas": [], "vars": vars });
         for ((table, name), target) in table {
             resolved[*table].as_array_mut().unwrap().push(json!([name, subst(target, &|j| json!(hashes[j]))]));
         }
@@ -316,22 +328,24 @@ pub fn tarjan(edges: &[Vec<usize>]) -> Vec<Vec<usize>> {
     t.out
 }
 
+/// Levenshtein distance in chars.
+pub fn dist(a: &str, b: &str) -> usize {
+    let b: Vec<char> = b.chars().collect();
+    let mut row: Vec<usize> = (0..=b.len()).collect();
+    for (i, ca) in a.chars().enumerate() {
+        let mut prev = row[0];
+        row[0] = i + 1;
+        for j in 0..b.len() {
+            let cur = row[j + 1];
+            row[j + 1] = if ca == b[j] { prev } else { 1 + prev.min(row[j]).min(row[j + 1]) };
+            prev = cur;
+        }
+    }
+    row[b.len()]
+}
+
 /// Up to three candidates within edit distance 2 of `name`, as fixes.
 pub fn nearest<'a>(name: &str, candidates: impl Iterator<Item = &'a String>) -> Vec<Fix> {
-    fn dist(a: &str, b: &str) -> usize {
-        let b: Vec<char> = b.chars().collect();
-        let mut row: Vec<usize> = (0..=b.len()).collect();
-        for (i, ca) in a.chars().enumerate() {
-            let mut prev = row[0];
-            row[0] = i + 1;
-            for j in 0..b.len() {
-                let cur = row[j + 1];
-                row[j + 1] = if ca == b[j] { prev } else { 1 + prev.min(row[j]).min(row[j + 1]) };
-                prev = cur;
-            }
-        }
-        row[b.len()]
-    }
     let mut scored: Vec<(usize, &String)> = candidates.map(|c| (dist(name, c), c)).filter(|(d, _)| *d <= 2).collect();
     scored.sort();
     scored.dedup();
@@ -348,6 +362,7 @@ struct Canon<'a> {
     local_values: &'a HashMap<String, usize>,
     local_types: &'a HashMap<String, usize>,
     local_ctors: &'a HashMap<String, (usize, usize)>,
+    local_schemas: &'a HashMap<String, (usize, Vec<String>)>,
     def_name: String,
     /// Local variables in scope, innermost last.
     locals: Vec<String>,
@@ -355,7 +370,7 @@ struct Canon<'a> {
     eparams: Vec<String>,
     local_deps: BTreeSet<usize>,
     ext_deps: BTreeSet<String>,
-    /// (`values` | `types` | `ctors`, written name) to hash or local marker;
+    /// (`values` | `types` | `ctors` | `schemas`, written name) to hash or local marker;
     /// a constructor maps to its type.
     refs: BTreeMap<(&'static str, String), Value>,
     /// Ids of the `Var` expressions that refer to top-level definitions.
@@ -499,8 +514,35 @@ impl Canon<'_> {
                 // Types are nominal: the name is part of the hash.
                 json!({ "kind": item_kind(item), "name": t.name, "tparams": t.params.len(), "body": body })
             }
+            Item::Schema(t) => {
+                let cols: Vec<Value> = t.columns.iter().map(|f| json!([f.name, self.ty(&f.ty)])).collect();
+                // The table name is what SQL text refers to: part of the hash, as for types.
+                json!({ "kind": "schema", "name": t.name, "columns": cols })
+            }
             Item::Comment(_) => Value::Null,
         }
+    }
+
+    /// The schemas a `sql` literal mentions, as references. Unknown tables
+    /// are left to the checker, which reports them with the declared names.
+    fn sql_tables(&mut self, text: &str) -> Value {
+        let mut declared: BTreeMap<String, Vec<String>> = self.scope.schemas.iter().map(|(n, (_, c))| (n.clone(), c.clone())).collect();
+        declared.extend(self.local_schemas.iter().map(|(n, (_, c))| (n.clone(), c.clone())));
+        let mut refs = Vec::new();
+        for t in crate::sql::check(text, &declared).tables {
+            let target = match (self.local_schemas.get(&t), self.scope.schemas.get(&t)) {
+                (Some((i, _)), _) => self.local(*i),
+                (None, Some((h, _))) => {
+                    let h = h.clone();
+                    self.ext(&h)
+                }
+                (None, None) => continue,
+            };
+            self.note("schemas", &t, &target);
+            refs.push(target);
+        }
+        refs.sort_by_key(|v| v.to_string());
+        json!(refs)
     }
 
     /// Sets type and effect parameters and pushes the parameters as locals.
@@ -608,6 +650,7 @@ impl Canon<'_> {
             ExprKind::Int(n) => json!({ "int": n }),
             ExprKind::Float(x) => json!({ "float": crate::printer::float_text(*x) }),
             ExprKind::Str(s) => json!({ "str": s }),
+            ExprKind::Sql(s) => json!({ "sql": s, "tables": self.sql_tables(s) }),
             ExprKind::Bool(b) => json!({ "bool": b }),
             ExprKind::Unit => json!("unit"),
             ExprKind::Var(name) => {

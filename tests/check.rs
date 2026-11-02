@@ -121,6 +121,19 @@ fn err_fixtures_produce_exactly_the_expected_codes() {
 }
 
 #[test]
+fn json_fixtures_produce_exactly_the_expected_diagnostics() {
+    let mut n = 0;
+    for (name, src) in fixtures() {
+        let Ok(want) = fs::read_to_string(name.replace(".ov", ".expect.json")) else { continue };
+        n += 1;
+        let (_, diags) = check_sources(&[(name.clone(), src)]);
+        let got: String = errors(&diags).iter().map(|d| d.to_json() + "\n").collect();
+        assert_eq!(got, want, "{name}");
+    }
+    assert!(n >= 4, "json fixtures not found");
+}
+
+#[test]
 fn ov_check_prints_json_lines_and_sets_the_exit_code() {
     let ov = env!("CARGO_BIN_EXE_ov");
     let run = |f: &str| std::process::Command::new(ov).args(["check", f]).output().unwrap();

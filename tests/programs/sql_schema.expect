@@ -1,0 +1,3 @@
+create table if not exists todos (id integer primary key, title text, done integer)
+select t.id, title, g.name from todos t join tags g on g.todo_id = t.id where done = ? order by t.id
+update todos set done = 1 - done where id = ?;

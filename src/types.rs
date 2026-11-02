@@ -286,6 +286,7 @@ pub fn check(prelude: &Program, files: &[(String, Program)]) -> (TypedProgram, V
     let mut c = Checker::default();
     c.collect_types(&all);
     c.collect_sigs(&all);
+    c.collect_schemas(&all);
     for (file, prog, _) in &all {
         for item in &prog.items {
             c.check_item(item);
@@ -357,6 +358,9 @@ struct Checker<'a> {
     fn_sites: HashMap<String, (Span, bool)>,
     type_sites: HashMap<String, (Span, bool)>,
     test_sites: HashMap<String, Span>,
+    /// Declared schemas: table name to column names, and where each was declared.
+    schemas: std::collections::BTreeMap<String, Vec<String>>,
+    schema_sites: HashMap<String, Span>,
     /// Signatures rejected as duplicates (by address); their bodies are not checked.
     dup_sigs: HashSet<usize>,
 
@@ -774,6 +778,61 @@ impl<'a> Checker<'a> {
         }
     }
 
+    /// Schemas share the flat namespace with functions (E0109 on a clash).
+    fn collect_schemas(&mut self, all: &[(&str, &'a Program, bool)]) {
+        for (file, prog, _) in all {
+            for item in &prog.items {
+                let Item::Schema(t) = item else { continue };
+                self.def_name = Some(t.name.clone());
+                if let Some(other) = self.schema_sites.get(&t.name) {
+                    let msg = format!("schema `{}` is already defined at line {}", t.name, other.line);
+                    self.diag("E0109", t.span, msg);
+                } else if let Some((other, _)) = self.fn_sites.get(&t.name) {
+                    let msg = format!("`{}` is already defined at line {}", t.name, other.line);
+                    self.diag("E0109", t.span, msg);
+                } else {
+                    self.schema_sites.insert(t.name.clone(), t.span);
+                    self.schemas.insert(t.name.clone(), t.columns.iter().map(|c| c.name.clone()).collect());
+                    let mut seen = HashSet::new();
+                    for f in &t.columns {
+                        if !seen.insert(f.name.clone()) {
+                            self.diag("E0109", f.span, format!("column `{}` is declared twice", f.name));
+                        }
+                    }
+                }
+                self.flush(file);
+            }
+        }
+    }
+
+    /// Check a `sql` literal against the declared schemas (spec section 6.1).
+    fn sql(&mut self, text: &str, span: Span) {
+        // A name's span is computed from the canonical spelling of the literal,
+        // which ends at `span.end_col`.
+        // shortcut: a literal written over several lines reports the whole literal.
+        let width = |s: &str| crate::printer::escape_str(s).chars().count() as u32;
+        let chars: Vec<char> = text.chars().collect();
+        let open = span.end_col.saturating_sub(width(text));
+        for issue in crate::sql::check(text, &self.schemas).issues {
+            let (a, b) = issue.range;
+            let at = if span.line != span.end_line || (a, b) == (0, chars.len()) {
+                span
+            } else {
+                let prefix: String = chars[..a].iter().collect();
+                let name: String = chars[a..b].iter().collect();
+                let col = open + width(&prefix) - 1;
+                Span { line: span.line, col, end_line: span.line, end_col: col + width(&name) - 2 }
+            };
+            let d = self.diag(issue.code, at, issue.message);
+            if !issue.expected.is_empty() {
+                d.expected = Some(issue.expected);
+            }
+            if !issue.fixes.is_empty() {
+                d.fixes = Some(issue.fixes);
+            }
+        }
+    }
+
     fn collect_sigs(&mut self, all: &[(&str, &'a Program, bool)]) {
         for (file, prog, is_prelude) in all {
             for item in &prog.items {
@@ -887,6 +946,7 @@ impl<'a> Checker<'a> {
                 self.finish(None);
             }
             Item::Type(t) => self.def_name = Some(t.name.clone()),
+            Item::Schema(t) => self.def_name = Some(t.name.clone()),
             Item::Foreign(f) => self.def_name = Some(f.sig.name.clone()),
             Item::Intrinsic(i) => self.def_name = Some(i.sig.name.clone()),
             Item::Comment(_) => {}
@@ -1371,6 +1431,10 @@ impl<'a> Checker<'a> {
             ExprKind::Int(_) => Ty::Int,
             ExprKind::Float(_) => Ty::Float,
             ExprKind::Str(_) => Ty::Str,
+            ExprKind::Sql(text) => {
+                self.sql(text, e.span);
+                Ty::Str
+            }
             ExprKind::Bool(_) => Ty::Bool,
             ExprKind::Unit => Ty::Unit,
             ExprKind::Var(name) => {

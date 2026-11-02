@@ -1,0 +1,1 @@
+{"code":"E0121","severity":"error","name":"mode","span":{"line":4,"col":3,"end_line":4,"end_col":34},"message":"sql literal mentions no declared table","expected":["todos"],"fixes":[{"rank":1,"description":"name a declared table, or use a plain string","patch":"\"pragma journal_mode = wal\""}],"file":"tests/programs/err_sql_no_table.ov"}
