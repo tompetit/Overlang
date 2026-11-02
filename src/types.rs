@@ -968,6 +968,10 @@ impl<'a> Checker<'a> {
         let fsig = self.out.fns[&sig.name].clone();
         let mut scope = Vec::new();
         for (i, p) in sig.params.iter().enumerate() {
+            if let (Some(e), "result") = (ensures.first(), p.name.as_str()) {
+                // `result` in `ensures` (and in the trap's `args`) is the return value.
+                self.diag("E0109", p.span, format!("parameter `result` clashes with `result` in the `ensures` at line {}", e.span.line));
+            }
             let ty = fsig.params.get(i).map(|x| x.1.clone()).unwrap_or(Ty::Error);
             scope.push(Local { name: p.name.clone(), ty, mutable: false, site: VarRef::Param(i), span: p.span, used: false, depth: 0, warn_unused: false });
         }
@@ -1317,6 +1321,9 @@ impl<'a> Checker<'a> {
     fn unknown_name(&mut self, name: &str, span: Span) {
         let mut cands: Vec<String> = self.scopes.iter().flatten().map(|l| l.name.clone()).collect();
         cands.extend(self.fn_sites.keys().cloned());
+        if self.result_ty.is_some() {
+            cands.push("result".into());
+        }
         let fixes = nearest(name, cands.iter());
         let d = self.diag("E0100", span, format!("unknown name `{name}`"));
         d.fixes = fixes;

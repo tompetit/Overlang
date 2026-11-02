@@ -1,0 +1,16 @@
+// Float generation covers any magnitude (spec 7.1): values between 1e20 and
+// 1e299 must come up, so the fuzzer catches `big` (tests/fuzz.rs).
+fn big(x: Float) -> Int
+  requires x < 1.0e299 && x > -1.0e299
+  ensures result == 0
+{
+  if x > 1.0e20 || x < -1.0e20 { 1 } else { 0 }
+}
+
+fn main() -> Unit !io {
+  println(show(big(1.0)));
+}
+
+test one {
+  assert_eq(big(1.0), 0);
+}

@@ -1,0 +1,6 @@
+// A misspelled `result` inside `ensures` is E0100 with `result` as the fix.
+fn f() -> Int
+  ensures reslt > 0
+{
+  1
+}

@@ -42,7 +42,9 @@ pub fn test(exe: &Path, targets: &[FuzzTarget], cases: u64, seed: Option<u64>, j
     });
     let cache_path = exe.with_file_name("fuzz-cache.json");
     let old: Map<String, Value> = std::fs::read_to_string(&cache_path).ok().and_then(|s| serde_json::from_str(&s).ok()).unwrap_or_default();
-    let mut cache = Map::new();
+    // Entries this run does not reach are kept, so a `--name` run evicts nothing.
+    // shortcut: entries for C text that no longer exists are never dropped; fine until the cache moves to the store.
+    let mut cache = old.clone();
     let mut failed = false;
     for t in targets {
         let line = match old.get(&t.key) {
