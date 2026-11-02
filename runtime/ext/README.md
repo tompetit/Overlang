@@ -31,7 +31,8 @@ The Overlang name is free; the C symbol is `ov_` plus the name above (the compil
 - `sqlite_query*` return text on success and NULL on error. Encoding: a header row of column names, then
   one row per result, all rows joined by `\x1e`, columns by `\x1f`, NULL as the empty string. A query with zero
   rows is just the header row. Split on `\x1e` first, then on `\x1f`. Values containing those two control
-  characters are not escaped.
+  characters are not escaped. A value (text or blob) is cut at its first NUL byte, since the result crosses as a
+  C string; its other bytes become a Str like any foreign return (invalid UTF-8 is replaced by U+FFFD).
 - Always bind user input with the `_1s/_2s/_1i` variants; never concatenate it into SQL.
 
 ## HTTP (`ov_http`, effect `!net`, no link library)

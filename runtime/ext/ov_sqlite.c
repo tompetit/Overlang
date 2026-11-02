@@ -102,7 +102,8 @@ static int run(int64_t h, const char* sql, const param* ps, int np, int first, b
             for (int c = 0; c < ncol; c++) {
                 if (c) put(out, "\x1f", 1);
                 const char* t = (const char*)sqlite3_column_text(st, c); /* NULL -> empty */
-                put(out, t ? t : "", t ? (size_t)sqlite3_column_bytes(st, c) : 0);
+                /* column_text is NUL-terminated; the result crosses as a C string, so a value is cut at its first NUL */
+                put(out, t ? t : "", t ? strlen(t) : 0);
             }
         }
         if (ok && rc != SQLITE_DONE) ok = 0;
