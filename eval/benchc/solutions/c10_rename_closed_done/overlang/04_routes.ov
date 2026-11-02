@@ -1,0 +1,504 @@
+// Tracker routes: HTTP shims, request parsing, one handler per route, the server loop.
+
+type Request = { method: Str, path: Str, query: Str, body: Str }
+type Response = { status: Int, content_type: Str, body: Str }
+
+foreign c "ov_http.h" fn http_listen(port: Int) -> Int !net = "ov_http_listen"
+foreign c "ov_http.h" fn http_accept(server: Int) -> Int !net = "ov_http_accept"
+foreign c "ov_http.h" fn http_method(req: Int) -> Str !net = "ov_http_method"
+foreign c "ov_http.h" fn http_path(req: Int) -> Str !net = "ov_http_path"
+foreign c "ov_http.h" fn http_query(req: Int) -> Str !net = "ov_http_query"
+foreign c "ov_http.h" fn http_body(req: Int) -> Str !net = "ov_http_body"
+foreign c "ov_http.h" fn http_respond(req: Int, status: Int, content_type: Str, body: Str) -> Int !net = "ov_http_respond"
+foreign c "ov_http.h" fn form_value(body: Str, key: Str) -> Str = "ov_http_form_value"
+
+// ---- responses ----
+fn resp_html(body: Str) -> Response {
+  Response { status: 200, content_type: "text/html; charset=utf-8", body: body }
+}
+
+fn resp_text(body: Str) -> Response {
+  Response { status: 200, content_type: "text/plain; charset=utf-8", body: body }
+}
+
+fn resp_json(body: Str) -> Response {
+  Response { status: 200, content_type: "application/json", body: body }
+}
+
+fn resp_csv(body: Str) -> Response {
+  Response { status: 200, content_type: "text/csv; charset=utf-8", body: body }
+}
+
+fn resp_error(status: Int, msg: Str) -> Response {
+  Response { status: status, content_type: "text/plain; charset=utf-8", body: msg ++ "\n" }
+}
+
+// ---- input cleaning and parsing ----
+fn clean_text(s: Str) -> Str {
+  trim(replace(replace(replace(replace(s, "\r\n", "\n"), "\r", "\n"), "\u{1e}", " "), "\u{1f}", " "))
+}
+
+fn clean_line(s: Str) -> Str {
+  trim(replace(replace(replace(replace(s, "\r", " "), "\n", " "), "\u{1e}", " "), "\u{1f}", " "))
+}
+
+fn form_line(body: Str, key: Str) -> Str {
+  clean_line(form_value(body, key))
+}
+
+fn form_text(body: Str, key: Str) -> Str {
+  clean_text(form_value(body, key))
+}
+
+fn parse_nat(s: Str) -> Int
+  ensures result >= -1
+{
+  let n = str_len(s);
+  if n < 1 || n > 9 || !all(chars(s), |c| is_digit(c)) { -1 } else { unwrap_or(parse_int(s), -1) }
+}
+
+fn issue_ref(seg: Str, suffix: Str) -> Int
+  ensures result >= 0
+{
+  if !ends_with(seg, suffix) {
+    0
+  } else {
+    let n = parse_nat(substr(seg, 0, str_len(seg) - str_len(suffix)));
+    if n >= 1 { n } else { 0 }
+  }
+}
+
+fn path_segments(path: Str) -> List[Str] {
+  filter(split(path, "/"), |s| s != "")
+}
+
+fn parse_filter(query: Str) -> Result[Filter, Str] {
+  let status = form_line(query, "status");
+  if status != "" && !valid_status(status) {
+    return Err("bad status");
+  }
+  let ps = form_line(query, "priority");
+  let priority = if ps == "" { 0 } else { parse_nat(ps) };
+  if ps != "" && (priority < 1 || priority > 4) {
+    return Err("bad priority");
+  }
+  let pgs = form_line(query, "page");
+  let page = if pgs == "" { 1 } else { parse_nat(pgs) };
+  if page < 1 || page > 1_000_000 {
+    return Err("bad page");
+  }
+  Ok(Filter { status: status, assignee: form_line(query, "assignee"), label: form_line(query, "label"), priority: priority, q: form_line(query, "q"), page: page })
+}
+
+fn parse_label_names(s: Str) -> List[Str] {
+  filter(map(split(s, ","), |x| trim(x)), |x| x != "")
+}
+
+// Priority form value: "" gives dflt; -1 when not parse_nat-able (400), else the value (range checked by caller).
+fn rt_priority(s: Str, dflt: Int) -> Int {
+  if s == "" { dflt } else { parse_nat(s) }
+}
+
+fn rt_bad_priority(pr: Int) -> Response {
+  if pr < 0 { resp_error(400, "bad priority") } else { resp_error(422, "bad priority") }
+}
+
+// ---- lookups and shared responses ----
+fn with_project(db: Int, key: Str, f: fn(Project) -> Response !fs) -> Response !fs {
+  match find_project(db, key) {
+    Some(p) => f(p),
+    None => resp_error(404, "no such project: " ++ key),
+  }
+}
+
+fn with_issue(db: Int, key: Str, n: Int, f: fn(Project, Issue) -> Response !fs) -> Response !fs {
+  with_project(db, key, |p| match find_issue(db, p.id, n) {
+    Some(i) => f(p, i),
+    None => resp_error(404, "no such issue: " ++ key ++ "-" ++ show(n)),
+  })
+}
+
+fn respond_issue(db: Int, p: Project, number: Int) -> Response !fs {
+  match find_issue(db, p.id, number) {
+    Some(i) => resp_html(render_issue(i, list_comments(db, i.id), list_activity(db, i.id))),
+    None => resp_error(404, "no such issue: " ++ p.key ++ "-" ++ show(number)),
+  }
+}
+
+fn respond_project(db: Int, p: Project, f: Filter) -> Response !fs {
+  resp_html(render_project(p, list_labels(db, p.id), f, search_issues(db, p.id, f)))
+}
+
+// ---- handlers ----
+fn h_home(db: Int) -> Response !fs {
+  resp_html(render_home(list_projects(db)))
+}
+
+fn h_health() -> Response {
+  resp_text("ok\n")
+}
+
+fn h_users_page(db: Int) -> Response !fs {
+  resp_html(render_users(list_users(db)))
+}
+
+fn h_users_text(db: Int) -> Response !fs {
+  resp_text(users_text(list_users(db)))
+}
+
+fn h_create_user(db: Int, body: Str) -> Response !fs {
+  let name = form_line(body, "name");
+  if name == "" {
+    resp_error(422, "name required")
+  } else if !valid_user_name(name) {
+    resp_error(422, "bad name")
+  } else if is_some(find_user(db, name)) {
+    resp_error(422, "user exists")
+  } else {
+    create_user(db, name);
+    h_users_page(db)
+  }
+}
+
+fn h_projects_text(db: Int) -> Response !fs {
+  resp_text(projects_text(list_projects(db)))
+}
+
+fn h_create_project(db: Int, body: Str) -> Response !fs {
+  let key = form_line(body, "key");
+  let name = form_line(body, "name");
+  if key == "" {
+    resp_error(422, "key required")
+  } else if !valid_project_key(key) {
+    resp_error(422, "bad key")
+  } else if name == "" {
+    resp_error(422, "name required")
+  } else if is_some(find_project(db, key)) {
+    resp_error(422, "project exists")
+  } else {
+    create_project(db, key, name);
+    with_project(db, key, |p| respond_project(db, p, no_filter()))
+  }
+}
+
+fn h_project_page(db: Int, key: Str, query: Str) -> Response !fs {
+  with_project(db, key, |p| match parse_filter(query) {
+    Ok(f) => respond_project(db, p, f),
+    Err(m) => resp_error(400, m),
+  })
+}
+
+fn h_issues_text(db: Int, key: Str, query: Str) -> Response !fs {
+  with_project(db, key, |p| match parse_filter(query) {
+    Ok(f) => resp_text(issues_text(search_issues(db, p.id, f).issues)),
+    Err(m) => resp_error(400, m),
+  })
+}
+
+fn h_issues_csv(db: Int, key: Str) -> Response !fs {
+  with_project(db, key, |p| resp_csv(issues_csv(all_issues(db, p.id))))
+}
+
+fn rt_create_issue(db: Int, p: Project, body: Str) -> Response !fs {
+  let title = form_line(body, "title");
+  if title == "" {
+    return resp_error(422, "title required");
+  }
+  let priority = rt_priority(form_line(body, "priority"), 3);
+  if priority < 1 || priority > 4 {
+    return rt_bad_priority(priority);
+  }
+  let who = form_line(body, "assignee");
+  let mut assignee_id = 0;
+  if who != "" {
+    match find_user(db, who) {
+      Some(u) => { assignee_id = u.id; },
+      None => { return resp_error(422, "no such user: " ++ who); },
+    }
+  }
+  let mut label_ids: List[Int] = [];
+  for name in parse_label_names(form_line(body, "labels")) {
+    match find_label(db, p.id, name) {
+      Some(l) => { label_ids = push(label_ids, l.id); },
+      None => { return resp_error(422, "no such label: " ++ name); },
+    }
+  }
+  let number = create_issue(db, p.id, title, form_text(body, "body"), priority, assignee_id, unique(label_ids));
+  respond_issue(db, p, number)
+}
+
+fn h_create_issue(db: Int, key: Str, body: Str) -> Response !fs {
+  with_project(db, key, |p| rt_create_issue(db, p, body))
+}
+
+fn h_labels_text(db: Int, key: Str) -> Response !fs {
+  with_project(db, key, |p| resp_text(labels_text(list_labels(db, p.id))))
+}
+
+fn h_create_label(db: Int, key: Str, body: Str) -> Response !fs {
+  with_project(db, key, |p| {
+    let name = form_line(body, "name");
+    if name == "" {
+      resp_error(422, "name required")
+    } else if !valid_label_name(name) {
+      resp_error(422, "bad label")
+    } else if is_some(find_label(db, p.id, name)) {
+      resp_error(422, "label exists")
+    } else {
+      create_label(db, p.id, name);
+      respond_project(db, p, no_filter())
+    }
+  })
+}
+
+fn h_issue_page(db: Int, key: Str, n: Int) -> Response !fs {
+  with_issue(db, key, n, |_p, i| resp_html(render_issue(i, list_comments(db, i.id), list_activity(db, i.id))))
+}
+
+fn h_issue_json(db: Int, key: Str, n: Int) -> Response !fs {
+  with_issue(db, key, n, |_p, i| resp_json(issue_json(i, list_comments(db, i.id), list_activity(db, i.id))))
+}
+
+fn h_issue_text(db: Int, key: Str, n: Int) -> Response !fs {
+  with_issue(db, key, n, |_p, i| resp_text(issue_line(i)))
+}
+
+fn h_comments_text(db: Int, key: Str, n: Int) -> Response !fs {
+  with_issue(db, key, n, |_p, i| resp_text(comments_text(list_comments(db, i.id))))
+}
+
+fn h_activity_text(db: Int, key: Str, n: Int) -> Response !fs {
+  with_issue(db, key, n, |_p, i| resp_text(activity_text(list_activity(db, i.id))))
+}
+
+fn h_edit_issue(db: Int, key: Str, n: Int, body: Str) -> Response !fs {
+  with_issue(db, key, n, |p, i| {
+    let priority = rt_priority(form_line(body, "priority"), i.priority);
+    if priority < 1 || priority > 4 {
+      rt_bad_priority(priority)
+    } else {
+      let title = form_line(body, "title");
+      let text = form_text(body, "body");
+      edit_issue(db, i, if title == "" { i.title } else { title }, if text == "" { i.body } else { text }, priority);
+      respond_issue(db, p, i.number)
+    }
+  })
+}
+
+fn h_set_status(db: Int, key: Str, n: Int, body: Str) -> Response !fs {
+  with_issue(db, key, n, |p, i| {
+    let status = form_line(body, "status");
+    if !valid_status(status) {
+      resp_error(422, "bad status")
+    } else {
+      set_status(db, i, status);
+      respond_issue(db, p, i.number)
+    }
+  })
+}
+
+fn h_assign(db: Int, key: Str, n: Int, body: Str) -> Response !fs {
+  with_issue(db, key, n, |p, i| {
+    let who = form_line(body, "assignee");
+    let user = find_user(db, who);
+    if who != "" && is_none(user) {
+      resp_error(422, "no such user: " ++ who)
+    } else {
+      set_assignee(db, i, user);
+      respond_issue(db, p, i.number)
+    }
+  })
+}
+
+fn h_add_comment(db: Int, key: Str, n: Int, body: Str) -> Response !fs {
+  with_issue(db, key, n, |p, i| {
+    let author = form_line(body, "author");
+    let text = form_text(body, "body");
+    if author == "" {
+      resp_error(422, "author required")
+    } else {
+      match find_user(db, author) {
+        None => resp_error(422, "no such user: " ++ author),
+        Some(_) if text == "" => resp_error(422, "body required"),
+        Some(u) => {
+          add_comment(db, i, u, text);
+          respond_issue(db, p, i.number)
+        },
+      }
+    }
+  })
+}
+
+// Routes 23 and 24: same checks, then add_label or remove_label.
+fn rt_issue_label(db: Int, key: Str, n: Int, body: Str, add: Bool) -> Response !fs {
+  with_issue(db, key, n, |p, i| {
+    let name = form_line(body, "label");
+    if name == "" {
+      resp_error(422, "label required")
+    } else {
+      match find_label(db, p.id, name) {
+        None => resp_error(422, "no such label: " ++ name),
+        Some(l) => {
+          if add { add_label(db, i, l); } else { remove_label(db, i, l); }
+          respond_issue(db, p, i.number)
+        },
+      }
+    }
+  })
+}
+
+fn h_add_label(db: Int, key: Str, n: Int, body: Str) -> Response !fs {
+  rt_issue_label(db, key, n, body, true)
+}
+
+fn h_remove_label(db: Int, key: Str, n: Int, body: Str) -> Response !fs {
+  rt_issue_label(db, key, n, body, false)
+}
+
+// ---- routing and server ----
+fn route(db: Int, req: Request) -> Response !fs {
+  let b = req.body;
+  let q = req.query;
+  match (req.method, path_segments(req.path)) {
+    ("GET", []) => h_home(db),
+    ("GET", ["health"]) => h_health(),
+    ("GET", ["users"]) => h_users_page(db),
+    ("GET", ["users.txt"]) => h_users_text(db),
+    ("POST", ["users"]) => h_create_user(db, b),
+    ("GET", ["projects.txt"]) => h_projects_text(db),
+    ("POST", ["projects"]) => h_create_project(db, b),
+    ("GET", ["p", key]) => h_project_page(db, key, q),
+    ("GET", ["p", key, "issues.txt"]) => h_issues_text(db, key, q),
+    ("GET", ["p", key, "issues.csv"]) => h_issues_csv(db, key),
+    ("POST", ["p", key, "issues"]) => h_create_issue(db, key, b),
+    ("GET", ["p", key, "labels.txt"]) => h_labels_text(db, key),
+    ("POST", ["p", key, "labels"]) => h_create_label(db, key, b),
+    ("GET", ["p", key, n]) if issue_ref(n, ".json") > 0 => h_issue_json(db, key, issue_ref(n, ".json")),
+    ("GET", ["p", key, n]) if issue_ref(n, ".txt") > 0 => h_issue_text(db, key, issue_ref(n, ".txt")),
+    ("GET", ["p", key, n]) if issue_ref(n, "") > 0 => h_issue_page(db, key, issue_ref(n, "")),
+    ("GET", ["p", key, n, "comments.txt"]) if issue_ref(n, "") > 0 => h_comments_text(db, key, issue_ref(n, "")),
+    ("GET", ["p", key, n, "activity.txt"]) if issue_ref(n, "") > 0 => h_activity_text(db, key, issue_ref(n, "")),
+    ("POST", ["p", key, n, "edit"]) if issue_ref(n, "") > 0 => h_edit_issue(db, key, issue_ref(n, ""), b),
+    ("POST", ["p", key, n, "status"]) if issue_ref(n, "") > 0 => h_set_status(db, key, issue_ref(n, ""), b),
+    ("POST", ["p", key, n, "assign"]) if issue_ref(n, "") > 0 => h_assign(db, key, issue_ref(n, ""), b),
+    ("POST", ["p", key, n, "comments"]) if issue_ref(n, "") > 0 => h_add_comment(db, key, issue_ref(n, ""), b),
+    ("POST", ["p", key, n, "labels"]) if issue_ref(n, "") > 0 => h_add_label(db, key, issue_ref(n, ""), b),
+    ("POST", ["p", key, n, "labels", "remove"]) if issue_ref(n, "") > 0 => h_remove_label(db, key, issue_ref(n, ""), b),
+    _ => resp_error(404, "not found"),
+  }
+}
+
+fn parse_args(argv: List[Str]) -> (Str, Int) {
+  match argv {
+    [] => ("tracker.db", 8080),
+    [path] => (path, 8080),
+    [path, port, ..] => (path, unwrap_or(parse_int(port), 8080)),
+  }
+}
+
+fn serve(db: Int, server: Int) -> Unit !net !fs {
+  while true {
+    let h = http_accept(server);
+    if h >= 0 {
+      let r = route(db, Request { method: http_method(h), path: http_path(h), query: http_query(h), body: http_body(h) });
+      http_respond(h, r.status, r.content_type, r.body);
+    }
+  }
+}
+
+fn main() -> Unit !io !net !fs !exit {
+  let (path, port) = parse_args(args());
+  let db = db_open(path);
+  if db < 1 {
+    println("cannot open " ++ path);
+    exit(1);
+    return ();
+  }
+  let server = http_listen(port);
+  if server < 1 {
+    println("cannot listen on port " ++ show(port));
+    exit(1);
+    return ();
+  }
+  println("listening on http://127.0.0.1:" ++ show(port));
+  flush();
+  serve(db, server);
+}
+
+// ---- tests ----
+fn rt_req(m: Str, p: Str, q: Str, b: Str) -> Request {
+  Request { method: m, path: p, query: q, body: b }
+}
+
+test t_rt_parsing {
+  assert_eq(path_segments("/p/WEB/3/"), ["p", "WEB", "3"]);
+  assert_eq(path_segments("/"), []);
+  assert_eq(parse_nat("42"), 42);
+  assert_eq(parse_nat(""), -1);
+  assert_eq(parse_nat("-1"), -1);
+  assert_eq(parse_nat("1x"), -1);
+  assert_eq(parse_nat("1234567890"), -1);
+  assert_eq(issue_ref("12.json", ".json"), 12);
+  assert_eq(issue_ref("12", ""), 12);
+  assert_eq(issue_ref("0", ""), 0);
+  assert_eq(issue_ref("12.json", ""), 0);
+  assert_eq(clean_text("a\r\nb\u{1f}c "), "a\nb c");
+  assert_eq(clean_line(" a\nb "), "a b");
+  assert_eq(parse_label_names(" bug, ,ui "), ["bug", "ui"]);
+}
+
+test t_rt_filter {
+  assert_eq(parse_filter("status=open&priority=2&q=a+b&page=3"), Ok(Filter { status: "open", assignee: "", label: "", priority: 2, q: "a b", page: 3 }));
+  assert_eq(parse_filter(""), Ok(no_filter()));
+  assert_eq(parse_filter("status=closed"), Err("bad status"));
+  assert_eq(parse_filter("priority=5"), Err("bad priority"));
+  assert_eq(parse_filter("priority=x"), Err("bad priority"));
+  assert_eq(parse_filter("page=0"), Err("bad page"));
+}
+
+test t_rt_unknown_404 {
+  let nf = Response { status: 404, content_type: "text/plain; charset=utf-8", body: "not found\n" };
+  assert_eq(route(0, rt_req("GET", "/nope", "", "")), nf);
+  assert_eq(route(0, rt_req("DELETE", "/", "", "")), nf);
+  assert_eq(route(0, rt_req("POST", "/users.txt", "", "")), nf);
+  let h = route(0, rt_req("GET", "/health", "", ""));
+  assert_eq(h.status, 200);
+  assert_eq(h.body, "ok\n");
+}
+
+test t_rt_flow {
+  let db = db_open(":memory:");
+  assert(db >= 1);
+  let r1 = route(db, rt_req("POST", "/users", "", "name=alice"));
+  assert_eq(r1.status, 200);
+  assert(str_contains(r1.body, "<li>alice</li>"));
+  assert_eq(route(db, rt_req("POST", "/users", "", "name=alice")), resp_error(422, "user exists"));
+  assert_eq(route(db, rt_req("POST", "/users", "", "name=")), resp_error(422, "name required"));
+  assert_eq(route(db, rt_req("POST", "/users", "", "name=a+b")), resp_error(422, "bad name"));
+  let r2 = route(db, rt_req("POST", "/projects", "", "key=WEB&name=Web+site"));
+  assert_eq(r2.status, 200);
+  assert(str_contains(r2.body, "<h1>WEB: Web site</h1>"));
+  assert_eq(route(db, rt_req("POST", "/p/WEB/labels", "", "name=bug")).status, 200);
+  let r3 = route(db, rt_req("POST", "/p/WEB/issues", "", "title=Fix+it&labels=bug&assignee=alice&priority=2"));
+  assert_eq(r3.status, 200);
+  assert(str_contains(r3.body, "<h1>WEB-1: Fix it</h1>"));
+  assert_eq(route(db, rt_req("GET", "/p/WEB/issues.txt", "", "")).body, "WEB-1 open P2 alice [bug] Fix it\n");
+  assert_eq(route(db, rt_req("POST", "/p/WEB/1/status", "", "status=done")).status, 200);
+  assert_eq(route(db, rt_req("GET", "/p/WEB/1/activity.txt", "", "")).body, "created\nstatus done\n");
+  let j = route(db, rt_req("GET", "/p/WEB/1.json", "", ""));
+  assert_eq(j.content_type, "application/json");
+  assert(starts_with(j.body, "{\"key\":\"WEB-1\","));
+  assert_eq(route(db, rt_req("GET", "/p/NOPE", "", "")), resp_error(404, "no such project: NOPE"));
+  assert_eq(route(db, rt_req("GET", "/p/WEB/9", "", "")), resp_error(404, "no such issue: WEB-9"));
+  assert_eq(route(db, rt_req("GET", "/p/WEB", "page=0", "")), resp_error(400, "bad page"));
+  assert_eq(route(db, rt_req("POST", "/p/WEB/issues", "", "title=x&priority=9")), resp_error(422, "bad priority"));
+  assert_eq(route(db, rt_req("POST", "/p/WEB/issues", "", "title=x&priority=abc")), resp_error(400, "bad priority"));
+  assert_eq(route(db, rt_req("POST", "/p/WEB/issues", "", "title=x&labels=nope")), resp_error(422, "no such label: nope"));
+}
+
+test t_rt_args {
+  assert_eq(parse_args([]), ("tracker.db", 8080));
+  assert_eq(parse_args(["x.db"]), ("x.db", 8080));
+  assert_eq(parse_args(["x.db", "9000"]), ("x.db", 9000));
+  assert_eq(parse_args(["x.db", "nine"]), ("x.db", 8080));
+}
