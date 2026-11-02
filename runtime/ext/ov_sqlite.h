@@ -31,4 +31,13 @@ const char* ov_sqlite_query_1s(int64_t db, const char* sql, const char* p1);
 /* Like ov_sqlite_query with ? bound to the integer p1. */
 const char* ov_sqlite_query_1i(int64_t db, const char* sql, int64_t p1);
 
+/* Parameter list for the _p variants: "" for none, else fields separated by \x1f; field k (1-based) binds ?k.
+ * A field is "i" then a decimal int64 (optional -, then digits), "s" then any text, or "n" alone (NULL). An empty
+ * field, unknown tag, malformed or out-of-range integer, or more than 32 fields fails with error "bad parameter". */
+
+/* Like ov_sqlite_exec, but runs only the first statement of sql, with its ? parameters bound from params. */
+int64_t ov_sqlite_exec_p(int64_t db, const char* sql, const char* params);
+/* Like ov_sqlite_query, but runs only the first statement of sql, with its ? parameters bound from params. */
+const char* ov_sqlite_query_p(int64_t db, const char* sql, const char* params);
+
 #endif

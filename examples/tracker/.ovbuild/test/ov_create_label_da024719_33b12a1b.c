@@ -1,0 +1,31 @@
+#include "ov_types.h"
+
+bool ov_valid_label_name_abbf85dd_9802eab5(ov_str*);
+int64_t ov_db_int_36007c3c_9a9bc110(int64_t, ov_str*, ov_list*);
+ov_str* ov_p_int_4640db5b_f21961d6(int64_t);
+ov_str* ov_p_str_73f85a82_17f92fe7(ov_str*);
+int64_t ov_create_label_da024719_33b12a1b(int64_t p0, int64_t p1, ov_str* p2);
+
+int64_t ov_create_label_da024719_33b12a1b(int64_t p0, int64_t p1, ov_str* p2) {
+  bool t1 = ov_valid_label_name_abbf85dd_9802eab5(p2);
+  if (!t1) {
+    ov_sb* ovsb = ov_sb_new();
+    ov_sb_push_cstr(ovsb, "{");
+    ov_sb_push_cstr(ovsb, "\"db\": ");
+    ov_sb_push(ovsb, ovsup_json_str(ov_show_int(p0)));
+    ov_sb_push_cstr(ovsb, ", \"project_id\": ");
+    ov_sb_push(ovsb, ovsup_json_str(ov_show_int(p1)));
+    ov_sb_push_cstr(ovsb, ", \"name\": ");
+    ov_sb_push(ovsb, ovsup_json_str(ov_show_str(p2)));
+    ov_sb_push_cstr(ovsb, "}");
+    ov_trap_contract("requires", "create_label", "da024719c092e758180a758bc3ae3d568da3c57898cae3a270c67c656dd989fb", "valid_label_name(name)", ov_sb_finish(ovsb)->data);
+  }
+  ov_str* t2 = ov_str_new("insert into labels (project_id, name) values (\?, \?) returning id", 64);
+  ov_str* t3 = ov_p_int_4640db5b_f21961d6(p1);
+  ov_str* t4 = ov_p_str_73f85a82_17f92fe7(p2);
+  ov_list* t5 = ov_list_new(2);
+  t5->items[0] = (ov_value){.p = t3};
+  t5->items[1] = (ov_value){.p = t4};
+  int64_t t6 = ov_db_int_36007c3c_9a9bc110(p0, t2, t5);
+  return t6;
+}

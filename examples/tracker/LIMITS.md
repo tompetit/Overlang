@@ -1,0 +1,2 @@
+- render: a long `++` chain (about 50 operands) stores fine but `ov check`/`ov test` from the store fail with "bad AST ...: recursion limit exceeded" (serde_json depth 128); 03_render builds long pages with join([...], "") over a flat list instead.
+- models: the linked SQLite is 3.40, which lacks `group_concat(x, ',' order by ...)` (3.44+); issue_select_sql aggregates an ordered subquery instead and row_issue sorts the labels, so its SQL text differs from section 1.1.
