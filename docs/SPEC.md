@@ -177,6 +177,13 @@ is invisible outside the function.
 Precedence, lowest to highest: `||`, `&&`, comparisons, `++`, `+ -`, `* / %`,
 unary `- !`, postfix (`?`, call, field, index). Comparisons do not chain.
 
+Nesting is at most 200 levels deep (E0002, without `expected`). Each
+expression, block, pattern and type is one level inside the one that contains
+it, and each binary or postfix operator in a chain adds one (`a + b + c` and
+`f(x).y` are two deeper than their first operand). The limit keeps every
+recursive pass of the compiler within its stack; bind part of the expression
+with `let` to go deeper.
+
 - Literals, variables, tuples `(a, b)`, lists `[a, b, c]`.
 - Call: `f(a, b)`. Uniform call syntax: `a.f(b)` means `f(a, b)` whenever `a`
   has no field named `f`. The printer preserves whichever form was written.
@@ -705,7 +712,7 @@ Codes:
 |---|---|---|
 | E0000 | Command-line or file error | `message` |
 | E0001 | Lexical error | `message` |
-| E0002 | Parse error | `expected` tokens; for an uppercase value name, `fixes`: the snake-case name |
+| E0002 | Parse error | `expected` tokens (none for nesting deeper than 200 levels); for an uppercase value name, `fixes`: the snake-case name |
 | E0100 | Unknown name | `fixes`: nearest names by edit distance |
 | E0101 | Type mismatch | `expected`, `actual` types |
 | E0102 | Wrong argument count | `expected`, `actual` counts |

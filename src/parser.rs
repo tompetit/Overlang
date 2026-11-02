@@ -38,6 +38,7 @@ pub fn parse_with(src: &str, allow_intrinsic: bool, first_id: NodeId) -> (Progra
         next_id: first_id,
         in_ensures: false,
         allow_intrinsic,
+        depth: 0,
     };
     let mut diags = lexed.diags;
     let mut items = Vec::new();
@@ -49,6 +50,7 @@ pub fn parse_with(src: &str, allow_intrinsic: bool, first_id: NodeId) -> (Progra
             break;
         }
         let start = p.pos;
+        p.depth = 0;
         match p.item() {
             Ok(item) => items.push(item),
             Err(d) => {
@@ -72,6 +74,8 @@ struct Parser {
     /// Inside an `ensures` clause, the identifier `result` is `ResultRef`.
     in_ensures: bool,
     allow_intrinsic: bool,
+    /// Current nesting, bounded by `MAX_DEPTH`. Errors leave it raised; each item resets it.
+    depth: usize,
 }
 
 fn binop(tok: &Tok) -> Option<(BinOp, u8)> {
@@ -98,6 +102,10 @@ fn binop(tok: &Tok) -> Option<(BinOp, u8)> {
 const BINOP_TOKENS: [&str; 14] = ["||", "&&", "==", "!=", "<", "<=", ">", ">=", "++", "+", "-", "*", "/", "%"];
 
 const COMPARISON_PREC: u8 = 3;
+
+/// Nesting limit (spec section 6), low enough that every recursive pass,
+/// even unoptimized on an 8 MB stack, stays within its stack.
+pub const MAX_DEPTH: usize = 200;
 
 /// `Strongest_Extension` -> `strongest_extension`, `MinPath` -> `min_path`,
 /// `N` -> `n`; a keyword result gets a trailing `_`.
@@ -190,6 +198,15 @@ impl Parser {
         let mut d = Diag::error("E0002", self.span(), format!("unexpected {found}"));
         d.expected = Some(self.expected.clone());
         d
+    }
+
+    /// One level deeper: an expression, block, pattern, type or binary operator.
+    fn enter(&mut self) -> PResult<()> {
+        self.depth += 1;
+        if self.depth > MAX_DEPTH {
+            return Err(Diag::error("E0002", self.span(), format!("nesting deeper than {MAX_DEPTH} levels; bind part of the expression with `let`")));
+        }
+        Ok(())
     }
 
     fn ident(&mut self) -> PResult<String> {
@@ -487,6 +504,7 @@ impl Parser {
     // ------------------------------------------------------------ types
 
     fn ty(&mut self) -> PResult<TypeExpr> {
+        self.enter()?;
         let start = self.span();
         let kind = match self.peek().clone() {
             Tok::TypeName(name) => {
@@ -504,6 +522,7 @@ impl Parser {
                 let (mut elems, trailing) = self.comma_list(&Tok::RParen, |p| p.ty())?;
                 if elems.len() == 1 && !trailing {
                     // Grouping, needed to write `-> (fn() -> Int) !io`.
+                    self.depth -= 1;
                     return Ok(elems.pop().unwrap());
                 }
                 TypeKind::Tuple(elems)
@@ -522,12 +541,14 @@ impl Parser {
                 return Err(self.error());
             }
         };
+        self.depth -= 1;
         Ok(TypeExpr { kind, span: start.to(self.prev_span()) })
     }
 
     // ------------------------------------------------------------ blocks and statements
 
     fn block(&mut self) -> PResult<Block> {
+        self.enter()?;
         let start = self.expect(&Tok::LBrace)?;
         let mut stmts = Vec::new();
         let mut tail = None;
@@ -591,6 +612,7 @@ impl Parser {
             };
             stmts.push(Stmt { kind, span: sstart.to(self.prev_span()) });
         }
+        self.depth -= 1;
         Ok(Block { stmts, tail, span: start.to(self.prev_span()) })
     }
 
@@ -612,6 +634,7 @@ impl Parser {
         let start = self.span();
         let mut lhs = self.unary()?;
         let mut saw_comparison = false;
+        let depth = self.depth;
         loop {
             let Some((op, prec)) = binop(self.peek()) else {
                 for t in BINOP_TOKENS {
@@ -623,10 +646,12 @@ impl Parser {
                 break;
             }
             saw_comparison |= prec == COMPARISON_PREC;
+            self.enter()?;
             self.bump();
             let rhs = self.binary(prec + 1)?;
             lhs = self.expr_node(ExprKind::Binary { op, lhs: Box::new(lhs), rhs: Box::new(rhs) }, start);
         }
+        self.depth = depth;
         Ok(lhs)
     }
 
@@ -637,15 +662,22 @@ impl Parser {
             Tok::Bang => UnOp::Not,
             _ => return self.postfix(),
         };
+        self.enter()?;
         self.bump();
         let expr = Box::new(self.unary()?);
+        self.depth -= 1;
         Ok(self.expr_node(ExprKind::Unary { op, expr }, start))
     }
 
     fn postfix(&mut self) -> PResult<Expr> {
         let start = self.span();
         let mut e = self.primary()?;
+        let depth = self.depth;
         loop {
+            // Like a binary operator, each postfix nests the left side one level deeper.
+            if matches!(self.peek(), Tok::Question | Tok::LParen | Tok::LBracket | Tok::Dot) {
+                self.enter()?;
+            }
             if self.eat(&Tok::Question) {
                 e = self.expr_node(ExprKind::Try(Box::new(e)), start);
             } else if self.eat(&Tok::LParen) {
@@ -675,12 +707,14 @@ impl Parser {
                     e = self.expr_node(ExprKind::Field { base: Box::new(e), name }, start);
                 }
             } else {
+                self.depth = depth;
                 return Ok(e);
             }
         }
     }
 
     fn primary(&mut self) -> PResult<Expr> {
+        self.enter()?;
         let start = self.span();
         let kind = match self.peek().clone() {
             Tok::Int(n) => {
@@ -722,7 +756,10 @@ impl Parser {
                 let (mut elems, trailing) = self.comma_list(&Tok::RParen, |p| p.expr())?;
                 match elems.len() {
                     0 => ExprKind::Unit,
-                    1 if !trailing => return Ok(elems.pop().unwrap()),
+                    1 if !trailing => {
+                        self.depth -= 1;
+                        return Ok(elems.pop().unwrap());
+                    }
                     _ => ExprKind::Tuple(elems),
                 }
             }
@@ -739,7 +776,11 @@ impl Parser {
                 self.bump();
                 ExprKind::Lambda { params: Vec::new(), body: Box::new(self.expr()?) }
             }
-            Tok::If => return self.if_expr(),
+            Tok::If => {
+                let e = self.if_expr();
+                self.depth -= 1;
+                return e;
+            }
             Tok::Match => {
                 self.bump();
                 let scrutinee = Box::new(self.expr()?);
@@ -769,6 +810,7 @@ impl Parser {
                 return Err(self.error());
             }
         };
+        self.depth -= 1;
         Ok(self.expr_node(kind, start))
     }
 
@@ -810,7 +852,8 @@ impl Parser {
         let then_branch = self.block()?;
         let else_branch = if self.eat(&Tok::Else) {
             if self.peek() == &Tok::If {
-                Some(Box::new(self.if_expr()?))
+                // Through `primary`, so each `else if` counts one level.
+                Some(Box::new(self.primary()?))
             } else {
                 let bstart = self.span();
                 let b = self.block()?;
@@ -838,6 +881,7 @@ impl Parser {
     }
 
     fn pattern_single(&mut self) -> PResult<Pat> {
+        self.enter()?;
         let start = self.span();
         let kind = match self.peek().clone() {
             Tok::Underscore => {
@@ -884,7 +928,10 @@ impl Parser {
                 let (mut elems, trailing) = self.comma_list(&Tok::RParen, |p| p.pattern())?;
                 match elems.len() {
                     0 => PatKind::Unit,
-                    1 if !trailing => return Ok(elems.pop().unwrap()),
+                    1 if !trailing => {
+                        self.depth -= 1;
+                        return Ok(elems.pop().unwrap());
+                    }
                     _ => PatKind::Tuple(elems),
                 }
             }
@@ -907,6 +954,7 @@ impl Parser {
                 return Err(self.error());
             }
         };
+        self.depth -= 1;
         Ok(self.pat_node(kind, start))
     }
 
