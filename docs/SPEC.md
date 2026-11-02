@@ -177,6 +177,13 @@ is invisible outside the function.
 Precedence, lowest to highest: `||`, `&&`, comparisons, `++`, `+ -`, `* / %`,
 unary `- !`, postfix (`?`, call, field, index). Comparisons do not chain.
 
+Nesting is at most 200 levels deep (E0002, without `expected`). Each
+expression, block, pattern and type is one level inside the one that contains
+it, and each binary or postfix operator in a chain adds one (`a + b + c` and
+`f(x).y` are two deeper than their first operand). The limit keeps every
+recursive pass of the compiler within its stack; bind part of the expression
+with `let` to go deeper.
+
 - Literals, variables, tuples `(a, b)`, lists `[a, b, c]`.
 - Call: `f(a, b)`. Uniform call syntax: `a.f(b)` means `f(a, b)` whenever `a`
   has no field named `f`. The printer preserves whichever form was written.
@@ -200,7 +207,8 @@ unary `- !`, postfix (`?`, call, field, index). Comparisons do not chain.
   `[p, p]`, `[p, ..rest]`, `[..init, p]`, and `p | p` alternatives binding
   the same names. The rest may be written as a bare `..` (`[p, ..]`,
   `[.., p]`), which binds nothing; in the AST and in hashing it is a rest
-  whose name is `_`, distinct from a named rest.
+  whose name is `_`, distinct from a named rest. A literal pattern matches
+  the values `==` to it, so the Float patterns `0.0` and `-0.0` are the same.
 - Lambda: `|x, y| expr` or `|x, y| { block }`. Captures by value.
 - Block: `{ stmt; stmt; expr }`. The final expression is the value; a block
   ending in `;` has type Unit.
@@ -270,7 +278,9 @@ fn total(o: Order) -> Int
 
 - Any number of `requires` and `ensures` clauses. Each is a pure Bool
   expression (E0108 if it uses effects). `requires` sees the parameters.
-  `ensures` sees the parameters and `result`.
+  `ensures` sees the parameters and `result`. So a function with `ensures`
+  cannot have a parameter named `result`, and `result` cannot be bound
+  inside `ensures` (both E0002).
 - Contracts are compiled to runtime checks on entry and exit. A failed check
   traps with kind `requires` or `ensures`.
 - `assert(c)` and `assert_eq(a, b)` are prelude functions that trap with kind
@@ -705,7 +715,7 @@ Codes:
 |---|---|---|
 | E0000 | Command-line or file error | `message` |
 | E0001 | Lexical error | `message` |
-| E0002 | Parse error | `expected` tokens; for an uppercase value name, `fixes`: the snake-case name |
+| E0002 | Parse error | `expected` tokens (none for nesting deeper than 200 levels); for an uppercase value name, `fixes`: the snake-case name |
 | E0100 | Unknown name | `fixes`: nearest names by edit distance |
 | E0101 | Type mismatch | `expected`, `actual` types |
 | E0102 | Wrong argument count | `expected`, `actual` counts |

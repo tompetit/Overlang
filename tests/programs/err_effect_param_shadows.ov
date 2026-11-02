@@ -1,0 +1,11 @@
+// An effect parameter named like a label hides that label in its signature,
+// so adding the label cannot fix a call that performs it: E0111, not an
+// E0105 whose fix loops. Audit finding: effects e3.
+fn app[!io](f: fn(Int) -> Int !io) -> Int !io {
+  println("printing from app");
+  f(1)
+}
+
+fn main() -> Unit !io {
+  println(show(app(|x| x + 1)));
+}

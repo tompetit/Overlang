@@ -1,0 +1,390 @@
+// Tracker render module: pure HTML, text, JSON and CSV formatting (SPEC.md sections 2.3 to 2.6).
+
+foreign c "ov_http.h" fn html_escape(s: Str) -> Str = "ov_http_html_escape"
+
+// ---- encoders ----
+
+// Two hex digits of a byte (0..255) from the given 16-digit alphabet.
+fn r_hex2(b: Int, digits: Str) -> Str {
+  substr(digits, b / 16, b / 16 + 1) ++ substr(digits, b % 16, b % 16 + 1)
+}
+
+// The UTF-8 bytes of a code point.
+fn r_utf8(cp: Int) -> List[Int] {
+  if cp < 128 {
+    [cp]
+  } else if cp < 2048 {
+    [192 + cp / 64, 128 + cp % 64]
+  } else if cp < 65536 {
+    [224 + cp / 4096, 128 + cp / 64 % 64, 128 + cp % 64]
+  } else {
+    [240 + cp / 262144, 128 + cp / 4096 % 64, 128 + cp / 64 % 64, 128 + cp % 64]
+  }
+}
+
+// Section 2.6.
+fn url_encode(s: Str) -> Str {
+  let mut out = "";
+  for c in chars(s) {
+    if is_alnum(c) || c == "-" || c == "_" || c == "." || c == "~" {
+      out = out ++ c;
+    } else {
+      let cp = unwrap_or(code_point(c), 0);
+      out = out ++ join(map(r_utf8(cp), |b| "%" ++ r_hex2(b, "0123456789ABCDEF")), "");
+    }
+  }
+  out
+}
+
+// Section 2.3, quotes included.
+fn json_str(s: Str) -> Str {
+  let mut out = "\"";
+  for c in chars(s) {
+    let cp = unwrap_or(code_point(c), 0);
+    out = out ++ (
+      if c == "\\" {
+        "\\\\"
+      } else if c == "\"" {
+        "\\\""
+      } else if c == "\n" {
+        "\\n"
+      } else if c == "\r" {
+        "\\r"
+      } else if c == "\t" {
+        "\\t"
+      } else if cp < 32 {
+        "\\u00" ++ r_hex2(cp, "0123456789abcdef")
+      } else {
+        c
+      }
+    );
+  }
+  out ++ "\""
+}
+
+// Section 2.3.
+fn csv_field(s: Str) -> Str {
+  if str_contains(s, ",") || str_contains(s, "\"") || str_contains(s, "\n") || str_contains(s, "\r") {
+    "\"" ++ replace(s, "\"", "\"\"") ++ "\""
+  } else {
+    s
+  }
+}
+
+// ---- markdown-lite ----
+
+// True when the code points of pat occur in cs starting at k.
+fn r_at(cs: List[Str], k: Int, pat: Str) -> Bool {
+  let ps = chars(pat);
+  k >= 0 && k + len(ps) <= len(cs) && slice(cs, k, k + len(ps)) == ps
+}
+
+// First position p >= from where pat occurs in cs, or -1.
+fn r_find(cs: List[Str], pat: Str, from: Int) -> Int {
+  let mut p = max(from, 0);
+  let mut found = -1;
+  while found < 0 && p < len(cs) {
+    if r_at(cs, p, pat) {
+      found = p;
+    }
+    p = p + 1;
+  }
+  found
+}
+
+fn r_cut(cs: List[Str], a: Int, b: Int) -> Str {
+  join(slice(cs, a, b), "")
+}
+
+// Section 2.5 inline rules over already-escaped text.
+fn r_inline_rest(t: Str) -> Str {
+  let cs = chars(t);
+  let n = len(cs);
+  let mut out = "";
+  let mut k = 0;
+  while k < n {
+    let c = cs[k];
+    let tick = if c == "`" { r_find(cs, "`", k + 1) } else { -1 };
+    let bold = if tick < 0 && r_at(cs, k, "**") { r_find(cs, "**", k + 3) } else { -1 };
+    let j = if tick < 0 && bold < 0 && c == "[" { r_find(cs, "](", k + 1) } else { -1 };
+    let e = if j >= 0 { r_find(cs, ")", j + 2) } else { -1 };
+    let url = if e >= 0 { r_cut(cs, j + 2, e) } else { "" };
+    let is_link = e >= 0 && (starts_with(url, "http://") || starts_with(url, "https://") || starts_with(url, "/"));
+    if tick >= 0 {
+      out = out ++ "<code>" ++ r_cut(cs, k + 1, tick) ++ "</code>";
+      k = tick + 1;
+    } else if bold >= 0 {
+      out = out ++ "<strong>" ++ r_inline_rest(r_cut(cs, k + 2, bold)) ++ "</strong>";
+      k = bold + 2;
+    } else if is_link {
+      out = out ++ "<a href=\"" ++ url ++ "\">" ++ r_cut(cs, k + 1, j) ++ "</a>";
+      k = e + 1;
+    } else {
+      out = out ++ c;
+      k = k + 1;
+    }
+  }
+  out
+}
+
+// Section 2.5: escape, then inline rules.
+fn md_inline(s: Str) -> Str {
+  r_inline_rest(html_escape(s))
+}
+
+// Section 2.5: paragraphs.
+fn md_render(s: Str) -> Str {
+  let mut paras: List[Str] = [];
+  let mut cur: List[Str] = [];
+  for l in lines(s) {
+    if trim(l) == "" {
+      if len(cur) > 0 {
+        paras = push(paras, join(cur, "\n"));
+        cur = [];
+      }
+    } else {
+      cur = push(cur, l);
+    }
+  }
+  if len(cur) > 0 {
+    paras = push(paras, join(cur, "\n"));
+  }
+  join(map(paras, |p| "<p>" ++ md_inline(p) ++ "</p>"), "\n")
+}
+
+// ---- small helpers ----
+
+// Section 2.4 page skeleton.
+fn html_page(title: Str, body: Str) -> Str {
+  "<!doctype html><html><head><meta charset=\"utf-8\"><title>" ++ html_escape(title)
+    ++ "</title></head><body><nav><a href=\"/\">Tracker</a> <a href=\"/users\">Users</a></nav>"
+    ++ body ++ "</body></html>"
+}
+
+// <a href="mailto:{email}">{text}</a>, both escaped.
+fn mailto(email: Str, text: Str) -> Str {
+  "<a href=\"mailto:" ++ html_escape(email) ++ "\">" ++ html_escape(text) ++ "</a>"
+}
+
+// "-" for "", else s.
+fn dash_if_empty(s: Str) -> Str {
+  if s == "" { "-" } else { s }
+}
+
+// Names joined by ", ", or "-" when empty.
+fn labels_display(names: List[Str]) -> Str {
+  dash_if_empty(join(names, ", "))
+}
+
+// Section 2.6.
+fn filter_query(f: Filter, page: Int) -> Str {
+  let pairs = [("status", f.status), ("assignee", f.assignee), ("label", f.label), ("priority", if f.priority > 0 { show(f.priority) } else { "" }), ("q", f.q)];
+  let set = filter(pairs, |kv| kv.1 != "");
+  join(push(map(set, |kv| kv.0 ++ "=" ++ url_encode(kv.1)), "page=" ++ show(page)), "&")
+}
+
+// ---- HTML pages ----
+
+fn render_home(projects: List[Project]) -> Str {
+  html_page("Tracker", "<h1>Projects</h1><ul class=\"projects\">"
+    ++ join(map(projects, |p| "<li><a href=\"/p/" ++ html_escape(p.key) ++ "\">" ++ html_escape(p.key) ++ "</a> " ++ html_escape(p.name) ++ "</li>"), "")
+    ++ "</ul><form method=\"post\" action=\"/projects\"><input name=\"key\" placeholder=\"KEY\"> <input name=\"name\" placeholder=\"name\"> <button>create project</button></form>")
+}
+
+fn render_users(users: List[User]) -> Str {
+  html_page("Users", "<h1>Users</h1><ul class=\"users\">"
+    ++ join(map(users, |u| "<li>" ++ html_escape(u.name) ++ (if u.email == "" { "" } else { " " ++ mailto(u.email, u.email) }) ++ "</li>"), "")
+    ++ "</ul><form method=\"post\" action=\"/users\"><input name=\"name\" placeholder=\"name\"> <input name=\"email\" placeholder=\"email\"> <button>create user</button></form>")
+}
+
+fn render_issue_row(i: Issue) -> Str {
+  "<tr><td><a href=\"/p/" ++ html_escape(i.project_key) ++ "/" ++ show(i.number) ++ "\">" ++ html_escape(issue_key(i))
+    ++ "</a></td><td>" ++ html_escape(i.title) ++ "</td><td>" ++ html_escape(i.status)
+    ++ "</td><td>P" ++ show(i.priority) ++ "</td><td>" ++ html_escape(dash_if_empty(i.assignee))
+    ++ "</td><td>" ++ html_escape(labels_display(i.labels)) ++ "</td></tr>"
+}
+
+fn r_page_link(p: Project, f: Filter, n: Int, text: Str) -> Str {
+  " <a href=\"" ++ html_escape("/p/" ++ p.key ++ "?" ++ filter_query(f, n)) ++ "\">" ++ text ++ "</a>"
+}
+
+fn render_pager(p: Project, f: Filter, pg: IssuePage) -> Str {
+  "<p class=\"pager\">Page " ++ show(pg.page) ++ " of " ++ show(pg.pages) ++ " (" ++ show(pg.total) ++ " issues)"
+    ++ (if pg.page > 1 { r_page_link(p, f, pg.page - 1, "prev") } else { "" })
+    ++ (if pg.page < pg.pages { r_page_link(p, f, pg.page + 1, "next") } else { "" })
+    ++ "</p>"
+}
+
+fn r_input(name: Str, value: Str, placeholder: Str) -> Str {
+  "<input name=\"" ++ name ++ "\" value=\"" ++ html_escape(value) ++ "\" placeholder=\"" ++ placeholder ++ "\">"
+}
+
+// Long pages are built with join over a flat list: a long `++` chain nests too deep for the store's AST reader (LIMITS.md).
+fn render_project(p: Project, labels: List[Label], f: Filter, pg: IssuePage) -> Str {
+  let key = html_escape(p.key);
+  let pri = if f.priority > 0 { show(f.priority) } else { "" };
+  html_page(p.key ++ ": " ++ p.name, join([
+    "<h1>", key, ": ", html_escape(p.name), "</h1>",
+    "<form method=\"get\" action=\"/p/", key, "\">", r_input("status", f.status, "status"),
+    " ", r_input("assignee", f.assignee, "assignee"), " ", r_input("label", f.label, "label"),
+    " ", r_input("priority", pri, "priority"), " ", r_input("q", f.q, "search"),
+    " <button>filter</button></form>",
+    "<table class=\"issues\"><tr><th>Issue</th><th>Title</th><th>Status</th><th>Priority</th><th>Assignee</th><th>Labels</th></tr>",
+    join(map(pg.issues, |i| render_issue_row(i)), ""), "</table>",
+    render_pager(p, f, pg),
+    "<h2>Labels</h2><p class=\"labels\">", html_escape(labels_display(map(labels, |l| l.name))), "</p>",
+    "<form method=\"post\" action=\"/p/", key, "/labels\"><input name=\"name\" placeholder=\"label\"> <button>add label</button></form>",
+    "<h2>New issue</h2><form method=\"post\" action=\"/p/", key,
+    "/issues\"><input name=\"title\" placeholder=\"title\"> <input name=\"priority\" value=\"3\"> <input name=\"assignee\" placeholder=\"assignee\"> <input name=\"labels\" placeholder=\"labels\"> <textarea name=\"body\"></textarea> <button>create issue</button></form>",
+  ], ""))
+}
+
+fn r_label_form(b: Str, action: Str, button: Str) -> Str {
+  "<form method=\"post\" action=\"" ++ b ++ action ++ "\"><input name=\"label\" placeholder=\"label\"> <button>" ++ button ++ "</button></form>"
+}
+
+fn render_issue(i: Issue, comments: List[Comment], activity: List[Activity]) -> Str {
+  let b = "/p/" ++ html_escape(i.project_key) ++ "/" ++ show(i.number);
+  let tv = if i.status == "open" { ("closed", "close") } else { ("open", "reopen") };
+  html_page(issue_key(i) ++ ": " ++ i.title, join([
+    "<h1>", html_escape(issue_key(i)), ": ", html_escape(i.title), "</h1>",
+    "<p class=\"meta\">Status: <span class=\"status\">", html_escape(i.status), "</span> | Priority: P", show(i.priority),
+    " | Assignee: ", if i.assignee_email == "" { html_escape(dash_if_empty(i.assignee)) } else { mailto(i.assignee_email, i.assignee) }, " | Labels: ", html_escape(labels_display(i.labels)), "</p>",
+    "<div class=\"body\">", md_render(i.body), "</div>",
+    "<form method=\"post\" action=\"", b, "/status\"><input type=\"hidden\" name=\"status\" value=\"", tv.0, "\"><button>", tv.1, "</button></form>",
+    "<form method=\"post\" action=\"", b, "/assign\"><input name=\"assignee\" value=\"", html_escape(i.assignee), "\"> <button>assign</button></form>",
+    r_label_form(b, "/labels", "add label"), r_label_form(b, "/labels/remove", "remove label"),
+    "<form method=\"post\" action=\"", b, "/edit\"><input name=\"title\" value=\"", html_escape(i.title), "\"> <input name=\"priority\" value=\"",
+    show(i.priority), "\"> <textarea name=\"body\">", html_escape(i.body), "</textarea> <button>save</button></form>",
+    "<h2>Comments</h2><ul class=\"comments\">",
+    join(map(comments, |c| "<li><b>" ++ html_escape(c.author) ++ "</b> " ++ md_render(c.body) ++ "</li>"), ""), "</ul>",
+    "<form method=\"post\" action=\"", b, "/comments\"><input name=\"author\" placeholder=\"author\"> <textarea name=\"body\"></textarea> <button>comment</button></form>",
+    "<h2>Activity</h2><ul class=\"activity\">",
+    join(map(activity, |a| "<li>" ++ html_escape(activity_line(a)) ++ "</li>"), ""), "</ul>",
+  ], ""))
+}
+
+// ---- text, JSON, CSV ----
+
+fn issue_line(i: Issue) -> Str {
+  issue_key(i) ++ " " ++ i.status ++ " P" ++ show(i.priority) ++ " " ++ dash_if_empty(i.assignee)
+    ++ " [" ++ join(i.labels, ",") ++ "] " ++ i.title ++ "\n"
+}
+
+fn issues_text(xs: List[Issue]) -> Str {
+  join(map(xs, |i| issue_line(i)), "")
+}
+
+fn users_text(xs: List[User]) -> Str {
+  join(map(xs, |u| show(u.id) ++ " " ++ u.name ++ " " ++ dash_if_empty(u.email) ++ "\n"), "")
+}
+
+fn projects_text(xs: List[Project]) -> Str {
+  join(map(xs, |p| p.key ++ " " ++ p.name ++ "\n"), "")
+}
+
+fn labels_text(xs: List[Label]) -> Str {
+  join(map(xs, |l| l.name ++ "\n"), "")
+}
+
+fn comments_text(xs: List[Comment]) -> Str {
+  join(map(xs, |c| c.author ++ ": " ++ replace(c.body, "\n", " ") ++ "\n"), "")
+}
+
+fn activity_line(a: Activity) -> Str {
+  if a.detail == "" { a.kind } else { a.kind ++ " " ++ a.detail }
+}
+
+fn activity_text(xs: List[Activity]) -> Str {
+  join(map(xs, |a| activity_line(a) ++ "\n"), "")
+}
+
+// Section 2.3 JSON, ending "\n".
+fn issue_json(i: Issue, comments: List[Comment], activity: List[Activity]) -> Str {
+  join([
+    "{\"key\":", json_str(issue_key(i)), ",\"project\":", json_str(i.project_key), ",\"number\":", show(i.number),
+    ",\"title\":", json_str(i.title), ",\"body\":", json_str(i.body), ",\"status\":", json_str(i.status),
+    ",\"priority\":", show(i.priority), ",\"assignee\":", if i.assignee == "" { "null" } else { json_str(i.assignee) },
+    ",\"assignee_email\":", if i.assignee_email == "" { "null" } else { json_str(i.assignee_email) },
+    ",\"labels\":[", join(map(i.labels, |l| json_str(l)), ","), "]",
+    ",\"comments\":[", join(map(comments, |c| "{\"author\":" ++ json_str(c.author) ++ ",\"body\":" ++ json_str(c.body) ++ "}"), ","), "]",
+    ",\"activity\":[", join(map(activity, |a| "{\"kind\":" ++ json_str(a.kind) ++ ",\"detail\":" ++ json_str(a.detail) ++ "}"), ","), "]}\n",
+  ], "")
+}
+
+// Section 2.3 CSV, header line included.
+fn issues_csv(xs: List[Issue]) -> Str {
+  "key,title,status,priority,assignee,labels,body\n"
+    ++ join(map(xs, |i| join(map([issue_key(i), i.title, i.status, show(i.priority), i.assignee, join(i.labels, ";"), i.body], |s| csv_field(s)), ",") ++ "\n"), "")
+}
+
+// ---- tests ----
+
+fn r_sample_issue() -> Issue {
+  Issue { id: 1, project_id: 1, project_key: "WEB", number: 7, title: "Fix \"login\"", body: "line1\nline2", status: "open", priority: 2, assignee: "alice", assignee_email: "alice@example.org", labels: ["bug", "ui"] }
+}
+
+fn r_sample_project() -> Project {
+  Project { id: 1, key: "WEB", name: "Web <site>" }
+}
+
+test t_r_markdown {
+  assert_eq(md_render("a **b** `c<d>` [x](http://e.com)\n\nnext"), "<p>a <strong>b</strong> <code>c&lt;d&gt;</code> <a href=\"http://e.com\">x</a></p>\n<p>next</p>");
+  assert_eq(md_render("[x](javascript:alert(1)) **open"), "<p>[x](javascript:alert(1)) **open</p>");
+  assert_eq(md_render("<script>"), "<p>&lt;script&gt;</p>");
+  assert_eq(md_render("line1\nline2"), "<p>line1\nline2</p>");
+  assert_eq(md_render("  \n\na"), "<p>a</p>");
+  assert_eq(md_render(""), "");
+  assert_eq(md_render("**a [l](/x) b**"), "<p><strong>a <a href=\"/x\">l</a> b</strong></p>");
+}
+
+test t_r_text_json {
+  let iss = r_sample_issue();
+  assert_eq(issue_line(iss), "WEB-7 open P2 alice [bug,ui] Fix \"login\"\n");
+  assert_eq(issue_line(Issue { ..iss, assignee: "", labels: [] }), "WEB-7 open P2 - [] Fix \"login\"\n");
+  assert_eq(activity_text([Activity { id: 1, issue_id: 1, kind: "created", detail: "" }, Activity { id: 2, issue_id: 1, kind: "status", detail: "closed" }]), "created\nstatus closed\n");
+  assert_eq(comments_text([Comment { id: 1, issue_id: 1, author: "bob", body: "a\nb" }]), "bob: a b\n");
+  assert_eq(json_str("a\"b\\c\nd\u{1}é"), "\"a\\\"b\\\\c\\nd\\u0001é\"");
+  let j = issue_json(Issue { ..iss, number: 1, title: "Say \"hi\"", assignee: "", assignee_email: "" }, [Comment { id: 1, issue_id: 1, author: "bob", body: "ok" }], [Activity { id: 1, issue_id: 1, kind: "created", detail: "" }]);
+  assert_eq(j, "{\"key\":\"WEB-1\",\"project\":\"WEB\",\"number\":1,\"title\":\"Say \\\"hi\\\"\",\"body\":\"line1\\nline2\",\"status\":\"open\",\"priority\":2,\"assignee\":null,\"assignee_email\":null,\"labels\":[\"bug\",\"ui\"],\"comments\":[{\"author\":\"bob\",\"body\":\"ok\"}],\"activity\":[{\"kind\":\"created\",\"detail\":\"\"}]}\n");
+}
+
+test t_r_csv {
+  let iss = r_sample_issue();
+  assert_eq(csv_field("plain"), "plain");
+  assert_eq(csv_field("a,b"), "\"a,b\"");
+  assert_eq(csv_field("say \"hi\""), "\"say \"\"hi\"\"\"");
+  assert_eq(issues_csv([Issue { ..iss, number: 1, title: "a,b", body: "x\ny", status: "open", priority: 3, assignee: "" }]), "key,title,status,priority,assignee,labels,body\nWEB-1,\"a,b\",open,3,,bug;ui,\"x\ny\"\n");
+  assert_eq(issues_csv([]), "key,title,status,priority,assignee,labels,body\n");
+}
+
+test t_r_query {
+  assert_eq(url_encode("a b&c/é~"), "a%20b%26c%2F%C3%A9~");
+  assert_eq(filter_query(Filter { status: "open", assignee: "", label: "bug", priority: 2, q: "a b", page: 1 }, 3), "status=open&label=bug&priority=2&q=a%20b&page=3");
+  assert_eq(filter_query(no_filter(), 2), "page=2");
+}
+
+test t_r_pages {
+  let iss = r_sample_issue();
+  let web = r_sample_project();
+  let ih = render_issue(Issue { ..iss, title: "<x>" }, [], []);
+  assert(str_contains(ih, "<h1>WEB-7: &lt;x&gt;</h1>"));
+  assert(!str_contains(ih, "<x>"));
+  assert(str_contains(ih, "action=\"/p/WEB/7/status\""));
+  assert(str_contains(ih, "<button>close</button>"));
+  assert(str_contains(ih, "Assignee: <a href=\"mailto:alice@example.org\">alice</a> |"));
+  assert(str_contains(render_issue(Issue { ..iss, assignee_email: "" }, [], []), "Assignee: alice |"));
+  assert_eq(users_text([User { id: 1, name: "a", email: "a@b.co" }, User { id: 2, name: "b", email: "" }]), "1 a a@b.co\n2 b -\n");
+  assert(str_contains(render_users([User { id: 1, name: "a", email: "a@b.co" }, User { id: 2, name: "b", email: "" }]), "<li>a <a href=\"mailto:a@b.co\">a@b.co</a></li><li>b</li>"));
+  let ph = render_project(web, [], no_filter(), IssuePage { issues: [iss], total: 41, page: 2, pages: 3 });
+  assert(str_contains(ph, "<h1>WEB: Web &lt;site&gt;</h1>"));
+  assert(str_contains(ph, "Page 2 of 3 (41 issues)"));
+  assert(str_contains(ph, "href=\"/p/WEB?page=1\">prev</a>"));
+  assert(str_contains(ph, "href=\"/p/WEB?page=3\">next</a>"));
+  assert(str_contains(ph, "<a href=\"/p/WEB/7\">WEB-7</a>"));
+  assert(str_contains(ph, "action=\"/p/WEB/issues\""));
+  assert(str_contains(render_home([web]), "<li><a href=\"/p/WEB\">WEB</a> Web &lt;site&gt;</li>"));
+  let hp = html_page("a&b", "<i>x</i>");
+  assert(str_contains(hp, "<title>a&amp;b</title>"));
+  assert(str_contains(hp, "<i>x</i></body></html>"));
+}

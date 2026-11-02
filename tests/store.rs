@@ -448,3 +448,97 @@ fn sql_literals_depend_on_their_schemas() {
     ov(&dir, &["rm", "todos"]);
     assert!(!ov(&dir, &["ls"]).contains("todos "));
 }
+
+#[test]
+fn a_constructor_already_used_by_a_stored_type_is_refused() {
+    let dir = workdir("ctor_clash");
+    add_text(&dir, "a.ov", "type Tree = Leaf | Node(l: Tree, r: Tree)\nfn size(t: Tree) -> Int { match t { Leaf => 1, Node(l, r) => size(l) + size(r) } }\n");
+    let before = ov(&dir, &["ls"]);
+    fs::write(dir.join("b.ov"), "type Alpha = Leaf | Other\nfn pick() -> Alpha { Leaf }\n").unwrap();
+    let (code, out) = ov_in(&dir, &["add", "b.ov"], "");
+    assert_eq!(code, 1, "{out}");
+    let d: Value = serde_json::from_str(out.lines().next().unwrap()).unwrap();
+    assert_eq!((d["code"].as_str(), d["file"].as_str()), (Some("E0109"), Some("b.ov")), "{out}");
+    assert_eq!(ov(&dir, &["ls"]), before, "nothing is stored");
+    // Editing the type that owns the constructor is not a clash.
+    let (code, out) = ov_in(&dir, &["edit", "Tree"], "type Tree = Node(l: Tree, r: Tree) | Leaf\n");
+    assert_eq!(code, 0, "{out}");
+}
+
+#[test]
+fn rebinding_a_called_name_to_a_test_is_refused() {
+    let dir = workdir("test_takes_fn_name");
+    add_text(&dir, "a.ov", "fn h() -> Int { 1 }\nfn m() -> Int { h() }\n");
+    let before = ov(&dir, &["ls"]);
+    fs::write(dir.join("b.ov"), "test h { }\n").unwrap();
+    let (code, out) = ov_in(&dir, &["add", "b.ov"], "");
+    assert_eq!(code, 1, "m no longer resolves: {out}");
+    let d: Value = serde_json::from_str(out.lines().next().unwrap()).unwrap();
+    assert_eq!((d["code"].as_str(), d["name"].as_str()), (Some("E0100"), Some("m")), "{out}");
+    assert_eq!(ov(&dir, &["ls"]), before, "nothing is stored");
+    // The same goes for a function name taken by a schema.
+    let (code, out) = ov_in(&dir, &["edit", "h"], "schema h { x: Int }\n");
+    assert_eq!(code, 1, "{out}");
+    assert_eq!(ov(&dir, &["ls"]), before, "nothing is stored");
+}
+
+#[test]
+fn a_field_call_hashes_the_same_whatever_globals_exist() {
+    let src = "type R = { f: fn(Int) -> Int }\nfn use_it(r: R) -> Int { r.f(1) }\n";
+    let x = workdir("field_call_alone");
+    add_text(&x, "m.ov", src);
+    let y = workdir("field_call_with_global");
+    add_text(&y, "m.ov", &format!("{src}fn f() -> Int {{ 0 }}\n"));
+    assert_eq!(hash_of(&x, "use_it"), hash_of(&y, "use_it"));
+    let deps: Vec<Value> = json(&y, &["deps", "use_it"]).as_array().unwrap().iter().map(|d| d["name"].clone()).collect();
+    assert_eq!(deps, ["R"], "no dependency on the global `f`");
+    // Editing the unrelated global re-hashes nothing, and an export re-added gives the same hashes.
+    let (code, out) = ov_in(&y, &["edit", "f", "--json"], "fn f() -> Int { 1 }\n");
+    assert_eq!(code, 0, "{out}");
+    assert_eq!(serde_json::from_str::<Value>(&out).unwrap()["propagated"], serde_json::json!([]));
+    let fresh = workdir("field_call_export");
+    add_text(&fresh, "all.ov", &ov(&y, &["export"]));
+    assert_eq!(hash_of(&fresh, "use_it"), hash_of(&x, "use_it"));
+}
+
+#[test]
+fn rendering_a_new_name_renames_a_local_it_would_capture() {
+    let dir = workdir("render_capture");
+    add_text(&dir, "a.ov", "fn g(x: Int) -> Int { x + 1 }\nfn main() -> Unit !io {\n  let y = 5;\n  println(show(g(y)));\n}\n");
+    let main = hash_of(&dir, "main");
+    add_text(&dir, "b.ov", "fn y(x: Int) -> Int { x + 1 }\n");
+    ov(&dir, &["rm", "g"]);
+    assert_eq!(hash_of(&dir, "main"), main);
+    assert_eq!(ov(&dir, &["view", "main"]), "fn main() -> Unit !io {\n  let y2 = 5;\n  println(show(y(y2)));\n}\n");
+    assert_eq!(ov(&dir, &["check"]), "");
+    assert_eq!(ov(&dir, &["run", "main"]), "6\n");
+    // The export, added to an empty store, gives the same hash.
+    let fresh = workdir("render_capture_fresh");
+    add_text(&fresh, "all.ov", &ov(&dir, &["export"]));
+    assert_eq!(hash_of(&fresh, "main"), main);
+}
+
+#[test]
+fn a_dependent_that_no_longer_resolves_is_reported_in_its_canonical_text() {
+    let dir = workdir("removed_ctor_diag");
+    add_text(&dir, "a.ov", "type T = A | B\nfn f() -> T { B }\n");
+    let f = hash_of(&dir, "f");
+    assert_eq!(ov(&dir, &["view", "f"]), "fn f() -> T {\n  B\n}\n");
+    let (code, out) = ov_in(&dir, &["edit", "T"], "type T = A\n");
+    assert_eq!(code, 1, "{out}");
+    assert_eq!(out.lines().count(), 1, "{out}");
+    let d: Value = serde_json::from_str(&out).unwrap();
+    assert_eq!((d["code"].as_str(), d["name"].as_str(), d["hash"].as_str()), (Some("E0103"), Some("f"), Some(f.as_str())), "{out}");
+    assert_eq!((d["span"]["line"].as_u64(), d["span"]["col"].as_u64()), (Some(2), Some(3)), "{out}");
+    assert_eq!(d["fixes"][0]["patch"], "A", "{out}");
+    assert_eq!(hash_of(&dir, "f"), f, "nothing is stored");
+}
+
+#[test]
+fn export_uses_the_most_recently_bound_name() {
+    let dir = workdir("export_latest_name");
+    add_text(&dir, "a.ov", "fn abc() -> Int { 7 }\nfn main() -> Unit !io { println(show(abc())); }\n");
+    add_text(&dir, "b.ov", "fn zed() -> Int { 7 }\n");
+    let out = ov(&dir, &["export"]);
+    assert!(out.contains("fn zed()") && out.contains("show(zed())") && !out.contains("abc"), "{out}");
+}

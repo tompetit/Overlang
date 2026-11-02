@@ -1,0 +1,1 @@
+{"code":"E0100","severity":"error","name":"f","span":{"line":3,"col":11,"end_line":3,"end_col":16},"message":"unknown name `reslt`","fixes":[{"rank":1,"description":"did you mean `result`?","patch":"result"}],"file":"tests/programs/err_result_fix.ov"}

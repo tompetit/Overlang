@@ -36,6 +36,11 @@ int main(void) {
     CHECK(ov_sqlite_exec_1i(db, "DELETE FROM todo WHERE id = ?", 99) == 0);
     CHECK_STR(ov_sqlite_query(db, "SELECT count(*), sum(done) FROM todo"), "count(*)\x1f" "sum(done)\x1e" "4\x1f" "2");
     CHECK_STR(ov_sqlite_query(db, "SELECT 1 AS a, 2.5 AS b, 'é' AS c"), "a\x1f" "b\x1f" "c\x1e" "1\x1f" "2.5\x1f" "é");
+    /* a query runs only its first statement, so a second header is never glued onto the last row */
+    CHECK_STR(ov_sqlite_query(db, "SELECT 1 AS a; SELECT 2 AS b"), "a\x1e" "1");
+    /* a NUL inside a value (text or blob) cuts that value only; later columns and rows survive */
+    CHECK_STR(ov_sqlite_query(db, "SELECT 'p' || char(0) || 'q' AS a, 'b' AS c UNION ALL SELECT 'x', x'00ff'"),
+              "a\x1f" "c\x1e" "p\x1f" "b\x1e" "x\x1f");
 
     /* error paths */
     CHECK(ov_sqlite_query(db, "SELEC nope") == NULL);

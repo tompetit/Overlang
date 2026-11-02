@@ -9,7 +9,7 @@
 int64_t ov_sqlite_open(const char* path);
 /* Run one or more statements that return no rows; returns the number of rows changed, or -1 on error. */
 int64_t ov_sqlite_exec(int64_t db, const char* sql);
-/* Run a query and return all rows as text: first row is the column names, rows are separated by \x1e,
+/* Run the first statement of sql and return all rows as text: first row is the column names, rows are separated by \x1e,
  * columns by \x1f, NULL is the empty string. Returns NULL on error. */
 /* shortcut: values containing \x1e or \x1f are not escaped, add escaping if binary-ish text is stored */
 const char* ov_sqlite_query(int64_t db, const char* sql);
@@ -37,7 +37,7 @@ const char* ov_sqlite_query_1i(int64_t db, const char* sql, int64_t p1);
 
 /* Like ov_sqlite_exec, but runs only the first statement of sql, with its ? parameters bound from params. */
 int64_t ov_sqlite_exec_p(int64_t db, const char* sql, const char* params);
-/* Like ov_sqlite_query, but runs only the first statement of sql, with its ? parameters bound from params. */
+/* Like ov_sqlite_query, with its ? parameters bound from params. */
 const char* ov_sqlite_query_p(int64_t db, const char* sql, const char* params);
 
 #endif

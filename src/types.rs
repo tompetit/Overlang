@@ -49,7 +49,7 @@
 
 use crate::ast::*;
 use crate::diag::{Diag, Fix, Severity};
-use crate::effects::{self, Charge, Eff, EffSet, EffVars};
+use crate::effects::{self, Charge, Eff, EffSet, EffVars, Flow};
 use crate::exhaust::{self, ArmInfo};
 use crate::printer::Printer;
 use std::collections::{HashMap, HashSet};
@@ -271,8 +271,17 @@ pub fn check_sources(sources: &[(String, String)]) -> (Checked, Vec<Diag>) {
     } else {
         TypedProgram::default()
     };
+    let checked = Checked { prelude, files, typed };
+    // Constraints that depend on type parameters hold only per instantiation
+    // (spec section 3), so check every instance reachable from concrete code.
+    if !diags.iter().any(|d| d.severity == Severity::Error) {
+        let defs = crate::mono::Defs::new(&checked, HashMap::new());
+        if let Err(ds) = crate::mono::collect(&checked, &defs, crate::mono::Root::All) {
+            diags.extend(ds);
+        }
+    }
     sort_diags(&mut diags);
-    (Checked { prelude, files, typed }, diags)
+    (checked, diags)
 }
 
 pub fn sort_diags(diags: &mut [Diag]) {
@@ -293,6 +302,7 @@ pub fn check(prelude: &Program, files: &[(String, Program)]) -> (TypedProgram, V
             c.flush(file);
         }
     }
+    c.nonregular(&all);
     let mut diags = c.diags;
     sort_diags(&mut diags);
     (c.out, diags)
@@ -387,6 +397,10 @@ struct Checker<'a> {
     lambda_exprs: HashMap<NodeId, &'a [LambdaParam]>,
     body_charges: Vec<Charge>,
     contract_charges: Vec<Charge>,
+    /// Function types whose effects flowed with `Flow::Later`, checked in
+    /// `finish`, at the span of the `expect` that unified them.
+    eff_bounds: Vec<(Ty, Ty, Span)>,
+    unify_span: Span,
 }
 
 const BUILTIN_TYPES: [&str; 8] = ["Int", "Float", "Bool", "Str", "Unit", "List", "Map", "Set"];
@@ -461,6 +475,35 @@ fn block_diverges(b: &Block) -> bool {
 }
 
 /// Does `t` use type parameter `p` as a Map key or Set element?
+/// Every user type mentioned in `t`, with its arguments.
+fn named_in<'t>(t: &'t Ty, out: &mut Vec<(&'t str, &'t [Ty])>) {
+    match t {
+        Ty::Named(n, ts) => {
+            out.push((n, ts));
+            ts.iter().for_each(|t| named_in(t, out));
+        }
+        Ty::List(a) | Ty::Set(a) => named_in(a, out),
+        Ty::Map(k, v) => {
+            named_in(k, out);
+            named_in(v, out);
+        }
+        Ty::Tuple(ts) => ts.iter().for_each(|t| named_in(t, out)),
+        Ty::Fn(ps, r, _) => ps.iter().chain([&**r]).for_each(|t| named_in(t, out)),
+        _ => {}
+    }
+}
+
+fn mentions_param(t: &Ty, p: &str) -> bool {
+    match t {
+        Ty::Param(x) => x == p,
+        Ty::List(a) | Ty::Set(a) => mentions_param(a, p),
+        Ty::Map(k, v) => mentions_param(k, p) || mentions_param(v, p),
+        Ty::Tuple(ts) | Ty::Named(_, ts) => ts.iter().any(|t| mentions_param(t, p)),
+        Ty::Fn(ps, r, _) => ps.iter().any(|t| mentions_param(t, p)) || mentions_param(r, p),
+        _ => false,
+    }
+}
+
 fn key_param(t: &Ty, p: &str) -> bool {
     match t {
         Ty::Map(k, v) => matches!(&**k, Ty::Param(x) if x == p) || key_param(k, p) || key_param(v, p),
@@ -570,7 +613,8 @@ impl<'a> Checker<'a> {
     }
 
     /// Unify `actual` into `expected`. Function effects are not unified but
-    /// flow: the actual effects must be covered by the expected ones.
+    /// flow: the actual effects must be covered by the expected ones (and the
+    /// other way round in parameter position).
     fn unify(&mut self, expected: &Ty, actual: &Ty) -> bool {
         let (a, b) = (self.shallow(expected), self.shallow(actual));
         match (&a, &b) {
@@ -587,7 +631,18 @@ impl<'a> Checker<'a> {
                 n1 == n2 && xs.len() == ys.len() && xs.iter().zip(ys).all(|(x, y)| self.unify(x, y))
             }
             (Ty::Fn(p1, r1, e1), Ty::Fn(p2, r2, e2)) => {
-                p1.len() == p2.len() && p1.iter().zip(p2).all(|(x, y)| self.unify(x, y)) && self.unify(r1, r2) && self.eff.flow(e1, e2)
+                // Parameters are contravariant: the actual function receives what the expected one would.
+                p1.len() == p2.len()
+                    && p1.iter().zip(p2).all(|(x, y)| self.unify(y, x))
+                    && self.unify(r1, r2)
+                    && match self.eff.flow(e1, e2) {
+                        Flow::Ok => true,
+                        Flow::Fail => false,
+                        Flow::Later => {
+                            self.eff_bounds.push((a.clone(), b.clone(), self.unify_span));
+                            true
+                        }
+                    }
             }
             (Ty::Param(x), Ty::Param(y)) => x == y,
             (Ty::Int, Ty::Int) | (Ty::Float, Ty::Float) | (Ty::Bool, Ty::Bool) | (Ty::Str, Ty::Str) | (Ty::Unit, Ty::Unit) => true,
@@ -597,6 +652,7 @@ impl<'a> Checker<'a> {
 
     /// Unify or report E0101 at `span`.
     fn expect(&mut self, expected: &Ty, actual: &Ty, span: Span) -> bool {
+        self.unify_span = span;
         if self.unify(expected, actual) {
             return true;
         }
@@ -744,15 +800,103 @@ impl<'a> Checker<'a> {
         }
     }
 
+    /// E0122: monomorphization (spec section 12) needs finitely many
+    /// instances, so a type parameter may not come back to its own
+    /// definition inside a bigger type argument (`depth[(T, T)]` in `depth`,
+    /// `Nest[List[T]]` in `Nest`). Nodes are (definition, parameter index);
+    /// an edge follows a parameter into a type argument of a mentioned type
+    /// or a called function and "grows" unless the argument is the bare
+    /// parameter. A growing edge on a cycle is reported at its site.
+    fn nonregular(&mut self, all: &[(&str, &'a Program, bool)]) {
+        // (file, definition, span, target, type arguments) of every generic use
+        // inside a generic definition.
+        let mut uses: Vec<(&str, String, Span, String, Vec<Ty>)> = vec![];
+        for (file, prog, _) in all {
+            for item in &prog.items {
+                match item {
+                    Item::Type(t) if !t.params.is_empty() => {
+                        let Some(info) = self.out.types.get(&t.name) else { continue };
+                        let fields: Vec<(&Field, &Ty)> = match (&t.body, &info.shape) {
+                            (TypeBody::Record(a), TypeShape::Record(b)) => a.iter().zip(b.iter().map(|x| &x.1)).collect(),
+                            (TypeBody::Sum(a), TypeShape::Sum(b)) => a.iter().zip(b).flat_map(|(v, w)| v.fields.iter().zip(w.1.iter().map(|x| &x.1))).collect(),
+                            _ => vec![],
+                        };
+                        for (f, ty) in fields {
+                            let mut named = vec![];
+                            named_in(ty, &mut named);
+                            uses.extend(named.into_iter().map(|(n, args)| (*file, t.name.clone(), f.ty.span, n.to_string(), args.to_vec())));
+                        }
+                    }
+                    Item::Fn(FnDef { sig, requires, ensures, .. }) | Item::Declare(DeclareDef { sig, requires, ensures, .. }) if !sig.type_params.is_empty() => {
+                        let mut es = vec![];
+                        requires.iter().chain(ensures).for_each(|x| crate::mono::walk_expr(x, &mut |e| es.push(e)));
+                        if let Item::Fn(f) = item {
+                            crate::mono::walk_block(&f.body, &mut |e| es.push(e));
+                        }
+                        for e in es {
+                            let target = match (self.out.calls.get(&e.id), self.out.vars.get(&e.id)) {
+                                (Some(CallInfo { callee: Callee::Fn(n), type_args }), _) | (_, Some(VarRef::Global { name: n, type_args })) => (n, type_args),
+                                _ => continue,
+                            };
+                            uses.push((*file, sig.name.clone(), e.span, target.0.clone(), target.1.clone()));
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+        let params = |d: &str| self.out.types.get(d).map(|i| &i.params).or_else(|| self.out.fns.get(d).map(|s| &s.type_params));
+        let mut edges: HashMap<(&str, usize), Vec<(&str, usize)>> = HashMap::new();
+        // (use index, from, to) of every growing edge.
+        let mut growing = vec![];
+        for (k, (_, def, _, target, args)) in uses.iter().enumerate() {
+            let Some(ps) = params(def) else { continue };
+            for (i, p) in ps.iter().enumerate() {
+                for (j, a) in args.iter().enumerate() {
+                    if !mentions_param(a, p) {
+                        continue;
+                    }
+                    edges.entry((def, i)).or_default().push((target, j));
+                    if *a != Ty::Param(p.clone()) {
+                        growing.push((k, (def.as_str(), i), (target.as_str(), j), p.clone()));
+                    }
+                }
+            }
+        }
+        let reaches = |from: (&str, usize), to: (&str, usize)| {
+            let (mut seen, mut stack) = (HashSet::new(), vec![from]);
+            while let Some(n) = stack.pop() {
+                if n == to {
+                    return true;
+                }
+                if seen.insert(n) {
+                    stack.extend(edges.get(&n).into_iter().flatten());
+                }
+            }
+            false
+        };
+        let mut reported = HashSet::new();
+        let found: Vec<(usize, String)> = growing.into_iter().filter(|(_, from, to, _)| reaches(*to, *from)).map(|(k, _, _, p)| (k, p)).collect();
+        for (k, p) in found {
+            let (file, def, span, target, args) = &uses[k];
+            let inst = Ty::Named(target.clone(), args.clone()).to_string();
+            // A call is seen twice, as the call and as its callee name.
+            if !reported.insert((def.clone(), inst.clone())) {
+                continue;
+            }
+            self.def_name = Some(def.clone());
+            let d = self.diag("E0122", *span, format!("{inst} passes type parameter `{p}` back to `{def}` inside a bigger type, so monomorphization would need infinitely many instances"));
+            d.actual = Some(vec![inst]);
+            self.flush(file);
+        }
+    }
+
     fn fields(&mut self, fs: &[Field], params: &[String]) -> Vec<(String, Ty)> {
         let mut seen = HashSet::new();
         let mut out = Vec::new();
         for f in fs {
             if !seen.insert(f.name.clone()) {
                 self.diag("E0109", f.span, format!("field `{}` is declared twice", f.name));
-            }
-            for d in effects::undeclared_params(&f.ty, &[]) {
-                self.def_diags.push(d);
             }
             out.push((f.name.clone(), self.conv(&f.ty, params, None)));
         }
@@ -968,6 +1112,10 @@ impl<'a> Checker<'a> {
         let fsig = self.out.fns[&sig.name].clone();
         let mut scope = Vec::new();
         for (i, p) in sig.params.iter().enumerate() {
+            if let (Some(e), "result") = (ensures.first(), p.name.as_str()) {
+                // `result` in `ensures` (and in the trap's `args`) is the return value.
+                self.diag("E0109", p.span, format!("parameter `result` clashes with `result` in the `ensures` at line {}", e.span.line));
+            }
             let ty = fsig.params.get(i).map(|x| x.1.clone()).unwrap_or(Ty::Error);
             scope.push(Local { name: p.name.clone(), ty, mutable: false, site: VarRef::Param(i), span: p.span, used: false, depth: 0, warn_unused: false });
         }
@@ -1017,6 +1165,13 @@ impl<'a> Checker<'a> {
             // One report per constraint and type: `map_new`, `map_set`, ... share a key type.
             if reported.insert((c, self.zonk(&ty).to_string())) {
                 self.check_constraint(&ty, c, span);
+            }
+        }
+        for (exp, act, span) in std::mem::take(&mut self.eff_bounds) {
+            if let (Ty::Fn(_, _, e1), Ty::Fn(_, _, e2)) = (&exp, &act) {
+                if !self.eff.within(e1, e2) {
+                    self.mismatch(span, &exp, &act);
+                }
             }
         }
         if let Some(sig) = sig {
@@ -1317,6 +1472,9 @@ impl<'a> Checker<'a> {
     fn unknown_name(&mut self, name: &str, span: Span) {
         let mut cands: Vec<String> = self.scopes.iter().flatten().map(|l| l.name.clone()).collect();
         cands.extend(self.fn_sites.keys().cloned());
+        if self.result_ty.is_some() {
+            cands.push("result".into());
+        }
         let fixes = nearest(name, cands.iter());
         let d = self.diag("E0100", span, format!("unknown name `{name}`"));
         d.fixes = fixes;
@@ -1352,7 +1510,8 @@ impl<'a> Checker<'a> {
                 self.exprs.push((callee.id, Ty::Error, callee.span));
                 (Ty::Error, Callee::Value, vec![], n.clone())
             }
-            _ => (self.expr(callee, None), Callee::Value, vec![], "this function".to_string()),
+            ExprKind::Lambda { .. } => (self.expr(callee, None), Callee::Value, vec![], "this lambda".to_string()),
+            _ => (self.expr(callee, None), Callee::Value, vec![], Printer { records: HashMap::new() }.expr(callee, 0)),
         };
         self.calls.push((e.id, kind, targs));
         self.apply(e.span, &fty, rest, recv, &name)
@@ -1453,6 +1612,9 @@ impl<'a> Checker<'a> {
             }
             ExprKind::ResultRef => self.result_ty.clone().unwrap_or(Ty::Error),
             ExprKind::Tuple(es) => {
+                if !(2..=8).contains(&es.len()) {
+                    self.diag("E0101", e.span, format!("tuples have 2 to 8 elements, not {}", es.len()));
+                }
                 let exp = expected.map(|t| self.shallow(t));
                 let ts = es
                     .iter()
@@ -1804,8 +1966,14 @@ impl<'a> Checker<'a> {
             let t = match (&p.ty, &exp_ps) {
                 (Some(ann), Some(ps)) => {
                     let t = self.conv_local(ann);
-                    self.expect(&ps[i], &t, p.span);
-                    t
+                    // Contravariant, as in `unify`: the annotation must accept what the caller passes.
+                    // On a mismatch the parameter is an error, so the lambda is not reported again.
+                    if self.unify(&t, &ps[i]) {
+                        t
+                    } else {
+                        self.mismatch(p.span, &ps[i], &t);
+                        Ty::Error
+                    }
                 }
                 (Some(ann), None) => self.conv_local(ann),
                 (None, Some(ps)) => ps[i].clone(),

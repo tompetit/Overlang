@@ -38,6 +38,8 @@ pub fn parse_with(src: &str, allow_intrinsic: bool, first_id: NodeId) -> (Progra
         next_id: first_id,
         in_ensures: false,
         allow_intrinsic,
+        depth: 0,
+        comparison_end: usize::MAX,
     };
     let mut diags = lexed.diags;
     let mut items = Vec::new();
@@ -49,6 +51,7 @@ pub fn parse_with(src: &str, allow_intrinsic: bool, first_id: NodeId) -> (Progra
             break;
         }
         let start = p.pos;
+        p.depth = 0;
         match p.item() {
             Ok(item) => items.push(item),
             Err(d) => {
@@ -72,6 +75,11 @@ struct Parser {
     /// Inside an `ensures` clause, the identifier `result` is `ResultRef`.
     in_ensures: bool,
     allow_intrinsic: bool,
+    /// Current nesting, bounded by `MAX_DEPTH`. Errors leave it raised; each item resets it.
+    depth: usize,
+    /// Token position just after the right operand of the last comparison. A
+    /// comparison operator there would chain, at whatever level it is met.
+    comparison_end: usize,
 }
 
 fn binop(tok: &Tok) -> Option<(BinOp, u8)> {
@@ -99,16 +107,23 @@ const BINOP_TOKENS: [&str; 14] = ["||", "&&", "==", "!=", "<", "<=", ">", ">=", 
 
 const COMPARISON_PREC: u8 = 3;
 
+/// Nesting limit (spec section 6), low enough that every recursive pass,
+/// even unoptimized on an 8 MB stack, stays within its stack.
+pub const MAX_DEPTH: usize = 200;
+
 /// `Strongest_Extension` -> `strongest_extension`, `MinPath` -> `min_path`,
-/// `N` -> `n`; a keyword result gets a trailing `_`.
+/// `XMLParser` -> `xml_parser`, `N` -> `n`; a keyword result gets a trailing `_`.
 pub(crate) fn value_name(name: &str) -> String {
+    let chars: Vec<char> = name.chars().collect();
     let mut out = String::new();
-    let mut prev_lower = false;
-    for c in name.chars() {
-        if c.is_ascii_uppercase() && prev_lower {
+    for (i, &c) in chars.iter().enumerate() {
+        // A word starts at a capital after a lowercase letter or digit, or at
+        // the last capital of an acronym followed by lowercase (`XMLParser`).
+        let prev = if i > 0 { chars[i - 1] } else { '_' };
+        let next_lower = chars.get(i + 1).is_some_and(|n| n.is_ascii_lowercase());
+        if c.is_ascii_uppercase() && (prev.is_ascii_lowercase() || prev.is_ascii_digit() || (prev.is_ascii_uppercase() && next_lower)) {
             out.push('_');
         }
-        prev_lower = c.is_ascii_lowercase() || c.is_ascii_digit();
         out.push(c.to_ascii_lowercase());
     }
     if crate::lexer::keyword(&out).is_some() {
@@ -192,6 +207,15 @@ impl Parser {
         d
     }
 
+    /// One level deeper: an expression, block, pattern, type or binary operator.
+    fn enter(&mut self) -> PResult<()> {
+        self.depth += 1;
+        if self.depth > MAX_DEPTH {
+            return Err(Diag::error("E0002", self.span(), format!("nesting deeper than {MAX_DEPTH} levels; bind part of the expression with `let`")));
+        }
+        Ok(())
+    }
+
     fn ident(&mut self) -> PResult<String> {
         if let Tok::Ident(name) = self.peek() {
             let name = name.clone();
@@ -213,7 +237,19 @@ impl Parser {
         if self.eat(&Tok::Underscore) {
             return Ok("_".to_string());
         }
+        self.not_result()?;
         self.ident()
+    }
+
+    /// Inside `ensures`, `result` is a keyword (spec section 1), so it cannot be bound.
+    fn not_result(&mut self) -> PResult<()> {
+        if self.in_ensures && matches!(self.peek(), Tok::Ident(s) if s == "result") {
+            self.expect_kind("identifier");
+            let mut d = self.error();
+            d.message = "`result` is a keyword inside `ensures`, where it names the return value, so it cannot be bound".to_string();
+            return Err(d);
+        }
+        Ok(())
     }
 
     fn type_name(&mut self) -> PResult<String> {
@@ -256,6 +292,15 @@ impl Parser {
             }
             self.expect(&Tok::Comma)?;
         }
+    }
+
+    /// Error if `close` comes next: the list must not be empty.
+    fn nonempty(&mut self, close: &Tok, what: &str) -> PResult<()> {
+        if self.peek() == close {
+            self.expect_kind(what);
+            return Err(self.error());
+        }
+        Ok(())
     }
 
     fn take_comments(&mut self) -> Vec<Comment> {
@@ -307,7 +352,7 @@ impl Parser {
         let start = self.span();
         if self.eat(&Tok::Fn) {
             let sig = self.signature(start)?;
-            let (requires, ensures) = self.contracts()?;
+            let (requires, ensures) = self.contracts(&sig)?;
             let body = self.block()?;
             return Ok(Item::Fn(FnDef { sig, requires, ensures, body, span: start.to(self.prev_span()) }));
         }
@@ -317,7 +362,7 @@ impl Parser {
         if self.eat(&Tok::Declare) {
             self.expect(&Tok::Fn)?;
             let sig = self.signature(start)?;
-            let (requires, ensures) = self.contracts()?;
+            let (requires, ensures) = self.contracts(&sig)?;
             return Ok(Item::Declare(DeclareDef { sig, requires, ensures, span: start.to(self.prev_span()) }));
         }
         if self.eat(&Tok::Foreign) {
@@ -402,13 +447,18 @@ impl Parser {
         Ok(effects)
     }
 
-    fn contracts(&mut self) -> PResult<(Vec<Expr>, Vec<Expr>)> {
+    fn contracts(&mut self, sig: &Signature) -> PResult<(Vec<Expr>, Vec<Expr>)> {
         let mut requires = Vec::new();
         let mut ensures = Vec::new();
         loop {
             if self.eat(&Tok::Requires) {
                 requires.push(self.expr()?);
-            } else if self.eat(&Tok::Ensures) {
+            } else if self.check(&Tok::Ensures) {
+                // In `ensures`, `result` is the return value, so it would hide the parameter.
+                if let Some(p) = sig.params.iter().find(|p| p.name == "result") {
+                    return Err(Diag::error("E0002", p.span, "a function with `ensures` cannot have a parameter named `result`, which there names the return value"));
+                }
+                self.bump();
                 self.in_ensures = true;
                 let e = self.expr();
                 self.in_ensures = false;
@@ -427,10 +477,7 @@ impl Parser {
     fn schema_def(&mut self, start: Span) -> PResult<Item> {
         let name = self.ident()?;
         self.expect(&Tok::LBrace)?;
-        if self.peek() == &Tok::RBrace {
-            self.expect_kind("identifier");
-            return Err(self.error());
-        }
+        self.nonempty(&Tok::RBrace, "identifier")?;
         let columns = self
             .comma_list(&Tok::RBrace, |p| {
                 let f = p.field()?;
@@ -455,17 +502,20 @@ impl Parser {
         self.expect(&Tok::Eq)?;
         let body = if self.eat(&Tok::LBrace) {
             // At least one field: `P {}` could not be told apart from `P` and a block.
-            if self.peek() == &Tok::RBrace {
-                self.expect_kind("identifier");
-                return Err(self.error());
-            }
+            self.nonempty(&Tok::RBrace, "identifier")?;
             TypeBody::Record(self.comma_list(&Tok::RBrace, |p| p.field())?.0)
         } else {
             let mut variants = Vec::new();
             loop {
                 let vstart = self.span();
                 let name = self.type_name()?;
-                let fields = if self.eat(&Tok::LParen) { self.comma_list(&Tok::RParen, |p| p.field())?.0 } else { Vec::new() };
+                // A constructor with no fields has no parentheses, here and in expressions and patterns.
+                let fields = if self.eat(&Tok::LParen) {
+                    self.nonempty(&Tok::RParen, "identifier")?;
+                    self.comma_list(&Tok::RParen, |p| p.field())?.0
+                } else {
+                    Vec::new()
+                };
                 variants.push(Variant { name, fields, span: vstart.to(self.prev_span()) });
                 if !self.eat(&Tok::Pipe) {
                     break;
@@ -487,6 +537,7 @@ impl Parser {
     // ------------------------------------------------------------ types
 
     fn ty(&mut self) -> PResult<TypeExpr> {
+        self.enter()?;
         let start = self.span();
         let kind = match self.peek().clone() {
             Tok::TypeName(name) => {
@@ -504,6 +555,7 @@ impl Parser {
                 let (mut elems, trailing) = self.comma_list(&Tok::RParen, |p| p.ty())?;
                 if elems.len() == 1 && !trailing {
                     // Grouping, needed to write `-> (fn() -> Int) !io`.
+                    self.depth -= 1;
                     return Ok(elems.pop().unwrap());
                 }
                 TypeKind::Tuple(elems)
@@ -522,12 +574,14 @@ impl Parser {
                 return Err(self.error());
             }
         };
+        self.depth -= 1;
         Ok(TypeExpr { kind, span: start.to(self.prev_span()) })
     }
 
     // ------------------------------------------------------------ blocks and statements
 
     fn block(&mut self) -> PResult<Block> {
+        self.enter()?;
         let start = self.expect(&Tok::LBrace)?;
         let mut stmts = Vec::new();
         let mut tail = None;
@@ -541,6 +595,7 @@ impl Parser {
                 let mutable = self.eat(&Tok::Mut);
                 let pat = if mutable {
                     let pstart = self.span();
+                    self.not_result()?;
                     let name = self.ident()?;
                     self.pat_node(PatKind::Bind(name), pstart)
                 } else {
@@ -591,6 +646,7 @@ impl Parser {
             };
             stmts.push(Stmt { kind, span: sstart.to(self.prev_span()) });
         }
+        self.depth -= 1;
         Ok(Block { stmts, tail, span: start.to(self.prev_span()) })
     }
 
@@ -611,7 +667,7 @@ impl Parser {
     fn binary(&mut self, min_prec: u8) -> PResult<Expr> {
         let start = self.span();
         let mut lhs = self.unary()?;
-        let mut saw_comparison = false;
+        let depth = self.depth;
         loop {
             let Some((op, prec)) = binop(self.peek()) else {
                 for t in BINOP_TOKENS {
@@ -619,14 +675,18 @@ impl Parser {
                 }
                 break;
             };
-            if prec < min_prec || (prec == COMPARISON_PREC && saw_comparison) {
+            if prec < min_prec || (prec == COMPARISON_PREC && self.pos == self.comparison_end) {
                 break;
             }
-            saw_comparison |= prec == COMPARISON_PREC;
+            self.enter()?;
             self.bump();
             let rhs = self.binary(prec + 1)?;
+            if prec == COMPARISON_PREC {
+                self.comparison_end = self.pos;
+            }
             lhs = self.expr_node(ExprKind::Binary { op, lhs: Box::new(lhs), rhs: Box::new(rhs) }, start);
         }
+        self.depth = depth;
         Ok(lhs)
     }
 
@@ -637,15 +697,22 @@ impl Parser {
             Tok::Bang => UnOp::Not,
             _ => return self.postfix(),
         };
+        self.enter()?;
         self.bump();
         let expr = Box::new(self.unary()?);
+        self.depth -= 1;
         Ok(self.expr_node(ExprKind::Unary { op, expr }, start))
     }
 
     fn postfix(&mut self) -> PResult<Expr> {
         let start = self.span();
         let mut e = self.primary()?;
+        let depth = self.depth;
         loop {
+            // Like a binary operator, each postfix nests the left side one level deeper.
+            if matches!(self.peek(), Tok::Question | Tok::LParen | Tok::LBracket | Tok::Dot) {
+                self.enter()?;
+            }
             if self.eat(&Tok::Question) {
                 e = self.expr_node(ExprKind::Try(Box::new(e)), start);
             } else if self.eat(&Tok::LParen) {
@@ -657,7 +724,7 @@ impl Parser {
                 e = self.expr_node(ExprKind::Index { base: Box::new(e), index }, start);
             } else if self.eat(&Tok::Dot) {
                 if let Tok::Int(n) = self.peek() {
-                    let index = *n as u32;
+                    let index = *n as u64; // an Int token is never negative
                     self.bump();
                     e = self.expr_node(ExprKind::TupleField { base: Box::new(e), index }, start);
                     continue;
@@ -675,12 +742,14 @@ impl Parser {
                     e = self.expr_node(ExprKind::Field { base: Box::new(e), name }, start);
                 }
             } else {
+                self.depth = depth;
                 return Ok(e);
             }
         }
     }
 
     fn primary(&mut self) -> PResult<Expr> {
+        self.enter()?;
         let start = self.span();
         let kind = match self.peek().clone() {
             Tok::Int(n) => {
@@ -712,6 +781,7 @@ impl Parser {
                 if is_record {
                     self.record_literal(name)?
                 } else if self.eat(&Tok::LParen) {
+                    self.nonempty(&Tok::RParen, "expression")?;
                     ExprKind::Ctor { name, args: self.comma_list(&Tok::RParen, |p| p.expr())?.0 }
                 } else {
                     ExprKind::Ctor { name, args: Vec::new() }
@@ -722,7 +792,10 @@ impl Parser {
                 let (mut elems, trailing) = self.comma_list(&Tok::RParen, |p| p.expr())?;
                 match elems.len() {
                     0 => ExprKind::Unit,
-                    1 if !trailing => return Ok(elems.pop().unwrap()),
+                    1 if !trailing => {
+                        self.depth -= 1;
+                        return Ok(elems.pop().unwrap());
+                    }
                     _ => ExprKind::Tuple(elems),
                 }
             }
@@ -739,7 +812,11 @@ impl Parser {
                 self.bump();
                 ExprKind::Lambda { params: Vec::new(), body: Box::new(self.expr()?) }
             }
-            Tok::If => return self.if_expr(),
+            Tok::If => {
+                let e = self.if_expr();
+                self.depth -= 1;
+                return e;
+            }
             Tok::Match => {
                 self.bump();
                 let scrutinee = Box::new(self.expr()?);
@@ -769,6 +846,7 @@ impl Parser {
                 return Err(self.error());
             }
         };
+        self.depth -= 1;
         Ok(self.expr_node(kind, start))
     }
 
@@ -810,7 +888,8 @@ impl Parser {
         let then_branch = self.block()?;
         let else_branch = if self.eat(&Tok::Else) {
             if self.peek() == &Tok::If {
-                Some(Box::new(self.if_expr()?))
+                // Through `primary`, so each `else if` counts one level.
+                Some(Box::new(self.primary()?))
             } else {
                 let bstart = self.span();
                 let b = self.block()?;
@@ -838,6 +917,7 @@ impl Parser {
     }
 
     fn pattern_single(&mut self) -> PResult<Pat> {
+        self.enter()?;
         let start = self.span();
         let kind = match self.peek().clone() {
             Tok::Underscore => {
@@ -845,6 +925,7 @@ impl Parser {
                 PatKind::Wild
             }
             Tok::Ident(name) => {
+                self.not_result()?;
                 self.bump();
                 PatKind::Bind(name)
             }
@@ -884,7 +965,10 @@ impl Parser {
                 let (mut elems, trailing) = self.comma_list(&Tok::RParen, |p| p.pattern())?;
                 match elems.len() {
                     0 => PatKind::Unit,
-                    1 if !trailing => return Ok(elems.pop().unwrap()),
+                    1 if !trailing => {
+                        self.depth -= 1;
+                        return Ok(elems.pop().unwrap());
+                    }
                     _ => PatKind::Tuple(elems),
                 }
             }
@@ -895,6 +979,7 @@ impl Parser {
             Tok::TypeName(name) => {
                 self.bump();
                 if self.eat(&Tok::LParen) {
+                    self.nonempty(&Tok::RParen, "pattern")?;
                     PatKind::Ctor { name, args: self.comma_list(&Tok::RParen, |p| p.pattern())?.0 }
                 } else if self.eat(&Tok::LBrace) {
                     self.record_pattern(name)?
@@ -907,6 +992,7 @@ impl Parser {
                 return Err(self.error());
             }
         };
+        self.depth -= 1;
         Ok(self.pat_node(kind, start))
     }
 

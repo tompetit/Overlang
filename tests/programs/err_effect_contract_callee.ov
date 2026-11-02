@@ -1,0 +1,12 @@
+// E0108 names the call, also when the callee is not a plain name.
+// Audit finding: effects e16.
+fn mk() -> fn(Int) -> Int !io
+  ensures result(1) > 0
+{
+  |x| { println("called in ensures"); x }
+}
+
+fn main() -> Unit !io {
+  let g = mk();
+  println(show(g(2)));
+}

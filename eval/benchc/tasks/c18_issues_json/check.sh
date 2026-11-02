@@ -25,7 +25,7 @@ expect_eq "$(get '/p/WEB/issues.txt?page=2')" $'WEB-21 open P3 - [] bulk item 19
 p1="$(get /p/WEB/issues.json)"
 head1="{\"project\":\"WEB\",\"total\":23,\"page\":1,\"pages\":2,\"per_page\":20,\"prev\":null,\"next\":\"/p/WEB/issues.json?page=2\",\"issues\":[$o1,$o2,$(o 3 1),"
 [[ "$p1" == "$head1"* ]] || fail "page 1: want prefix [$head1] got [${p1:0:600}]"
-[[ "$p1" == *",$(o 22 20)]}" ]] || fail "page 1: want suffix [$(o 22 20)]}] got [${p1: -300}]"
+[[ "$p1" == *",$(o 20 18)]}" ]] || fail "page 1: want suffix [$(o 20 18)]}] got [${p1: -300}]"
 expect_eq "$(grep -o '"key":' <<<"$p1" | wc -l | tr -d ' ')" 20 "page 1 issue count"
 # page 2
 want2="{\"project\":\"WEB\",\"total\":23,\"page\":2,\"pages\":2,\"per_page\":20,\"prev\":\"/p/WEB/issues.json?page=1\",\"next\":null,\"issues\":[$(o 21 19),$(o 22 20),$(o 23 21)]}"

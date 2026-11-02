@@ -76,23 +76,35 @@ impl EffVars {
 
     /// `actual` is used where `expected` is required. Grows the first open
     /// variable of `expected` by what is missing. Fails if a label or param
-    /// is missing and `expected` has no variable to absorb it.
-    /// shortcut: a variable in `actual` with no counterpart is accepted as is;
-    /// fine for the shapes the prelude uses, revisit with effect-heavy code.
-    pub fn flow(&mut self, expected: &EffSet, actual: &EffSet) -> bool {
+    /// is missing and `expected` has no variable to absorb it. If only
+    /// variables of `actual` are missing and `expected` is closed, the answer
+    /// waits for their solutions: `Later`, and the caller checks again at
+    /// the end of the body (`within`).
+    pub fn flow(&mut self, expected: &EffSet, actual: &EffSet) -> Flow {
         let exp = self.resolve(expected, true);
         let act = self.resolve(actual, true);
         let missing: EffSet = act.difference(&exp).cloned().collect();
         if missing.is_empty() {
-            return true;
+            return Flow::Ok;
         }
         if let Some(Eff::Var(v)) = exp.iter().find(|e| matches!(e, Eff::Var(_))) {
             let v = *v as usize;
             self.sol[v].extend(missing);
-            return true;
+            return Flow::Ok;
         }
-        missing.iter().all(|e| matches!(e, Eff::Var(_)))
+        if missing.iter().all(|e| matches!(e, Eff::Var(_))) { Flow::Later } else { Flow::Fail }
     }
+
+    /// Final check of a `Later` flow: the solved `actual` is within `expected`.
+    pub fn within(&self, expected: &EffSet, actual: &EffSet) -> bool {
+        self.resolve(actual, false).is_subset(&self.resolve(expected, false))
+    }
+}
+
+pub enum Flow {
+    Ok,
+    Fail,
+    Later,
 }
 
 /// One call inside a body: what it charges to the enclosing function.
@@ -105,7 +117,8 @@ pub struct Charge {
 
 /// E0105: every effect a call performs must be declared by the enclosing
 /// function. One diagnostic per missing label, at the first call needing it.
-/// The fix is the signature with the label added.
+/// The fix is the signature with the label added, except for a label the
+/// effect parameter's name hides (E0111).
 pub fn check_body(charges: &[Charge], declared: &EffSet, vars: &EffVars, sig: &Signature) -> Vec<Diag> {
     let mut out = Vec::new();
     let mut reported = BTreeSet::new();
@@ -115,6 +128,12 @@ pub fn check_body(charges: &[Charge], declared: &EffSet, vars: &EffVars, sig: &S
                 continue;
             }
             let Some(lab) = label(&e) else { continue };
+            if matches!(&e, Eff::Label(l) if sig.effect_params.contains(l)) {
+                // Adding the label would only name the parameter again.
+                let msg = format!("`{}` performs the label {lab}, which the effect parameter {lab} of `{}` hides; rename the effect parameter", c.callee, sig.name);
+                out.push(Diag::error("E0111", c.span, msg));
+                continue;
+            }
             let mut fixed = sig.clone();
             fixed.effects.push(lab[1..].to_string());
             let patch = Printer { records: HashMap::new() }.signature("", &fixed, " {");
@@ -145,8 +164,8 @@ pub fn check_contract(charges: &[Charge], vars: &EffVars) -> Vec<Diag> {
     out
 }
 
-/// E0111: at most one effect parameter, used only on function-typed
-/// parameters and the signature's own effect list (not in the return type).
+/// E0111: at most one effect parameter, not in the return type. A name the
+/// brackets do not declare is a label, whatever its length.
 pub fn check_signature(sig: &Signature) -> Vec<Diag> {
     let mut out = Vec::new();
     if sig.effect_params.len() > 1 {
@@ -156,38 +175,9 @@ pub fn check_signature(sig: &Signature) -> Vec<Diag> {
             format!("`{}` declares {} effect parameters; at most one is allowed", sig.name, sig.effect_params.len()),
         ));
     }
-    for p in &sig.params {
-        out.extend(undeclared_params(&p.ty, &sig.effect_params));
-    }
-    out.extend(undeclared_params(&sig.ret, &sig.effect_params));
-    if let Some(e) = sig.effects.iter().find(|e| e.len() == 1 && !sig.effect_params.contains(e)) {
-        out.push(Diag::error("E0111", sig.span, format!("effect parameter !{e} is not declared; add `!{e}` to the brackets after `{}`", sig.name)));
-    }
     for e in &sig.effect_params {
         if let Some(span) = mentions(&sig.ret, e) {
             out.push(Diag::error("E0111", span, format!("effect parameter !{e} cannot appear in the return type")));
-        }
-    }
-    out
-}
-
-/// E0111 for a one-letter effect name that is not a declared effect
-/// parameter: labels are open, but `!e` is how parameters are written, so a
-/// one-letter label is taken to be a parameter used where it was not declared.
-pub fn undeclared_params(t: &TypeExpr, declared: &[String]) -> Vec<Diag> {
-    let mut out = Vec::new();
-    let mut stack = vec![t];
-    while let Some(t) = stack.pop() {
-        match &t.kind {
-            TypeKind::Named { args, .. } => stack.extend(args),
-            TypeKind::Tuple(ts) => stack.extend(ts),
-            TypeKind::Fn { params, ret, effects } => {
-                for e in effects.iter().filter(|e| e.len() == 1 && !declared.contains(e)) {
-                    out.push(Diag::error("E0111", t.span, format!("effect parameter !{e} is used here but not declared")));
-                }
-                stack.extend(params);
-                stack.push(ret);
-            }
         }
     }
     out

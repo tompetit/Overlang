@@ -46,7 +46,9 @@ fn fixtures() -> Vec<(String, String)> {
     let mut out = Vec::new();
     for entry in fs::read_dir("tests/programs").unwrap() {
         let path = entry.unwrap().path();
-        if path.extension().is_some_and(|e| e == "ov") {
+        // Fixtures expecting a lexical or parse error do not parse.
+        let parse_error = fs::read_to_string(path.with_extension("expect.diag")).is_ok_and(|d| d.lines().any(|l| l.starts_with("E000")));
+        if path.extension().is_some_and(|e| e == "ov") && !parse_error {
             out.push((path.display().to_string(), fs::read_to_string(&path).unwrap()));
         }
     }
@@ -240,7 +242,7 @@ fn ufcs_flag_preserves_written_form() {
 
 #[test]
 fn result_is_special_only_in_ensures() {
-    let p = parse_ok("fn f(result: Int) -> Int requires result > 0 ensures result > 0 { result }");
+    let p = parse_ok("fn f(x: Int) -> Int requires result > 0 ensures result > 0 { result }");
     let Item::Fn(f) = &p.items[0] else { panic!() };
     let lhs = |e: &Expr| match &e.kind {
         ExprKind::Binary { lhs, .. } => lhs.kind.clone(),

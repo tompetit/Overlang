@@ -307,6 +307,33 @@ following turn also include the model's own previous message and any other tool 
 it ignores that a long read result is then re-read from cache on every later turn, and it has only been tested
 on a hand-built fixture, not on a real transcript. `report.py` prints the median and mean per language.
 
+## Benchmark A-hard: 30 harder function-level tasks
+
+HumanEval saturates (every model passes 100% in every language), so `--benchmark ahard`
+holds 30 tasks with 40-120 line solutions in `eval/tasks/ahard/<lang>/`, same JSON format
+and adapters as HumanEval: parsers, state machines, intervals, graphs, dynamic
+programming, strings, numbers, data processing, geometry and encodings. Each task's
+10-21 hidden assertions were generated from one case table, so the three languages'
+tests agree by construction, and every reference solution passes (and every stub fails)
+through `--agent mock --mock-solve`. The Rust adapter returns a task's shipped
+`solution` for mock-solve (HumanEval has none).
+
+## Benchmark C: maintenance tasks on the tracker
+
+`--benchmark benchc` is Benchmark B's harness on a 10x larger program: the issue tracker
+in `examples/tracker` (1,464 lines of Overlang in four layers) and `examples/tracker_py`
+(1,551 lines), both built from `examples/tracker/SPEC.md`. The 40 tasks in
+`eval/benchc/tasks/` follow Benchmark B's layout (task.md, check.sh over HTTP through
+`eval/benchc/lib.sh`), with themes chosen for locality: schema changes, cross-module
+features, activity and JSON/CSV endpoints, validation, refactors, markdown and
+operations. The Overlang workspace is seeded by adding the four layer files to the
+store in order; `--lang overlang-ctx` works here too. Solutions in
+`eval/benchc/solutions/<id>/<lang>/` are full replacement files, as in Benchmark B. 79 of the 80 pass
+through `--agent mock --mock-solve`; c30's Overlang reference passes on source files but the
+program built from its store export crashes on the first request, and it was dropped rather
+than diagnosed (all 120 agent runs of that task passed through the same export path, so the
+task is sound).
+
 ## Not done / caveats
 
 - No real agent run has been exercised (no authentication); the stream-json

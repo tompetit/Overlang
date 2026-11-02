@@ -23,7 +23,7 @@ use crate::diag::{Diag, Fix};
 use crate::printer::Printer;
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::sync::OnceLock;
 
 /// Types that hash to their own name.
@@ -114,7 +114,13 @@ pub fn sha256_hex(s: &str) -> String {
 
 /// Hash every definition in `items` (comments are skipped), resolving names
 /// not defined in `items` through `scope`. Unknown names are diagnostics.
-pub fn hash_items(items: &[Item], scope: &Scope) -> Result<Vec<Hashed>, Vec<Diag>> {
+/// `fields[i]` holds the ids of the `a.f(b)` calls in `items[i]` that the
+/// checker found to call field `f` (spec section 4); without an entry, such a
+/// call is a field call when `f` names no local or function, as before the
+/// checker decided it.
+pub fn hash_items(items: &[Item], scope: &Scope, fields: &[Option<&HashSet<NodeId>>]) -> Result<Vec<Hashed>, Vec<Diag>> {
+    let fields: Vec<Option<&HashSet<NodeId>>> =
+        items.iter().zip(fields.iter().copied().chain(std::iter::repeat(None))).filter(|(i, _)| !matches!(i, Item::Comment(_))).map(|p| p.1).collect();
     let items: Vec<&Item> = items.iter().filter(|i| !matches!(i, Item::Comment(_))).collect();
     let mut local_values = HashMap::new();
     let mut local_types = HashMap::new();
@@ -152,9 +158,11 @@ pub fn hash_items(items: &[Item], scope: &Scope) -> Result<Vec<Hashed>, Vec<Diag
     let mut ext_deps = Vec::new();
     let mut refs = Vec::new();
     let mut diags = Vec::new();
-    for item in &items {
+    for (item, fields) in items.iter().zip(fields) {
         let mut c = Canon {
             scope,
+            fields,
+            field_calls: BTreeSet::new(),
             local_values: &local_values,
             local_types: &local_types,
             local_ctors: &local_ctors,
@@ -170,7 +178,7 @@ pub fn hash_items(items: &[Item], scope: &Scope) -> Result<Vec<Hashed>, Vec<Diag
             diags: Vec::new(),
         };
         forms.push(c.item(item));
-        refs.push((c.refs, c.vars));
+        refs.push((c.refs, c.vars, c.field_calls));
         edges.push(c.local_deps.into_iter().collect::<Vec<_>>());
         ext_deps.push(c.ext_deps);
         diags.extend(c.diags);
@@ -221,9 +229,9 @@ pub fn hash_items(items: &[Item], scope: &Scope) -> Result<Vec<Hashed>, Vec<Diag
         deps.extend(edges[i].iter().filter(|&&j| j != i).map(|&j| hashes[j].clone()));
         let kind = finals[i]["kind"].as_str().unwrap().to_string();
         let source = printer.item(item);
-        let (table, vars) = &refs[i];
+        let (table, vars, field_calls) = &refs[i];
         // Pairs, not objects: a name could be `local`, which `subst` would take for a marker.
-        let mut resolved = json!({ "values": [], "types": [], "ctors": [], "schemas": [], "vars": vars });
+        let mut resolved = json!({ "values": [], "types": [], "ctors": [], "schemas": [], "vars": vars, "fields": field_calls });
         for ((table, name), target) in table {
             resolved[*table].as_array_mut().unwrap().push(json!([name, subst(target, &|j| json!(hashes[j]))]));
         }
@@ -238,6 +246,11 @@ pub fn hash_items(items: &[Item], scope: &Scope) -> Result<Vec<Hashed>, Vec<Diag
         });
     }
     Ok(out)
+}
+
+/// Ids of the `a.f(b)` calls the checker resolved to a call of field `f`.
+pub fn field_calls(typed: &crate::types::TypedProgram) -> HashSet<NodeId> {
+    typed.calls.iter().filter(|(_, c)| matches!(c.callee, crate::types::Callee::Field)).map(|(id, _)| *id).collect()
 }
 
 /// The stored form of a definition: the item as written, with spans and
@@ -363,6 +376,10 @@ struct Canon<'a> {
     local_types: &'a HashMap<String, usize>,
     local_ctors: &'a HashMap<String, (usize, usize)>,
     local_schemas: &'a HashMap<String, (usize, Vec<String>)>,
+    /// Ids of the `a.f(b)` calls of field `f`, when the checker decided them.
+    fields: Option<&'a HashSet<NodeId>>,
+    /// Ids of the calls hashed as field calls.
+    field_calls: BTreeSet<NodeId>,
     def_name: String,
     /// Local variables in scope, innermost last.
     locals: Vec<String>,
@@ -676,12 +693,15 @@ impl Canon<'_> {
                 json!({ "record": t, "base": base, "fields": fields })
             }
             ExprKind::Call { callee, args, ufcs } => {
-                // `a.f(b)` where `f` names no function is a call of field `f`.
+                // `a.f(b)` where `a` has a field `f` is a call of that field, whatever
+                // globals exist; undecided, where `f` names no local or function.
                 if let (true, ExprKind::Var(f)) = (*ufcs, &callee.kind)
-                    && self.var_index(f).is_none()
-                    && !self.local_values.contains_key(f)
-                    && !self.scope.values.contains_key(f)
+                    && match self.fields {
+                        Some(ids) => ids.contains(&e.id),
+                        None => self.var_index(f).is_none() && !self.local_values.contains_key(f) && !self.scope.values.contains_key(f),
+                    }
                 {
+                    self.field_calls.insert(e.id);
                     return json!({ "field_call": f, "args": self.exprs(args) });
                 }
                 let callee = self.expr(callee);
@@ -791,7 +811,7 @@ pub fn prelude() -> &'static Prelude {
     static PRELUDE: OnceLock<Prelude> = OnceLock::new();
     PRELUDE.get_or_init(|| {
         let (program, _) = crate::prelude::parse();
-        let defs = hash_items(&program.items, &Scope::default()).expect("prelude hashes");
+        let defs = hash_items(&program.items, &Scope::default(), &[]).expect("prelude hashes");
         let mut scope = Scope::default();
         for d in &defs {
             scope.bind(&d.name, &d.hash, &d.item);
@@ -808,7 +828,7 @@ mod tests {
     fn hashes(src: &str) -> HashMap<String, String> {
         let (program, diags) = parser::parse(src);
         assert!(diags.is_empty(), "{diags:?}");
-        hash_items(&program.items, &prelude().scope).unwrap().into_iter().map(|h| (h.name, h.hash)).collect()
+        hash_items(&program.items, &prelude().scope, &[]).unwrap().into_iter().map(|h| (h.name, h.hash)).collect()
     }
 
     const BASE: &str = "fn double(x: Int) -> Int { x * 2 }\nfn quad(x: Int) -> Int { double(double(x)) }\n";
@@ -893,7 +913,7 @@ mod tests {
     fn named_ast_keeps_names_and_drops_spans_and_comments() {
         let src = "fn f(x: Int) -> Int {\n  // note\n  g(x)\n}\nfn g(y: Int) -> Int { y }\n";
         let (program, _) = parser::parse(src);
-        let h = hash_items(&program.items, &prelude().scope).unwrap();
+        let h = hash_items(&program.items, &prelude().scope, &[]).unwrap();
         let ast: Value = serde_json::from_str(&h[0].ast).unwrap();
         let text = ast["item"].to_string();
         assert!(text.contains("\"g\"") && text.contains("\"x\"") && !text.contains("span") && !text.contains("note"), "{text}");
@@ -928,7 +948,7 @@ mod tests {
     #[test]
     fn unknown_name_is_e0100_with_a_fix() {
         let (program, _) = parser::parse("fn f() -> Int { lenn([]) }\n");
-        let diags = hash_items(&program.items, &prelude().scope).unwrap_err();
+        let diags = hash_items(&program.items, &prelude().scope, &[]).unwrap_err();
         assert_eq!(diags[0].code, "E0100");
         assert_eq!(diags[0].fixes.as_ref().unwrap()[0].patch, "len");
     }

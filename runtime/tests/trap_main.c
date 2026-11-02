@@ -19,5 +19,6 @@ int main(int argc, char** argv) {
   if (!strcmp(k, "esc")) ov_trap("todo", "f\"x", "abc", "{\"a\": 1}");
   if (!strcmp(k, "requires")) ov_trap_contract("requires", "f", "abc", "x > 0", "{\"x\": \"-1\"}");
   if (!strcmp(k, "ensures")) ov_trap_contract("ensures", "f", "abc", "result >= 0", NULL);
+  if (!strcmp(k, "repeat")) ov_str_repeat(ov_str_lit("ab"), INT64_MAX / 2 + 1, "f", "abc");
   return 0;
 }

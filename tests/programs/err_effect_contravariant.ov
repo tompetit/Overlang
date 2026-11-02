@@ -1,0 +1,35 @@
+// Parameter positions of function types are contravariant in their effects:
+// a function that calls a pure callback cannot stand in for one whose
+// callback may perform !io. Audit finding: effects e22.
+fn call_cb(cb: fn(Int) -> Int) -> Int {
+  cb(1)
+}
+
+fn ignore_cb(cb: fn(Int) -> Int !io) -> Int {
+  1
+}
+
+fn use_it(h: fn(fn(Int) -> Int !io) -> Int) -> Int {
+  h(|x| { println("io from a pure function"); x })
+}
+
+fn use_pure(h: fn(fn(Int) -> Int) -> Int) -> Int {
+  h(|x| x)
+}
+
+fn named() -> Int {
+  use_it(call_cb)
+}
+
+fn annotated() -> Int {
+  use_it(|cb: fn(Int) -> Int| cb(1))
+}
+
+// Fine: a function accepting an effectful callback also accepts a pure one.
+fn widened() -> Int {
+  use_pure(ignore_cb)
+}
+
+fn main() -> Unit !io {
+  println(show(named() + annotated() + widened()));
+}

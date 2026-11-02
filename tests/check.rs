@@ -106,7 +106,7 @@ fn fixtures_without_expected_diagnostics_have_no_errors() {
 }
 
 #[test]
-fn err_fixtures_produce_exactly_the_expected_codes() {
+fn diag_fixtures_produce_exactly_the_expected_codes() {
     let mut n = 0;
     for (name, src) in fixtures() {
         let expect = name.replace(".ov", ".expect.diag");
@@ -114,7 +114,7 @@ fn err_fixtures_produce_exactly_the_expected_codes() {
         n += 1;
         let want: Vec<&str> = text.lines().map(str::trim).filter(|l| !l.is_empty()).collect();
         let (_, diags) = check_sources(&[(name.clone(), src)]);
-        let got: Vec<&str> = errors(&diags).iter().map(|d| d.code.as_str()).collect();
+        let got: Vec<&str> = diags.iter().map(|d| d.code.as_str()).collect();
         assert_eq!(got, want, "{name}: {diags:#?}");
     }
     assert!(n >= 8, "err fixtures not found");
@@ -268,7 +268,8 @@ fn effect_parameters_pass_through_and_are_checked() {
     assert_clean("fn twice[T, !e](xs: List[T], f: fn(T) -> Unit !e) -> Unit !e { for_each(xs, f); for_each(xs, f); }");
     assert_eq!(codes("fn twice[T, !e](xs: List[T], f: fn(T) -> Unit !e) -> Unit { for_each(xs, f); }"), vec!["E0105"]);
     assert_eq!(codes("fn f[!e, !g](x: Int) -> Int { x }"), vec!["E0111"]);
-    assert_eq!(codes("fn f(g: fn() -> Int !e) -> Int { 1 }"), vec!["E0111"]);
+    // Undeclared, `!e` is a label like any other name.
+    assert_clean("fn f(g: fn() -> Int !e) -> Int { 1 }");
     assert_eq!(codes("fn f[!e](g: fn() -> Int !e) -> fn() -> Int !e { g }"), vec!["E0111"]);
     // Mutation and loops are not effects.
     assert_clean("fn f() -> Int { let mut i = 0; while i < 3 { i = i + 1; } i }");
@@ -300,6 +301,15 @@ fn missing_list_shapes() {
     let d = only_error("fn f(xs: List[Int]) -> Int { match xs { [x, ..rest] => x + len(rest) } }", "E0104");
     assert_eq!(d.expected.unwrap(), vec!["[]"]);
     assert_clean("fn f(xs: List[Int]) -> Int { match xs { [] => 0, [..init, x] => x + len(init) } }");
+}
+
+#[test]
+fn exhaustiveness_is_not_exponential_in_tuple_columns() {
+    // 57 arms on an 8-tuple of an 8-variant sum took about a minute when every column split on every constructor.
+    let src = fs::read_to_string("tests/programs/exhaust_tuple_columns.ov").unwrap();
+    let start = std::time::Instant::now();
+    assert_clean(&src);
+    assert!(start.elapsed() < std::time::Duration::from_secs(2), "took {:?}", start.elapsed());
 }
 
 #[test]

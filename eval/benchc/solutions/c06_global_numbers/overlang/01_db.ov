@@ -1,0 +1,139 @@
+// Tracker db module: SQLite shims, the schema, tagged ? parameters and the shim's row encoding.
+
+// ---- foreign bindings: sqlite (!fs) ----
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_open(path: Str) -> Int !fs = "ov_sqlite_open"
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_close(db: Int) -> Unit !fs = "ov_sqlite_close"
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_error(db: Int) -> Str !fs = "ov_sqlite_error"
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_exec(db: Int, sql: Str) -> Int !fs = "ov_sqlite_exec"
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_exec_p(db: Int, sql: Str, params: Str) -> Int !fs = "ov_sqlite_exec_p"
+foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_query_p(db: Int, sql: Str, params: Str) -> Option[Str] !fs = "ov_sqlite_query_p"
+
+// ---- schema ----
+// The DDL of section 1 as one script.
+fn schema_sql() -> Str {
+  "create table if not exists users (id integer primary key autoincrement, name text not null unique);\n"
+    ++ "create table if not exists projects (id integer primary key autoincrement, key text not null unique, name text not null);\n"
+    ++ "create table if not exists issues (id integer primary key autoincrement, project_id integer not null references projects(id), "
+    ++ "number integer not null unique, title text not null, body text not null default '', "
+    ++ "status text not null default 'open' check (status in ('open', 'closed')), "
+    ++ "priority integer not null default 3 check (priority between 1 and 4), "
+    ++ "assignee_id integer references users(id));\n"
+    ++ "create table if not exists labels (id integer primary key autoincrement, project_id integer not null references projects(id), "
+    ++ "name text not null, unique (project_id, name));\n"
+    ++ "create table if not exists issue_labels (issue_id integer not null references issues(id), "
+    ++ "label_id integer not null references labels(id), primary key (issue_id, label_id));\n"
+    ++ "create table if not exists comments (id integer primary key autoincrement, issue_id integer not null references issues(id), "
+    ++ "author_id integer not null references users(id), body text not null);\n"
+    ++ "create table if not exists activity (id integer primary key autoincrement, issue_id integer not null references issues(id), "
+    ++ "kind text not null check (kind in ('created', 'status', 'assigned', 'commented')), detail text not null default '');\n"
+}
+
+// sqlite_open(path), then sqlite_exec(schema_sql()); the handle, or -1 if either fails (closing the handle).
+fn db_open(path: Str) -> Int !fs {
+  let db = sqlite_open(path);
+  if db < 1 {
+    -1
+  } else if sqlite_exec(db, schema_sql()) < 0 {
+    sqlite_close(db);
+    -1
+  } else {
+    db
+  }
+}
+
+// ---- parameters ----
+// "i" ++ show(n).
+fn p_int(n: Int) -> Str {
+  "i" ++ show(n)
+}
+
+// "s" ++ s. The caller guarantees s has no \x1f or \x1e (routes clean every input).
+fn p_str(s: Str) -> Str {
+  "s" ++ s
+}
+
+// "n".
+fn p_null() -> Str {
+  "n"
+}
+
+// The encoded params joined by "\u{1f}"; [] gives "".
+fn sql_params(ps: List[Str]) -> Str {
+  join(ps, "\u{1f}")
+}
+
+// ---- queries ----
+// sqlite_exec_p(db, sql, sql_params(ps)): rows changed, or -1.
+fn db_exec(db: Int, sql: Str, ps: List[Str]) -> Int !fs {
+  sqlite_exec_p(db, sql, sql_params(ps))
+}
+
+// sqlite_query_p then parse_table; [] on error.
+fn db_rows(db: Int, sql: Str, ps: List[Str]) -> List[List[Str]] !fs {
+  match sqlite_query_p(db, sql, sql_params(ps)) {
+    Some(text) => parse_table(text),
+    None => [],
+  }
+}
+
+// The first column of the first row of db_rows as an Int; -1 if there is no row or it is not an Int.
+fn db_int(db: Int, sql: Str, ps: List[Str]) -> Int !fs {
+  match db_rows(db, sql, ps) {
+    [[c, ..], ..] => unwrap_or(parse_int(c), -1),
+    _ => -1,
+  }
+}
+
+// ---- rows ----
+// Shim text to rows: split on "\u{1e}", drop the header row, split each row on "\u{1f}"; "" gives [].
+fn parse_table(text: Str) -> List[List[Str]] {
+  map(drop(split(text, "\u{1e}"), 1), |row| split(row, "\u{1f}"))
+}
+
+// The i-th cell, or "" when out of range.
+fn cell_str(row: List[Str], i: Int) -> Str {
+  unwrap_or(get(row, i), "")
+}
+
+// The i-th cell parsed with parse_int, or 0.
+fn cell_int(row: List[Str], i: Int) -> Int {
+  unwrap_or(parse_int(cell_str(row, i)), 0)
+}
+
+// ---- tests ----
+test t_db_parse_table {
+  assert_eq(parse_table("a\u{1f}b\u{1e}1\u{1f}x\u{1e}2\u{1f}"), [["1", "x"], ["2", ""]]);
+  assert_eq(parse_table("a\u{1f}b"), []);
+  assert_eq(parse_table(""), []);
+  assert_eq(cell_str(["a"], 3), "");
+  assert_eq(cell_int(["7", "x"], 0), 7);
+  assert_eq(cell_int(["7", "x"], 1), 0);
+}
+
+test t_db_params {
+  assert_eq(sql_params([p_int(5), p_str("a b"), p_null(), p_int(-2)]), "i5\u{1f}sa b\u{1f}n\u{1f}i-2");
+  assert_eq(sql_params([]), "");
+}
+
+test t_db_roundtrip {
+  let db = db_open(":memory:");
+  assert(db >= 1);
+  assert_eq(db_exec(db, "insert into users (name) values (?)", [p_str("ann")]), 1);
+  assert_eq(db_rows(db, "select id, name from users", []), [["1", "ann"]]);
+  assert_eq(db_int(db, "select count(*) from users where name = ?", [p_str("ann")]), 1);
+  assert_eq(db_rows(db, "select ? is null, ? + 1", [p_null(), p_int(41)]), [["1", "42"]]);
+  assert_eq(db_exec(db, "insert into nope values (1)", []), -1);
+  assert_eq(db_rows(db, "select * from nope", []), []);
+  assert_eq(db_exec(db, "select ?", ["x1"]), -1);
+  assert_eq(sqlite_error(db), "bad parameter");
+  sqlite_close(db);
+}
+
+test t_db_schema {
+  let db = db_open(":memory:");
+  assert_eq(db_rows(db, "select name from sqlite_master where type = 'table' and name != 'sqlite_sequence' order by name", []),
+    [["activity"], ["comments"], ["issue_labels"], ["issues"], ["labels"], ["projects"], ["users"]]);
+  assert_eq(sqlite_exec(db, schema_sql()), 0);
+  assert_eq(sqlite_query_p(db, "select 1; select 2", ""), Some("1\u{1e}1"));
+  sqlite_close(db);
+}

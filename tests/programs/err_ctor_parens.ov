@@ -1,0 +1,15 @@
+// A constructor with no fields is written without parentheses.
+type T = A() | B(x: Int)
+
+type U = C | D(x: Int)
+
+fn f() -> U {
+  C()
+}
+
+fn g(u: U) -> Int {
+  match u {
+    C() => 0,
+    D(x) => x,
+  }
+}

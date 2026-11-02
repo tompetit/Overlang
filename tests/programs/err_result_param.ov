@@ -1,0 +1,7 @@
+// A function with `ensures` cannot have a parameter named `result`: the
+// clause could not see it, and the trap's `args` would hold `result` twice.
+fn f(result: Int) -> Int
+  ensures result >= 0
+{
+  0 - 5
+}

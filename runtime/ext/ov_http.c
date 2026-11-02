@@ -96,6 +96,8 @@ static int read_request(int fd, req_t* r) {
         len += (size_t)n;
         b[len] = 0;
         sep = strstr(b + from, "\r\n\r\n");
+        /* strstr stops at a NUL, so a NUL in the head would hide its end: answer 400 now instead of waiting */
+        if (!sep && memchr(b + from, 0, len - from)) { reply_and_close(fd, "400 Bad Request"); return -7; }
     }
     hend = (size_t)(sep - b) + 4;
     *sep = 0;

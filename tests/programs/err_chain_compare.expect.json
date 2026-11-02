@@ -1,0 +1,2 @@
+{"code":"E0002","severity":"error","span":{"line":3,"col":15,"end_line":3,"end_col":17},"message":"unexpected `==`","expected":["?","(","[",".",";","}"],"file":"tests/programs/err_chain_compare.ov"}
+{"code":"E0002","severity":"error","span":{"line":7,"col":19,"end_line":7,"end_col":21},"message":"unexpected `!=`","expected":["?","(","[",".",";","}"],"file":"tests/programs/err_chain_compare.ov"}

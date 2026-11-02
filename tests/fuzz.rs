@@ -126,3 +126,21 @@ fn name_restricts_fuzzing_to_its_closure() {
     assert_eq!(bad.status.code(), Some(1));
     assert!(stdout(&bad).contains("E0000"));
 }
+
+#[test]
+fn float_generation_reaches_large_magnitudes() {
+    let out = ov_test(&workdir("float_mag"), &[&fixture("fuzz_float_mag.ov"), "--json", "--seed", "1", "--cases", "2000"]);
+    let v = fuzz_line(&out, "big");
+    assert_eq!(v["status"], "fail", "{v}");
+    assert_eq!(v["failure"]["kind"], "ensures", "{v}");
+}
+
+#[test]
+fn a_name_run_keeps_the_other_cache_entries() {
+    let dir = workdir("name_cache");
+    let f = fixture("fuzz_tree.ov");
+    ov_test(&dir, &[&f, "--seed", "1"]);
+    ov_test(&dir, &[&f, "--name", "shallow", "--seed", "1"]);
+    let s = stdout(&ov_test(&dir, &[&f, "--seed", "1"]));
+    assert!(s.lines().any(|l| l.starts_with("fuzz node_count ok") && l.ends_with(", cached)")), "{s}");
+}

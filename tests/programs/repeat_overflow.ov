@@ -1,0 +1,9 @@
+// A trap inside an intrinsic names the Overlang function that called it.
+fn stretch(s: Str, n: Int) -> Str {
+  repeat(s, n)
+}
+
+fn main() -> Unit !io {
+  println(stretch("ab", 2));
+  println(stretch("ab", 4_611_686_018_427_387_904));
+}

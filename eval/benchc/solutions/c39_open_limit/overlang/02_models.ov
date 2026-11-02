@@ -1,0 +1,477 @@
+// Tracker models: record types, validators, SQL and CRUD over the db module (SPEC.md 3.2).
+
+type User = { id: Int, name: Str }
+// open_limit is the cap on open issues, 0 = no limit.
+type Project = { id: Int, key: Str, name: Str, open_limit: Int }
+type Label = { id: Int, project_id: Int, name: Str }
+// assignee is the user's name, "" when unassigned; labels are names sorted ascending.
+type Issue = { id: Int, project_id: Int, project_key: Str, number: Int, title: Str, body: Str, status: Str, priority: Int, assignee: Str, labels: List[Str] }
+// author is the user's name.
+type Comment = { id: Int, issue_id: Int, author: Str, body: Str }
+type Activity = { id: Int, issue_id: Int, kind: Str, detail: Str }
+// "" and 0 mean "no filter"; page is 1-based.
+type Filter = { status: Str, assignee: Str, label: Str, priority: Int, q: Str, page: Int }
+type IssuePage = { issues: List[Issue], total: Int, page: Int, pages: Int }
+
+// ---- validators and pure helpers ----
+
+// 1 to 32 code points, each an ASCII letter, digit, "_", "-" or ".".
+fn valid_user_name(s: Str) -> Bool {
+  let n = str_len(s);
+  n >= 1 && n <= 32 && all(chars(s), |c| is_alnum(c) || c == "_" || c == "-" || c == ".")
+}
+
+// 2 to 10 code points: an ASCII uppercase letter, then uppercase letters or digits.
+fn valid_project_key(s: Str) -> Bool {
+  let n = str_len(s);
+  n >= 2 && n <= 10 && is_upper(s) && all(chars(s), |c| is_upper(c) || is_digit(c))
+}
+
+// 1 to 20 code points, each an ASCII lowercase letter, digit or "-".
+fn valid_label_name(s: Str) -> Bool {
+  let n = str_len(s);
+  n >= 1 && n <= 20 && all(chars(s), |c| is_lower(c) || is_digit(c) || c == "-")
+}
+
+// s == "open" || s == "closed".
+fn valid_status(s: Str) -> Bool {
+  s == "open" || s == "closed"
+}
+
+// i.project_key ++ "-" ++ show(i.number).
+fn issue_key(i: Issue) -> Str {
+  i.project_key ++ "-" ++ show(i.number)
+}
+
+// "%" ++ q with "\" -> "\\", "%" -> "\%", "_" -> "\_" (backslash first) ++ "%".
+fn like_pattern(q: Str) -> Str {
+  "%" ++ replace(replace(replace(q, "\\", "\\\\"), "%", "\\%"), "_", "\\_") ++ "%"
+}
+
+// max(1, (total + 19) / 20).
+fn page_count(total: Int) -> Int
+  requires total >= 0 && total <= 1_000_000_000
+  ensures result >= 1
+{
+  max(1, (total + 19) / 20)
+}
+
+// (page - 1) * 20.
+fn page_offset(page: Int) -> Int
+  requires page >= 1 && page <= 1_000_000
+  ensures result >= 0
+{
+  (page - 1) * 20
+}
+
+// Filter { status: "", assignee: "", label: "", priority: 0, q: "", page: 1 }.
+fn no_filter() -> Filter {
+  Filter { status: "", assignee: "", label: "", priority: 0, q: "", page: 1 }
+}
+
+// ---- row parsers (column order of section 1.1) ----
+
+fn row_user(r: List[Str]) -> User {
+  User { id: cell_int(r, 0), name: cell_str(r, 1) }
+}
+
+fn row_project(r: List[Str]) -> Project {
+  Project { id: cell_int(r, 0), key: cell_str(r, 1), name: cell_str(r, 2), open_limit: cell_int(r, 3) }
+}
+
+fn row_label(r: List[Str]) -> Label {
+  Label { id: cell_int(r, 0), project_id: cell_int(r, 1), name: cell_str(r, 2) }
+}
+
+// Column 9 split on ",", empty pieces dropped, sorted (group_concat order is not guaranteed).
+fn row_issue(r: List[Str]) -> Issue {
+  Issue {
+    id: cell_int(r, 0),
+    project_id: cell_int(r, 1),
+    project_key: cell_str(r, 2),
+    number: cell_int(r, 3),
+    title: cell_str(r, 4),
+    body: cell_str(r, 5),
+    status: cell_str(r, 6),
+    priority: cell_int(r, 7),
+    assignee: cell_str(r, 8),
+    labels: sort(filter(split(cell_str(r, 9), ","), |s| s != "")),
+  }
+}
+
+fn row_comment(r: List[Str]) -> Comment {
+  Comment { id: cell_int(r, 0), issue_id: cell_int(r, 1), author: cell_str(r, 2), body: cell_str(r, 3) }
+}
+
+fn row_activity(r: List[Str]) -> Activity {
+  Activity { id: cell_int(r, 0), issue_id: cell_int(r, 1), kind: cell_str(r, 2), detail: cell_str(r, 3) }
+}
+
+// The first row through f, or None when there are no rows.
+fn m_first[T](rows: List[List[Str]], f: fn(List[Str]) -> T) -> Option[T] {
+  match rows {
+    [r, ..] => Some(f(r)),
+    _ => None,
+  }
+}
+
+// ---- SQL ----
+
+// The issue select of section 1.1, except the labels column: the linked SQLite (3.40) has no
+// `group_concat(x, ',' order by ...)` (3.44+), so it aggregates an ordered subquery and row_issue sorts.
+fn issue_select_sql() -> Str {
+  "select i.id, i.project_id, p.key, i.number, i.title, i.body, i.status, i.priority, "
+    ++ "coalesce(u.name, ''), "
+    ++ "coalesce((select group_concat(n, ',') from (select l.name as n from issue_labels il "
+    ++ "join labels l on l.id = il.label_id where il.issue_id = i.id order by l.name)), '') "
+    ++ "from issues i join projects p on p.id = i.project_id left join users u on u.id = i.assignee_id"
+}
+
+// The filter fragments and their params, section 1.1 (page is not included).
+fn issue_where(f: Filter) -> (Str, List[Str]) {
+  let mut sql = "";
+  let mut ps: List[Str] = [];
+  if f.status != "" {
+    sql = sql ++ " and i.status = ?";
+    ps = push(ps, p_str(f.status));
+  }
+  if f.assignee != "" {
+    sql = sql ++ " and u.name = ?";
+    ps = push(ps, p_str(f.assignee));
+  }
+  if f.label != "" {
+    sql = sql ++ " and exists (select 1 from issue_labels il2 join labels l2 on l2.id = il2.label_id where il2.issue_id = i.id and l2.name = ?)";
+    ps = push(ps, p_str(f.label));
+  }
+  if f.priority > 0 {
+    sql = sql ++ " and i.priority = ?";
+    ps = push(ps, p_int(f.priority));
+  }
+  if f.q != "" {
+    sql = sql ++ " and (i.title like ? escape '\\' or i.body like ? escape '\\')";
+    ps = ps ++ [p_str(like_pattern(f.q)), p_str(like_pattern(f.q))];
+  }
+  (sql, ps)
+}
+
+// ---- users, projects, labels ----
+
+// Insert, returning the new id.
+fn create_user(db: Int, name: Str) -> Int !fs
+  requires valid_user_name(name)
+{
+  db_int(db, "insert into users (name) values (?) returning id", [p_str(name)])
+}
+
+// select id, name from users order by id.
+fn list_users(db: Int) -> List[User] !fs {
+  map(db_rows(db, "select id, name from users order by id", []), |r| row_user(r))
+}
+
+fn find_user(db: Int, name: Str) -> Option[User] !fs {
+  m_first(db_rows(db, "select id, name from users where name = ?", [p_str(name)]), |r| row_user(r))
+}
+
+fn create_project(db: Int, key: Str, name: Str) -> Int !fs
+  requires valid_project_key(key) && str_len(trim(name)) > 0
+{
+  db_int(db, "insert into projects (key, name) values (?, ?) returning id", [p_str(key), p_str(name)])
+}
+
+// select id, key, name, open_limit from projects order by key.
+fn list_projects(db: Int) -> List[Project] !fs {
+  map(db_rows(db, "select id, key, name, open_limit from projects order by key", []), |r| row_project(r))
+}
+
+fn find_project(db: Int, key: Str) -> Option[Project] !fs {
+  m_first(db_rows(db, "select id, key, name, open_limit from projects where key = ?", [p_str(key)]), |r| row_project(r))
+}
+
+fn create_label(db: Int, project_id: Int, name: Str) -> Int !fs
+  requires valid_label_name(name)
+{
+  db_int(db, "insert into labels (project_id, name) values (?, ?) returning id", [p_int(project_id), p_str(name)])
+}
+
+// update projects set open_limit = ? where id = ?; rows changed.
+fn set_open_limit(db: Int, p: Project, n: Int) -> Int !fs
+  requires n >= 0 && n <= 1000
+{
+  db_exec(db, "update projects set open_limit = ? where id = ?", [p_int(n), p_int(p.id)])
+}
+
+// The project's number of open issues.
+fn count_open(db: Int, project_id: Int) -> Int !fs {
+  count_issues(db, project_id, Filter { ..no_filter(), status: "open" })
+}
+
+// True when p has a limit and its open issues number at least the limit.
+fn limit_reached(db: Int, p: Project) -> Bool !fs {
+  p.open_limit > 0 && count_open(db, p.id) >= p.open_limit
+}
+
+// select id, project_id, name from labels where project_id = ? order by name.
+fn list_labels(db: Int, project_id: Int) -> List[Label] !fs {
+  map(db_rows(db, "select id, project_id, name from labels where project_id = ? order by name", [p_int(project_id)]), |r| row_label(r))
+}
+
+fn find_label(db: Int, project_id: Int, name: Str) -> Option[Label] !fs {
+  let rows = db_rows(db, "select id, project_id, name from labels where project_id = ? and name = ?", [p_int(project_id), p_str(name)]);
+  m_first(rows, |r| row_label(r))
+}
+
+// ---- issues ----
+
+// Insert (section 1.1; assignee_id 0 = none), attach each label id, log "created"; returns the new issue's number.
+fn create_issue(db: Int, project_id: Int, title: Str, body: Str, priority: Int, assignee_id: Int, label_ids: List[Int]) -> Int !fs
+  requires str_len(trim(title)) > 0 && priority >= 1 && priority <= 4
+{
+  let assignee = if assignee_id == 0 { p_null() } else { p_int(assignee_id) };
+  let sql = "insert into issues (project_id, number, title, body, priority, assignee_id) "
+    ++ "select ?, coalesce(max(number), 0) + 1, ?, ?, ?, ? from issues where project_id = ? returning id";
+  let id = db_int(db, sql, [p_int(project_id), p_str(title), p_str(body), p_int(priority), assignee, p_int(project_id)]);
+  if id < 1 {
+    return -1;
+  }
+  for lid in label_ids {
+    db_exec(db, "insert or ignore into issue_labels (issue_id, label_id) values (?, ?)", [p_int(id), p_int(lid)]);
+  }
+  log_activity(db, id, "created", "");
+  db_int(db, "select number from issues where id = ?", [p_int(id)])
+}
+
+fn find_issue(db: Int, project_id: Int, number: Int) -> Option[Issue] !fs {
+  let rows = db_rows(db, issue_select_sql() ++ " where i.project_id = ? and i.number = ?", [p_int(project_id), p_int(number)]);
+  m_first(rows, |r| row_issue(r))
+}
+
+// Number of issues matching f (ignoring f.page).
+fn count_issues(db: Int, project_id: Int, f: Filter) -> Int !fs {
+  let w = issue_where(f);
+  let sql = "select count(*) from issues i left join users u on u.id = i.assignee_id where i.project_id = ?" ++ w.0;
+  db_int(db, sql, [p_int(project_id)] ++ w.1)
+}
+
+// One page (20) of matching issues; total = count_issues, pages = page_count(total), page = f.page.
+fn search_issues(db: Int, project_id: Int, f: Filter) -> IssuePage !fs
+  requires f.page >= 1 && f.page <= 1_000_000
+{
+  let w = issue_where(f);
+  let sql = issue_select_sql() ++ " where i.project_id = ?" ++ w.0 ++ " order by i.number limit 20 offset ?";
+  let rows = db_rows(db, sql, [p_int(project_id)] ++ w.1 ++ [p_int(page_offset(f.page))]);
+  // count_issues is -1 on a database error; clamp so page_count's contract holds.
+  let total = max(0, count_issues(db, project_id, f));
+  IssuePage { issues: map(rows, |r| row_issue(r)), total: total, page: f.page, pages: page_count(total) }
+}
+
+// Every issue of the project, by number.
+fn all_issues(db: Int, project_id: Int) -> List[Issue] !fs {
+  map(db_rows(db, issue_select_sql() ++ " where i.project_id = ? order by i.number", [p_int(project_id)]), |r| row_issue(r))
+}
+
+// update issues set title = ?, body = ?, priority = ? where id = ?; rows changed. No activity.
+fn edit_issue(db: Int, i: Issue, title: Str, body: Str, priority: Int) -> Int !fs
+  requires priority >= 1 && priority <= 4
+{
+  db_exec(db, "update issues set title = ?, body = ?, priority = ? where id = ?", [p_str(title), p_str(body), p_int(priority), p_int(i.id)])
+}
+
+// If status differs: update and log ("status", status), true; else false.
+fn set_status(db: Int, i: Issue, status: Str) -> Bool !fs
+  requires valid_status(status)
+{
+  if status == i.status {
+    false
+  } else {
+    db_exec(db, "update issues set status = ? where id = ?", [p_str(status), p_int(i.id)]);
+    log_activity(db, i.id, "status", status);
+    true
+  }
+}
+
+// If the new name (user's name or "") differs from i.assignee: update assignee_id (NULL for None) and log ("assigned", name or "-"), true; else false.
+fn set_assignee(db: Int, i: Issue, user: Option[User]) -> Bool !fs {
+  let (name, param) = match user {
+    Some(u) => (u.name, p_int(u.id)),
+    None => ("", p_null()),
+  };
+  if name == i.assignee {
+    false
+  } else {
+    db_exec(db, "update issues set assignee_id = ? where id = ?", [param, p_int(i.id)]);
+    log_activity(db, i.id, "assigned", if name == "" { "-" } else { name });
+    true
+  }
+}
+
+// insert or ignore into issue_labels; rows changed.
+fn add_label(db: Int, i: Issue, l: Label) -> Int !fs {
+  db_exec(db, "insert or ignore into issue_labels (issue_id, label_id) values (?, ?)", [p_int(i.id), p_int(l.id)])
+}
+
+// delete from issue_labels where issue_id = ? and label_id = ?; rows changed.
+fn remove_label(db: Int, i: Issue, l: Label) -> Int !fs {
+  db_exec(db, "delete from issue_labels where issue_id = ? and label_id = ?", [p_int(i.id), p_int(l.id)])
+}
+
+// ---- comments and activity ----
+
+// Insert the comment, log ("commented", author.name); returns the comment id.
+fn add_comment(db: Int, i: Issue, author: User, body: Str) -> Int !fs {
+  let id = db_int(db, "insert into comments (issue_id, author_id, body) values (?, ?, ?) returning id", [p_int(i.id), p_int(author.id), p_str(body)]);
+  if id > 0 {
+    log_activity(db, i.id, "commented", author.name);
+  }
+  id
+}
+
+fn list_comments(db: Int, issue_id: Int) -> List[Comment] !fs {
+  let sql = "select c.id, c.issue_id, u.name, c.body from comments c join users u on u.id = c.author_id where c.issue_id = ? order by c.id";
+  map(db_rows(db, sql, [p_int(issue_id)]), |r| row_comment(r))
+}
+
+// Insert one activity row; returns its id.
+fn log_activity(db: Int, issue_id: Int, kind: Str, detail: Str) -> Int !fs {
+  db_int(db, "insert into activity (issue_id, kind, detail) values (?, ?, ?) returning id", [p_int(issue_id), p_str(kind), p_str(detail)])
+}
+
+fn list_activity(db: Int, issue_id: Int) -> List[Activity] !fs {
+  map(db_rows(db, "select id, issue_id, kind, detail from activity where issue_id = ? order by id", [p_int(issue_id)]), |r| row_activity(r))
+}
+
+// ---- tests ----
+
+// Users alice (1) and bob (2), project WEB "Web site" (1), labels bug (1) and ui (2) in WEB.
+fn m_fixture(db: Int) -> Unit !fs {
+  assert_eq(create_user(db, "alice"), 1);
+  assert_eq(create_user(db, "bob"), 2);
+  assert_eq(create_project(db, "WEB", "Web site"), 1);
+  assert_eq(create_label(db, 1, "bug"), 1);
+  assert_eq(create_label(db, 1, "ui"), 2);
+}
+
+// Test helper: the value of a Some, trapping on None.
+fn m_some[T](o: Option[T]) -> T {
+  match o {
+    Some(v) => v,
+    None => todo(),
+  }
+}
+
+test t_m_validators {
+  assert(valid_project_key("WEB"));
+  assert(valid_project_key("W3B"));
+  assert(!valid_project_key("W"));
+  assert(!valid_project_key("web"));
+  assert(!valid_project_key("3WB"));
+  assert(!valid_project_key("ABCDEFGHIJK"));
+  assert(valid_user_name("alice"));
+  assert(valid_user_name("a.b-c_1"));
+  assert(!valid_user_name(""));
+  assert(!valid_user_name("a b"));
+  assert(!valid_user_name(repeat("a", 33)));
+  assert(valid_label_name("bug-1"));
+  assert(!valid_label_name("Bug"));
+  assert(!valid_label_name(""));
+  assert(valid_status("open"));
+  assert(!valid_status("Open"));
+}
+
+test t_m_pure_helpers {
+  assert_eq(like_pattern("50%_a\\b"), "%50\\%\\_a\\\\b%");
+  assert_eq(page_count(0), 1);
+  assert_eq(page_count(20), 1);
+  assert_eq(page_count(21), 2);
+  assert_eq(page_offset(3), 40);
+  assert_eq(issue_where(no_filter()), ("", []));
+  assert_eq(issue_where(Filter { ..no_filter(), status: "open", priority: 2 }), (" and i.status = ? and i.priority = ?", ["sopen", "i2"]));
+}
+
+test t_m_issue_crud {
+  let db = db_open(":memory:");
+  m_fixture(db);
+  let bug_id = m_some(find_label(db, 1, "bug")).id;
+  let ui_id = m_some(find_label(db, 1, "ui")).id;
+  assert_eq(create_issue(db, 1, "Fix login", "body", 2, 1, [bug_id, ui_id]), 1);
+  let i = m_some(find_issue(db, 1, 1));
+  assert_eq(find_issue(db, 1, 1), Some(Issue { id: 1, project_id: 1, project_key: "WEB", number: 1, title: "Fix login", body: "body", status: "open", priority: 2, assignee: "alice", labels: ["bug", "ui"] }));
+  assert_eq(create_issue(db, 1, "Second", "", 3, 0, []), 2);
+  let api = create_project(db, "API", "Api");
+  assert_eq(create_issue(db, api, "Other", "", 3, 0, []), 1);
+  assert_eq(find_issue(db, 1, 99), None);
+  assert_eq(issue_key(i), "WEB-1");
+  assert_eq(find_user(db, "nobody"), None);
+  assert_eq(find_project(db, "NOPE"), None);
+}
+
+test t_m_search {
+  let db = db_open(":memory:");
+  m_fixture(db);
+  for k in range(1, 26) {
+    let labels = if k <= 5 { [1] } else { [] };
+    let body = if k == 7 { "50% done" } else { "" };
+    create_issue(db, 1, "issue " ++ show(k), body, 1 + k % 4, 0, labels);
+  }
+  for n in [1, 2, 3] {
+    assert(set_status(db, m_some(find_issue(db, 1, n)), "closed"));
+  }
+  let p1 = search_issues(db, 1, no_filter());
+  assert_eq(len(p1.issues), 20);
+  assert_eq(p1.total, 25);
+  assert_eq(p1.pages, 2);
+  assert_eq(p1.issues[0].number, 1);
+  let p2 = search_issues(db, 1, Filter { ..no_filter(), page: 2 });
+  assert_eq(len(p2.issues), 5);
+  assert_eq(p2.issues[0].number, 21);
+  assert_eq(search_issues(db, 1, Filter { ..no_filter(), status: "closed" }).total, 3);
+  assert_eq(search_issues(db, 1, Filter { ..no_filter(), label: "bug" }).total, 5);
+  assert_eq(search_issues(db, 1, Filter { ..no_filter(), priority: 1 }).total, 6);
+  assert_eq(map(search_issues(db, 1, Filter { ..no_filter(), q: "%" }).issues, |i| i.number), [7]);
+  assert_eq(search_issues(db, 1, Filter { ..no_filter(), q: "ISSUE 2" }).total, 7);
+  assert_eq(search_issues(db, 1, Filter { ..no_filter(), assignee: "alice" }).total, 0);
+  let f = Filter { ..no_filter(), label: "bug", status: "open" };
+  assert_eq(count_issues(db, 1, f), search_issues(db, 1, f).total);
+  assert_eq(count_issues(db, 1, no_filter()), 25);
+  assert_eq(len(all_issues(db, 1)), 25);
+}
+
+test t_m_activity {
+  let db = db_open(":memory:");
+  m_fixture(db);
+  create_issue(db, 1, "One", "", 3, 0, []);
+  let i = m_some(find_issue(db, 1, 1));
+  assert(set_status(db, i, "closed"));
+  let i2 = m_some(find_issue(db, 1, 1));
+  assert(!set_status(db, i2, "closed"));
+  assert(set_assignee(db, i2, find_user(db, "bob")));
+  let i3 = m_some(find_issue(db, 1, 1));
+  let bob = m_some(find_user(db, "bob"));
+  assert(add_comment(db, i3, bob, "hi") > 0);
+  assert_eq(map(list_activity(db, i.id), |a| a.kind ++ ":" ++ a.detail), ["created:", "status:closed", "assigned:bob", "commented:bob"]);
+  assert_eq(list_comments(db, i.id), [Comment { id: 1, issue_id: 1, author: "bob", body: "hi" }]);
+  let i4 = m_some(find_issue(db, 1, 1));
+  assert(set_assignee(db, i4, None));
+  assert_eq(m_some(last(list_activity(db, i.id))).detail, "-");
+  let bug = m_some(find_label(db, 1, "bug"));
+  assert_eq(add_label(db, i4, bug), 1);
+  assert_eq(add_label(db, i4, bug), 0);
+  assert_eq(remove_label(db, i4, bug), 1);
+}
+
+test t_m_open_limit {
+  let db = db_open(":memory:");
+  m_fixture(db);
+  let web = m_some(find_project(db, "WEB"));
+  assert_eq(web.open_limit, 0);
+  assert(!limit_reached(db, web));
+  create_issue(db, 1, "One", "", 3, 0, []);
+  create_issue(db, 1, "Two", "", 3, 0, []);
+  assert(set_status(db, m_some(find_issue(db, 1, 2)), "closed"));
+  assert_eq(count_open(db, 1), 1);
+  assert_eq(set_open_limit(db, web, 2), 1);
+  let w2 = m_some(find_project(db, "WEB"));
+  assert_eq(w2.open_limit, 2);
+  assert(!limit_reached(db, w2));
+  set_open_limit(db, web, 1);
+  assert(limit_reached(db, m_some(find_project(db, "WEB"))));
+}

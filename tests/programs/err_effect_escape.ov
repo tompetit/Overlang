@@ -1,0 +1,42 @@
+// An effect variable (the effects of a lambda parameter of unknown type)
+// flowing into a pure function slot must not let a later effectful argument
+// run inside a pure function. Audit findings: effects e26, e1, e8, e24.
+fn apply_to[T](f: fn(T) -> Int, x: T) -> Int {
+  f(x)
+}
+
+fn twice(f: fn(Int) -> Int, x: Int) -> Int {
+  f(f(x))
+}
+
+fn generic_order() -> Int {
+  apply_to(|h| h(1), |y| { println("leak"); y })
+}
+
+fn through_local() -> Int {
+  let r = |g| twice(|x| g(x), 1);
+  r(|x| { println("leak"); x + 1 })
+}
+
+fn through_intrinsic(xs: List[Int]) -> List[Int] {
+  let r = |g| sort_by(xs, |x| g(x));
+  r(|x| { println("key"); 0 - x })
+}
+
+fn fuzzed(n: Int) -> Int
+  requires n >= 0
+{
+  let r = |g| max_by([n], |x| g(x));
+  unwrap_or(r(|x| { if x > 5 { exit(42) }; x }), 0)
+}
+
+// Still fine: the variable stays pure.
+fn pure_through_local() -> Int {
+  let r = |g| twice(|x| g(x), 1);
+  r(|x| x + 1)
+}
+
+fn main() -> Unit !io {
+  println(show(generic_order() + through_local() + fuzzed(1) + pure_through_local()));
+  println(show(through_intrinsic([1, 2])));
+}
