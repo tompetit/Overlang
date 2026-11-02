@@ -69,9 +69,13 @@ def test_command():
     return "./run_tests.sh"
 
 
-def card():
+def card(short=False):
+    """The language card. short=True: the core card only (text before the first
+    `<!-- topic` marker; `ov card` prints the same), else every section."""
     text = (ROOT / "docs/CARD.md").read_text()
-    return re.sub(r"<!--.*?-->", "", text, flags=re.S).strip()
+    if short:
+        text = text.split("<!-- topic ", 1)[0]
+    return re.sub(r"<!--.*?-->\n?", "", text, flags=re.S).strip()
 
 
 def workspace(task, dir):
