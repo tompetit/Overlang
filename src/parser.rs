@@ -234,7 +234,19 @@ impl Parser {
         if self.eat(&Tok::Underscore) {
             return Ok("_".to_string());
         }
+        self.not_result()?;
         self.ident()
+    }
+
+    /// Inside `ensures`, `result` is a keyword (spec section 1), so it cannot be bound.
+    fn not_result(&mut self) -> PResult<()> {
+        if self.in_ensures && matches!(self.peek(), Tok::Ident(s) if s == "result") {
+            self.expect_kind("identifier");
+            let mut d = self.error();
+            d.message = "`result` is a keyword inside `ensures`, where it names the return value, so it cannot be bound".to_string();
+            return Err(d);
+        }
+        Ok(())
     }
 
     fn type_name(&mut self) -> PResult<String> {
@@ -566,6 +578,7 @@ impl Parser {
                 let mutable = self.eat(&Tok::Mut);
                 let pat = if mutable {
                     let pstart = self.span();
+                    self.not_result()?;
                     let name = self.ident()?;
                     self.pat_node(PatKind::Bind(name), pstart)
                 } else {
@@ -894,6 +907,7 @@ impl Parser {
                 PatKind::Wild
             }
             Tok::Ident(name) => {
+                self.not_result()?;
                 self.bump();
                 PatKind::Bind(name)
             }
