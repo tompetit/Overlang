@@ -197,7 +197,7 @@ def run_mock(adapter, task, work, args):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--benchmark", required=True, choices=["humaneval", "mbpp", "benchb"])
-    ap.add_argument("--lang", required=True, choices=["python", "rust", "overlang"])
+    ap.add_argument("--lang", required=True, choices=["python", "rust", "overlang", "overlang-ctx"])
     ap.add_argument("--model", default="sonnet")
     ap.add_argument("--tasks", default="0:5", help="start:stop slice of the shared task list (default 0:5)")
     ap.add_argument("--runs", type=int, default=3, help="runs per task")
@@ -213,8 +213,8 @@ def main():
     args = ap.parse_args()
 
     if args.benchmark == "benchb":
-        if args.lang not in ("python", "overlang"):
-            sys.exit("benchb supports --lang python and overlang")
+        if args.lang not in ("python", "overlang", "overlang-ctx"):
+            sys.exit("benchb supports --lang python, overlang and overlang-ctx")
         adapter = adapters.get("benchb").for_lang(args.lang)
     else:
         adapter = adapters.get(args.lang)

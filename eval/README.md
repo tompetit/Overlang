@@ -126,6 +126,13 @@ totals); there is no `--max-turns` or timeout; the agent's cwd is the
 session's, so the prompt tells it to `cd` into the workspace. This is how the
 numbers in `docs/RESULTS.md` were produced.
 
+### Forced-context variant
+
+`--lang overlang-ctx` (Benchmark B only) builds the same Overlang workspace but the `./ov`
+wrapper refuses `view`, `export`, `history` and `diff`, so `ov ctx` is the only way to read
+code. It tests whether the computed context is sufficient, and what the agent reads when it
+cannot read everything. Records carry `lang: overlang-ctx`.
+
 ## Metrics recorded (one JSON line per run)
 
 `benchmark, lang, task, run, model, agent, passed, num_turns, total_cost_usd,

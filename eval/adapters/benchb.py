@@ -152,6 +152,10 @@ class Adapter:
     SOLUTION = None
 
     def __init__(self, lang):
+        # "overlang-ctx": same workspace, but `ov view/export/history/diff` are disabled, so the
+        # only way to read code is `ov ctx` (tests whether the computed context is sufficient)
+        self.ctx_only = lang.endswith("-ctx")
+        lang = lang.removesuffix("-ctx")
         self.lang = self.LANG = lang
         self.TASK_LANG = lang
         self.SOLUTION = "main.py" if lang == "python" else "the store"
@@ -178,12 +182,19 @@ class Adapter:
         seed = hidden / "seed"
         seed.mkdir(exist_ok=True)
         (seed / "main.ov").write_text(files["main.ov"])
-        (work / "ov").write_text(f'#!/bin/sh\nexec "{ovmod.ov_bin()}" "$@"\n')
+        guard = ('case "$1" in view|export|history|diff) echo \'{"error":"disabled in this workspace: '
+                 'read code with ./ov ctx <name> [--depth 1]"}\' >&2; exit 1;; esac\n' if self.ctx_only else "")
+        (work / "ov").write_text(f'#!/bin/sh\n{guard}exec "{ovmod.ov_bin()}" "$@"\n')
         (work / "ov").chmod(0o755)
         self._ov(work, "add", str((seed / "main.ov").resolve()))  # ov runs with cwd=work
         shutil.rmtree(seed)  # the store must be the only copy of the code the agent can reach
-        (work / "CLAUDE.md").write_text(OV_MD.format(
-            card=ovmod.card(), overview=APP_OVERVIEW, command=self.test_command()))
+        md = OV_MD.format(card=ovmod.card(), overview=APP_OVERVIEW, command=self.test_command())
+        if self.ctx_only:
+            md = md.replace("; `./ov view <name>` prints one definition.",
+                            ". In this workspace `./ov view`, `./ov export`, `./ov history` and `./ov diff` are "
+                            "disabled: `./ov ctx` is the only way to read code, so ask it for exactly the "
+                            "names you need.")
+        (work / "CLAUDE.md").write_text(md)
 
     def grade(self, dir, timeout=120):
         work, hidden = Path(dir).resolve(), adapters.hidden_dir(dir).resolve()
