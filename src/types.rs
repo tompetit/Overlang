@@ -968,6 +968,10 @@ impl<'a> Checker<'a> {
         let fsig = self.out.fns[&sig.name].clone();
         let mut scope = Vec::new();
         for (i, p) in sig.params.iter().enumerate() {
+            if let (Some(e), "result") = (ensures.first(), p.name.as_str()) {
+                // `result` in `ensures` (and in the trap's `args`) is the return value.
+                self.diag("E0109", p.span, format!("parameter `result` clashes with `result` in the `ensures` at line {}", e.span.line));
+            }
             let ty = fsig.params.get(i).map(|x| x.1.clone()).unwrap_or(Ty::Error);
             scope.push(Local { name: p.name.clone(), ty, mutable: false, site: VarRef::Param(i), span: p.span, used: false, depth: 0, warn_unused: false });
         }

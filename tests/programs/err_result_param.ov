@@ -1,0 +1,13 @@
+// A parameter named `result` would clash with `result` in `ensures` (and in
+// the trap's `args`): E0109. Without `ensures` the name is allowed.
+fn f(result: Int) -> Int
+  ensures result == 0
+{
+  1
+}
+
+fn g(result: Int) -> Int
+  requires result > 0
+{
+  result
+}
