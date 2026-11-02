@@ -195,6 +195,23 @@ fn ctx_shows_source_signatures_and_types() {
 }
 
 #[test]
+fn ctx_appends_syntax_notes() {
+    let dir = workdir("ctx_notes");
+    ov(&dir, &["add", RECORDS]);
+    // `total` has contracts, reads record fields and passes lambdas; nothing
+    // in it uses loops, sums or foreign code.
+    let text = ov(&dir, &["ctx", "total"]);
+    let (code, notes) = text.split_once("\n# Syntax notes\n\n").expect("notes section");
+    let headings: Vec<&str> = notes.lines().filter(|l| l.starts_with("## ")).collect();
+    assert_eq!(headings, ["## Records", "## Lambdas and function types", "## Contracts and traps"], "{notes}");
+    assert_eq!(code, ov(&dir, &["ctx", "total", "--no-notes"]));
+    assert!(notes.starts_with(&ov(&dir, &["card", "records"])[..40]));
+    let v = json(&dir, &["ctx", "total"]);
+    assert_eq!(format!("{}\n", v["notes"].as_str().unwrap()), notes);
+    assert_eq!(json(&dir, &["ctx", "total", "--no-notes"])["notes"], "");
+}
+
+#[test]
 fn deps_and_dependents_agree() {
     let dir = workdir("deps");
     ov(&dir, &["add", RECORDS]);
