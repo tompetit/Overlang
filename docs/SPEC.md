@@ -779,7 +779,9 @@ Codes:
   correct inside whatever C the lowering of `match` and `if` emits.
 - `show` is generated per monomorphized type.
 - Traps call `ov_trap(kind, fn, hash, detail_json)` which prints and exits 3;
-  `hash` is the full store hash of the definition that trapped.
+  `hash` is the full store hash of the definition that trapped. A trap
+  raised inside an intrinsic (`repeat`, `to_int`, indexing) reports the
+  definition that called it, never a C symbol.
 - `main` is generated for the entry point: initializes the GC, captures argv
   for `args()`, calls the entry, maps `Err` to exit 1.
 - The `--fuzz <name>` protocol (section 7.1) is generated for every

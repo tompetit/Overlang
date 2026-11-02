@@ -984,6 +984,7 @@ impl<'a> Emitter<'a> {
             "to_float" => format!("((double){})", a[0]),
             "to_int" => format!("ovsup_to_int({}, {f})", a[0]),
             "div_floor" | "mod_floor" => format!("ov_{name}({}, {}, {f})", a[0], a[1]),
+            "repeat" => format!("ov_str_repeat({}, {}, {f})", a[0], a[1]),
             "print" | "println" | "exit" => {
                 self.line(format!("ov_{name}({});", a[0]));
                 return "0".into();
@@ -2210,7 +2211,7 @@ int64_t ovfz_neg(int64_t a, const char* fn, const char* hash);
 int64_t ovfz_div_floor(int64_t a, int64_t b, const char* fn, const char* hash);
 int64_t ovfz_mod_floor(int64_t a, int64_t b, const char* fn, const char* hash);
 ov_value ovfz_list_get(ov_list* xs, int64_t i, const char* fn, const char* hash);
-ov_str* ovfz_str_repeat(ov_str* s, int64_t n);
+ov_str* ovfz_str_repeat(ov_str* s, int64_t n, const char* fn, const char* hash);
 #define ov_trap(k, f, h, d) ovfz_trap(k, f, h, d)
 #define ov_trap_contract(c, f, h, e, a) ovfz_trap_contract(c, f, h, e, a)
 #define ov_add(a, b, f, h) ovfz_add(a, b, f, h)
@@ -2222,7 +2223,7 @@ ov_str* ovfz_str_repeat(ov_str* s, int64_t n);
 #define ov_div_floor(a, b, f, h) ovfz_div_floor(a, b, f, h)
 #define ov_mod_floor(a, b, f, h) ovfz_mod_floor(a, b, f, h)
 #define ov_list_get(x, i, f, h) ovfz_list_get(x, i, f, h)
-#define ov_str_repeat(s, n) ovfz_str_repeat(s, n)
+#define ov_str_repeat(s, n, f, h) ovfz_str_repeat(s, n, f, h)
 "#;
 
 const FUZZ_C: &str = r#"/* ---- fixed fuzzing support (spec section 7.1) */
@@ -2280,10 +2281,10 @@ ov_value ovfz_list_get(ov_list* xs, int64_t i, const char* fn, const char* hash)
   }
   return xs->items[i];
 }
-ov_str* ovfz_str_repeat(ov_str* s, int64_t n) {
+ov_str* ovfz_str_repeat(ov_str* s, int64_t n, const char* fn, const char* hash) {
   int64_t total = 0;
-  if (n > 0 && s->len > 0 && (__builtin_mul_overflow(s->len, n, &total) || total == INT64_MAX)) ovfz_trap("overflow", "ov_str_repeat", "", "\"string too long\"");
-  return (ov_str_repeat)(s, n);
+  if (n > 0 && s->len > 0 && (__builtin_mul_overflow(s->len, n, &total) || total == INT64_MAX)) ovfz_trap("overflow", fn, hash, "\"string too long\"");
+  return (ov_str_repeat)(s, n, fn, hash);
 }
 
 static uint64_t ovfz_next(void) { /* splitmix64 */
