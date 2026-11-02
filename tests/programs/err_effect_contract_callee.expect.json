@@ -1,0 +1,1 @@
+{"code":"E0108","severity":"error","name":"mk","span":{"line":4,"col":11,"end_line":4,"end_col":20},"message":"contract calls `result`, which performs !io","actual":["!io"],"file":"tests/programs/err_effect_contract_callee.ov"}

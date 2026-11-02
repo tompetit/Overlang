@@ -1373,7 +1373,8 @@ impl<'a> Checker<'a> {
                 self.exprs.push((callee.id, Ty::Error, callee.span));
                 (Ty::Error, Callee::Value, vec![], n.clone())
             }
-            _ => (self.expr(callee, None), Callee::Value, vec![], "this function".to_string()),
+            ExprKind::Lambda { .. } => (self.expr(callee, None), Callee::Value, vec![], "this lambda".to_string()),
+            _ => (self.expr(callee, None), Callee::Value, vec![], Printer { records: HashMap::new() }.expr(callee, 0)),
         };
         self.calls.push((e.id, kind, targs));
         self.apply(e.span, &fty, rest, recv, &name)
