@@ -2314,7 +2314,8 @@ static double ovfz_gen_float(int d) {
   uint64_t r = ovfz_below(8);
   if (r < 2) return edge[ovfz_below(7)];
   if (r < 6) return ((double)ovfz_below(20001) - 10000.0) / 100.0;
-  return ldexp((double)(int64_t)ovfz_next(), -(int)ovfz_below(124));
+  /* any magnitude: |mantissa| < 2^63 scaled by 2^-124..2^960, so at most 2^1023 and never infinite */
+  return ldexp((double)(int64_t)ovfz_next(), (int)ovfz_below(1085) - 124);
 }
 static int64_t ovfz_shr_float(double x, int64_t k, double* out) {
   double c = trunc(x) != x ? trunc(x) : trunc(x / 2);
