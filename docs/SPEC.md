@@ -119,6 +119,15 @@ diagnostics but positional in use: `Circle(1.0)`, `match s { Circle(r) => ... }`
 A constructor with no fields is written without parentheses.
 
 Generics: type parameters on types and functions. No bounds, no traits.
+Recursion through generics must be regular (E0122): following a type
+parameter `T` of a generic type or function into the type arguments of the
+types it mentions and the functions it calls or uses as values, and of theirs
+in turn, it may come back to the same definition only as the bare parameter,
+never inside a bigger type argument. Otherwise monomorphization (section 12)
+would need infinitely many instances. `type Nest[T] = Leaf(v: T) | Deep(n:
+Nest[List[T]])` and `fn f[T](x: T) -> Int { f((x, x)) }` are E0122; `type
+Tree[T] = Node(kids: List[Tree[T]])` and `fn g[A, B](a: A, b: B) -> Int { g(b,
+a) }` are not.
 Equality `==` and `!=` are structural and defined on every type except
 function types (E0101 if attempted). Ordering `< <= > >=` is defined on Int,
 Float and Str only. `show[T](x: T) -> Str` is defined structurally on every
@@ -728,6 +737,7 @@ Codes:
 | E0119 | Unknown column in a `sql` literal | `expected`: the table's columns; `fixes`: nearest names |
 | E0120 | Column ambiguous without a qualifier in a `sql` literal | `expected`, `fixes`: each `table.column` |
 | E0121 | `sql` literal mentions no declared table | `fixes`: the plain string |
+| E0122 | Type parameter recurses into a bigger type (section 3) | `actual`: the instantiation that grows |
 | W0001 | Unimplemented `declare` | |
 | W0002 | Unused variable | `fixes`: rename to `_x` |
 | W0003 | Unreachable match arm | |

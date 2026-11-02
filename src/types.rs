@@ -293,6 +293,7 @@ pub fn check(prelude: &Program, files: &[(String, Program)]) -> (TypedProgram, V
             c.flush(file);
         }
     }
+    c.nonregular(&all);
     let mut diags = c.diags;
     sort_diags(&mut diags);
     (c.out, diags)
@@ -461,6 +462,35 @@ fn block_diverges(b: &Block) -> bool {
 }
 
 /// Does `t` use type parameter `p` as a Map key or Set element?
+/// Every user type mentioned in `t`, with its arguments.
+fn named_in<'t>(t: &'t Ty, out: &mut Vec<(&'t str, &'t [Ty])>) {
+    match t {
+        Ty::Named(n, ts) => {
+            out.push((n, ts));
+            ts.iter().for_each(|t| named_in(t, out));
+        }
+        Ty::List(a) | Ty::Set(a) => named_in(a, out),
+        Ty::Map(k, v) => {
+            named_in(k, out);
+            named_in(v, out);
+        }
+        Ty::Tuple(ts) => ts.iter().for_each(|t| named_in(t, out)),
+        Ty::Fn(ps, r, _) => ps.iter().chain([&**r]).for_each(|t| named_in(t, out)),
+        _ => {}
+    }
+}
+
+fn mentions_param(t: &Ty, p: &str) -> bool {
+    match t {
+        Ty::Param(x) => x == p,
+        Ty::List(a) | Ty::Set(a) => mentions_param(a, p),
+        Ty::Map(k, v) => mentions_param(k, p) || mentions_param(v, p),
+        Ty::Tuple(ts) | Ty::Named(_, ts) => ts.iter().any(|t| mentions_param(t, p)),
+        Ty::Fn(ps, r, _) => ps.iter().any(|t| mentions_param(t, p)) || mentions_param(r, p),
+        _ => false,
+    }
+}
+
 fn key_param(t: &Ty, p: &str) -> bool {
     match t {
         Ty::Map(k, v) => matches!(&**k, Ty::Param(x) if x == p) || key_param(k, p) || key_param(v, p),
@@ -741,6 +771,97 @@ impl<'a> Checker<'a> {
                 self.diag("E0115", t.span, format!("record `{}` contains itself without going through a constructor", t.name));
                 self.flush(file);
             }
+        }
+    }
+
+    /// E0122: monomorphization (spec section 12) needs finitely many
+    /// instances, so a type parameter may not come back to its own
+    /// definition inside a bigger type argument (`depth[(T, T)]` in `depth`,
+    /// `Nest[List[T]]` in `Nest`). Nodes are (definition, parameter index);
+    /// an edge follows a parameter into a type argument of a mentioned type
+    /// or a called function and "grows" unless the argument is the bare
+    /// parameter. A growing edge on a cycle is reported at its site.
+    fn nonregular(&mut self, all: &[(&str, &'a Program, bool)]) {
+        // (file, definition, span, target, type arguments) of every generic use
+        // inside a generic definition.
+        let mut uses: Vec<(&str, String, Span, String, Vec<Ty>)> = vec![];
+        for (file, prog, _) in all {
+            for item in &prog.items {
+                match item {
+                    Item::Type(t) if !t.params.is_empty() => {
+                        let Some(info) = self.out.types.get(&t.name) else { continue };
+                        let fields: Vec<(&Field, &Ty)> = match (&t.body, &info.shape) {
+                            (TypeBody::Record(a), TypeShape::Record(b)) => a.iter().zip(b.iter().map(|x| &x.1)).collect(),
+                            (TypeBody::Sum(a), TypeShape::Sum(b)) => a.iter().zip(b).flat_map(|(v, w)| v.fields.iter().zip(w.1.iter().map(|x| &x.1))).collect(),
+                            _ => vec![],
+                        };
+                        for (f, ty) in fields {
+                            let mut named = vec![];
+                            named_in(ty, &mut named);
+                            uses.extend(named.into_iter().map(|(n, args)| (*file, t.name.clone(), f.ty.span, n.to_string(), args.to_vec())));
+                        }
+                    }
+                    Item::Fn(FnDef { sig, requires, ensures, .. }) | Item::Declare(DeclareDef { sig, requires, ensures, .. }) if !sig.type_params.is_empty() => {
+                        let mut es = vec![];
+                        requires.iter().chain(ensures).for_each(|x| crate::mono::walk_expr(x, &mut |e| es.push(e)));
+                        if let Item::Fn(f) = item {
+                            crate::mono::walk_block(&f.body, &mut |e| es.push(e));
+                        }
+                        for e in es {
+                            let target = match (self.out.calls.get(&e.id), self.out.vars.get(&e.id)) {
+                                (Some(CallInfo { callee: Callee::Fn(n), type_args }), _) | (_, Some(VarRef::Global { name: n, type_args })) => (n, type_args),
+                                _ => continue,
+                            };
+                            uses.push((*file, sig.name.clone(), e.span, target.0.clone(), target.1.clone()));
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+        let params = |d: &str| self.out.types.get(d).map(|i| &i.params).or_else(|| self.out.fns.get(d).map(|s| &s.type_params));
+        let mut edges: HashMap<(&str, usize), Vec<(&str, usize)>> = HashMap::new();
+        // (use index, from, to) of every growing edge.
+        let mut growing = vec![];
+        for (k, (_, def, _, target, args)) in uses.iter().enumerate() {
+            let Some(ps) = params(def) else { continue };
+            for (i, p) in ps.iter().enumerate() {
+                for (j, a) in args.iter().enumerate() {
+                    if !mentions_param(a, p) {
+                        continue;
+                    }
+                    edges.entry((def, i)).or_default().push((target, j));
+                    if *a != Ty::Param(p.clone()) {
+                        growing.push((k, (def.as_str(), i), (target.as_str(), j), p.clone()));
+                    }
+                }
+            }
+        }
+        let reaches = |from: (&str, usize), to: (&str, usize)| {
+            let (mut seen, mut stack) = (HashSet::new(), vec![from]);
+            while let Some(n) = stack.pop() {
+                if n == to {
+                    return true;
+                }
+                if seen.insert(n) {
+                    stack.extend(edges.get(&n).into_iter().flatten());
+                }
+            }
+            false
+        };
+        let mut reported = HashSet::new();
+        let found: Vec<(usize, String)> = growing.into_iter().filter(|(_, from, to, _)| reaches(*to, *from)).map(|(k, _, _, p)| (k, p)).collect();
+        for (k, p) in found {
+            let (file, def, span, target, args) = &uses[k];
+            let inst = Ty::Named(target.clone(), args.clone()).to_string();
+            // A call is seen twice, as the call and as its callee name.
+            if !reported.insert((def.clone(), inst.clone())) {
+                continue;
+            }
+            self.def_name = Some(def.clone());
+            let d = self.diag("E0122", *span, format!("{inst} passes type parameter `{p}` back to `{def}` inside a bigger type, so monomorphization would need infinitely many instances"));
+            d.actual = Some(vec![inst]);
+            self.flush(file);
         }
     }
 
