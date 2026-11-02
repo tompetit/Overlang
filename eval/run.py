@@ -26,8 +26,8 @@ FIELDS = ("input_tokens", "output_tokens", "cache_creation_input_tokens", "cache
 
 def load_tasks(benchmark, lang, spec, tasks_dir=HERE / "tasks"):
     """Tasks in index order; `spec` is a start:stop slice of the shared task list."""
-    if benchmark == "benchb":  # maintenance tasks: eval/benchb/tasks/<id>/, sorted by id
-        return adapters.get("benchb").load_tasks(spec)
+    if benchmark in ("benchb", "benchc"):  # maintenance tasks: eval/bench{b,c}/tasks/<id>/, sorted by id
+        return adapters.get("benchb").load_tasks(spec, adapters.get("benchb").APPS[benchmark])
     shared = json.loads((tasks_dir / "index.json").read_text())[benchmark]["shared"]
     start, _, stop = spec.partition(":")
     ids = shared[int(start or 0):int(stop) if stop else None]
@@ -159,7 +159,7 @@ def run_subagent(adapter, task, work, args, key):
             out = jl.read_text()
             (work.parent / "transcript.jsonl").write_text(out)
             rec = parse_transcript(out, adapter.TEST_MARKERS)
-            if args.benchmark == "benchb":
+            if args.benchmark in ("benchb", "benchc"):
                 rec.update(adapters.get("benchb").read_tokens(out))
             return rec
     return None
@@ -173,7 +173,7 @@ def run_claude(adapter, task, work, args):
                                      work, args.agent_timeout, env)
     (work.parent / "transcript.jsonl").write_text(out)
     rec = parse_transcript(out, adapter.TEST_MARKERS)
-    if args.benchmark == "benchb":
+    if args.benchmark in ("benchb", "benchc"):
         rec.update(adapters.get("benchb").read_tokens(out))
     if timed_out:
         rec.update(agent_error="timeout", timeout=True,
@@ -196,7 +196,7 @@ def run_mock(adapter, task, work, args):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--benchmark", required=True, choices=["humaneval", "mbpp", "benchb"])
+    ap.add_argument("--benchmark", required=True, choices=["humaneval", "mbpp", "ahard", "benchb", "benchc"])
     ap.add_argument("--lang", required=True, choices=["python", "rust", "overlang", "overlang-ctx"])
     ap.add_argument("--model", default="sonnet")
     ap.add_argument("--tasks", default="0:5", help="start:stop slice of the shared task list (default 0:5)")
@@ -212,10 +212,10 @@ def main():
     ap.add_argument("--tasks-dir", type=Path, default=HERE / "tasks")
     args = ap.parse_args()
 
-    if args.benchmark == "benchb":
+    if args.benchmark in ("benchb", "benchc"):
         if args.lang not in ("python", "overlang", "overlang-ctx"):
-            sys.exit("benchb supports --lang python, overlang and overlang-ctx")
-        adapter = adapters.get("benchb").for_lang(args.lang)
+            sys.exit(f"{args.benchmark} supports --lang python, overlang and overlang-ctx")
+        adapter = adapters.get("benchb").for_lang(args.lang, args.benchmark)
     else:
         adapter = adapters.get(args.lang)
     runs_dir = args.out.parent / args.out.stem
