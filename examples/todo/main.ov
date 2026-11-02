@@ -3,6 +3,9 @@
 type Todo = { id: Int, title: Str, done: Bool }
 type Response = { status: Int, content_type: Str, body: Str }
 
+// The table the `sql` literals below are checked against at `ov add`.
+schema todos { id: Int, title: Str, done: Int }
+
 // ---- foreign bindings: sqlite (!fs) ----
 foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_open(path: Str) -> Int !fs = "ov_sqlite_open"
 foreign c "ov_sqlite.h" link "sqlite3" fn sqlite_close(db: Int) -> Unit !fs = "ov_sqlite_close"
@@ -25,7 +28,7 @@ foreign c "ov_http.h" fn html_escape(s: Str) -> Str = "ov_http_html_escape"
 
 // ---- database ----
 fn db_init(db: Int) -> Int !fs {
-  sqlite_exec(db, "create table if not exists todos (id integer primary key autoincrement, title text not null, done integer not null default 0)")
+  sqlite_exec(db, sql "create table if not exists todos (id integer primary key autoincrement, title text not null, done integer not null default 0)")
 }
 
 // Splits the shim encoding (header row, then rows by \x1e, columns by \x1f) into todos.
@@ -46,7 +49,7 @@ fn parse_rows(text: Str) -> List[Todo]
 }
 
 fn list_todos(db: Int) -> List[Todo] !fs {
-  match sqlite_query(db, "select id, title, done from todos order by id") {
+  match sqlite_query(db, sql "select id, title, done from todos order by id") {
     Some(text) => parse_rows(text),
     None => [],
   }
@@ -55,19 +58,19 @@ fn list_todos(db: Int) -> List[Todo] !fs {
 fn add_todo(db: Int, title: Str) -> Int !fs
   requires str_len(trim(title)) > 0
 {
-  sqlite_exec_1s(db, "insert into todos (title) values (?)", trim(title))
+  sqlite_exec_1s(db, sql "insert into todos (title) values (?)", trim(title))
 }
 
 fn toggle_todo(db: Int, id: Int) -> Int !fs
   requires id > 0
 {
-  sqlite_exec_1i(db, "update todos set done = 1 - done where id = ?", id)
+  sqlite_exec_1i(db, sql "update todos set done = 1 - done where id = ?", id)
 }
 
 fn delete_todo(db: Int, id: Int) -> Int !fs
   requires id > 0
 {
-  sqlite_exec_1i(db, "delete from todos where id = ?", id)
+  sqlite_exec_1i(db, sql "delete from todos where id = ?", id)
 }
 
 // ---- views ----
