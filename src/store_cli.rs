@@ -431,6 +431,12 @@ fn store_items(store: &Store, items: &[Item], sources: &[(String, String)], file
     };
     // Every schema, so an unknown table in a `sql` literal gets the nearest declared name.
     roots.extend(db(store.names(Some("schema"), true))?.into_iter().map(|n| n.1));
+    // A stored type with one of the new constructors' names, so the clash is E0109.
+    for item in items {
+        if let Item::Type(TypeDef { body: TypeBody::Sum(vs), .. }) = item {
+            roots.extend(vs.iter().filter_map(|v| scope.ctors.get(&v.name)).map(|c| c.0.clone()));
+        }
+    }
     let (mut checked, _) = closure_sources(store, &roots, &new_names)?;
     checked.extend(sources.iter().cloned());
     let (errors, warnings): (Vec<Diag>, Vec<Diag>) = store_diags(crate::types::check_sources(&checked).1).into_iter().partition(|d| d.severity == Severity::Error);

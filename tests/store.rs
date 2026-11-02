@@ -448,3 +448,19 @@ fn sql_literals_depend_on_their_schemas() {
     ov(&dir, &["rm", "todos"]);
     assert!(!ov(&dir, &["ls"]).contains("todos "));
 }
+
+#[test]
+fn a_constructor_already_used_by_a_stored_type_is_refused() {
+    let dir = workdir("ctor_clash");
+    add_text(&dir, "a.ov", "type Tree = Leaf | Node(l: Tree, r: Tree)\nfn size(t: Tree) -> Int { match t { Leaf => 1, Node(l, r) => size(l) + size(r) } }\n");
+    let before = ov(&dir, &["ls"]);
+    fs::write(dir.join("b.ov"), "type Alpha = Leaf | Other\nfn pick() -> Alpha { Leaf }\n").unwrap();
+    let (code, out) = ov_in(&dir, &["add", "b.ov"], "");
+    assert_eq!(code, 1, "{out}");
+    let d: Value = serde_json::from_str(out.lines().next().unwrap()).unwrap();
+    assert_eq!((d["code"].as_str(), d["file"].as_str()), (Some("E0109"), Some("b.ov")), "{out}");
+    assert_eq!(ov(&dir, &["ls"]), before, "nothing is stored");
+    // Editing the type that owns the constructor is not a clash.
+    let (code, out) = ov_in(&dir, &["edit", "Tree"], "type Tree = Node(l: Tree, r: Tree) | Leaf\n");
+    assert_eq!(code, 0, "{out}");
+}

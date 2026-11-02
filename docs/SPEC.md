@@ -603,7 +603,8 @@ own exit code (1 for an `Err` from `main`, section 8).
 Typechecking `ov add` and `ov edit`: the new definitions are checked
 together with the prelude and the stored dependency closure of what they
 reference, plus every bound schema (so an unknown table gets the nearest
-declared name), rendered with current names; a stored definition whose name a
+declared name) and every bound type with a constructor of the same name as
+one of theirs (so the clash is E0109), rendered with current names; a stored definition whose name a
 new definition takes is left out. Any error aborts the command and stores
 nothing. Warnings do not abort; they are printed to stderr, one JSON object
 per line, so stdout stays the command's output. A diagnostic inside a stored
