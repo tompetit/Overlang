@@ -131,10 +131,10 @@ static void test_strings(void) {
   CHECK(STR_IS(ov_str_replace(S("abc"), S("x"), S("y")), "abc"));
   CHECK(STR_IS(ov_str_replace(S("abc"), S("abc"), S("")), ""));
   CHECK(STR_IS(ov_str_replace(S("abc"), S(""), S("y")), "abc"));
-  CHECK(STR_IS(ov_str_repeat(S("ab"), 3), "ababab"));
-  CHECK(ov_str_repeat(S("ab"), 0)->len == 0);
-  CHECK(ov_str_repeat(S("ab"), -2)->len == 0);
-  CHECK(ov_str_repeat(S("\xc3\xa9"), 3)->cps == 3);
+  CHECK(STR_IS(ov_str_repeat(S("ab"), 3, "f", "abc"), "ababab"));
+  CHECK(ov_str_repeat(S("ab"), 0, "f", "abc")->len == 0);
+  CHECK(ov_str_repeat(S("ab"), -2, "f", "abc")->len == 0);
+  CHECK(ov_str_repeat(S("\xc3\xa9"), 3, "f", "abc")->cps == 3);
   CHECK(STR_IS(ov_str_join(strs(3, w1), S(", ")), "a, b, c"));
   CHECK(ov_str_join(ov_list_empty(), S(","))->len == 0);
 }

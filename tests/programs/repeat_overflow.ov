@@ -1,0 +1,5 @@
+fn boom(n: Int) -> Str { repeat("ab", n) }
+fn main() -> Unit !io {
+  println(show(1));
+  println(boom(4_611_686_018_427_387_904));
+}

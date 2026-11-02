@@ -59,6 +59,11 @@ fn run_fixture(ov_file: &Path) -> Result<(), String> {
             if v["kind"] != kind.trim() {
                 return Err(format!("{name}: trap kind {} != {}", v["kind"], kind.trim()));
             }
+            // SPEC 7: fn and hash name the Overlang definition that trapped, never a runtime C symbol
+            let (f, h) = (v["fn"].as_str().unwrap_or(""), v["hash"].as_str().unwrap_or(""));
+            if f.is_empty() || f.starts_with("ov_") || h.len() != 64 {
+                return Err(format!("{name}: trap fn/hash do not name a definition: {stderr}"));
+            }
         }
         Err(_) if code != Some(0) => return Err(format!("{name}: exit {code:?}; stderr: {stderr}")),
         Err(_) => {}

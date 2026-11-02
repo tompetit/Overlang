@@ -275,10 +275,10 @@ ov_str* ov_str_substr(ov_str* s, int64_t from, int64_t to) {
   return ov_str_new(s->data + a, b - a);
 }
 
-ov_str* ov_str_repeat(ov_str* s, int64_t n) {
+ov_str* ov_str_repeat(ov_str* s, int64_t n, const char* fn, const char* hash) {
   if (n <= 0 || s->len == 0) return ov_str_new("", 0);
   int64_t total;
-  if (__builtin_mul_overflow(s->len, n, &total) || total == INT64_MAX) ov_trap("overflow", "ov_str_repeat", "", "\"string too long\"");
+  if (__builtin_mul_overflow(s->len, n, &total) || total == INT64_MAX) ov_trap("overflow", fn, hash, "\"string too long\"");
   char* d = alloc_bytes(total + 1);
   for (int64_t i = 0; i < n; i++) memcpy(d + i * s->len, s->data, (size_t)s->len);
   d[total] = 0;

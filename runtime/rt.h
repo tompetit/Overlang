@@ -89,8 +89,8 @@ bool ov_str_contains(ov_str* s, ov_str* sub);
 ov_str* ov_str_replace(ov_str* s, ov_str* from, ov_str* to);
 /* Substring by code point indices [from_cp, to_cp), clamped. */
 ov_str* ov_str_substr(ov_str* s, int64_t from_cp, int64_t to_cp);
-/* s repeated n times (n <= 0 gives the empty string). */
-ov_str* ov_str_repeat(ov_str* s, int64_t n);
+/* s repeated n times (n <= 0 gives the empty string); a result too long traps overflow, naming fn and hash. */
+ov_str* ov_str_repeat(ov_str* s, int64_t n, const char* fn, const char* hash);
 /* The code point at index i as a string, or NULL if out of range. */
 ov_str* ov_str_char_at(ov_str* s, int64_t i);
 /* Join a list of ov_str* with sep. */
