@@ -152,11 +152,19 @@ caller's declared effects. Violation is error E0105, whose fix suggestion is
 the exact label to add.
 
 Effect names are open: any identifier may be used, so a program can declare
-`!db` or `!gpu` for its own foreign functions. The prelude uses `io`
+`!db` or `!gpu` for its own foreign functions. A name is the effect parameter
+only where the signature's brackets declare it; elsewhere `!e` is a label like
+any other. Inside its signature the effect parameter hides a label of the same
+name, so a body that performs that label (`fn f[!io]() -> Unit !io` calling
+`println`) is E0111: rename the parameter. The prelude uses `io`
 (console), `fs`, `net`, `rand`, `time`, `exit`.
 
 Function types carry effects: `fn(Int) -> Int !io`. A lambda's effects are
-inferred from its body.
+inferred from its body. A function may be used where a function type with
+more effects is expected, never fewer (E0101). Parameter positions are the
+other way round: a function taking a pure callback is not a
+`fn(fn(Int) -> Int !io) -> Int`, since the `!io` callback it would receive is
+charged to nobody.
 
 Effect polymorphism: a signature may declare one effect parameter, `!e`, and
 use it on function-typed parameters and its own effect list:

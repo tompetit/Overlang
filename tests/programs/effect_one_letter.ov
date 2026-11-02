@@ -1,0 +1,17 @@
+// Effect names are open, one letter included: `!x` and `!e` are labels
+// unless the brackets after the name declare them as the effect parameter.
+// Audit findings: effects e2 (foreign function) and e15 (body annotation).
+foreign c "stdlib.h" fn labs(x: Int) -> Int !x = "labs"
+
+fn useit() -> Int !x {
+  labs(-3)
+}
+
+fn annotated() -> Int !e {
+  let g: fn(Int) -> Int !e = |x| x;
+  g(1)
+}
+
+fn main() -> Unit !io !x !e {
+  println(show(useit() + annotated()));
+}

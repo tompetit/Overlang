@@ -268,7 +268,8 @@ fn effect_parameters_pass_through_and_are_checked() {
     assert_clean("fn twice[T, !e](xs: List[T], f: fn(T) -> Unit !e) -> Unit !e { for_each(xs, f); for_each(xs, f); }");
     assert_eq!(codes("fn twice[T, !e](xs: List[T], f: fn(T) -> Unit !e) -> Unit { for_each(xs, f); }"), vec!["E0105"]);
     assert_eq!(codes("fn f[!e, !g](x: Int) -> Int { x }"), vec!["E0111"]);
-    assert_eq!(codes("fn f(g: fn() -> Int !e) -> Int { 1 }"), vec!["E0111"]);
+    // Undeclared, `!e` is a label like any other name.
+    assert_clean("fn f(g: fn() -> Int !e) -> Int { 1 }");
     assert_eq!(codes("fn f[!e](g: fn() -> Int !e) -> fn() -> Int !e { g }"), vec!["E0111"]);
     // Mutation and loops are not effects.
     assert_clean("fn f() -> Int { let mut i = 0; while i < 3 { i = i + 1; } i }");

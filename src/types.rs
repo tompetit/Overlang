@@ -49,7 +49,7 @@
 
 use crate::ast::*;
 use crate::diag::{Diag, Fix, Severity};
-use crate::effects::{self, Charge, Eff, EffSet, EffVars};
+use crate::effects::{self, Charge, Eff, EffSet, EffVars, Flow};
 use crate::exhaust::{self, ArmInfo};
 use crate::printer::Printer;
 use std::collections::{HashMap, HashSet};
@@ -387,6 +387,10 @@ struct Checker<'a> {
     lambda_exprs: HashMap<NodeId, &'a [LambdaParam]>,
     body_charges: Vec<Charge>,
     contract_charges: Vec<Charge>,
+    /// Function types whose effects flowed with `Flow::Later`, checked in
+    /// `finish`, at the span of the `expect` that unified them.
+    eff_bounds: Vec<(Ty, Ty, Span)>,
+    unify_span: Span,
 }
 
 const BUILTIN_TYPES: [&str; 8] = ["Int", "Float", "Bool", "Str", "Unit", "List", "Map", "Set"];
@@ -570,7 +574,8 @@ impl<'a> Checker<'a> {
     }
 
     /// Unify `actual` into `expected`. Function effects are not unified but
-    /// flow: the actual effects must be covered by the expected ones.
+    /// flow: the actual effects must be covered by the expected ones (and the
+    /// other way round in parameter position).
     fn unify(&mut self, expected: &Ty, actual: &Ty) -> bool {
         let (a, b) = (self.shallow(expected), self.shallow(actual));
         match (&a, &b) {
@@ -587,7 +592,18 @@ impl<'a> Checker<'a> {
                 n1 == n2 && xs.len() == ys.len() && xs.iter().zip(ys).all(|(x, y)| self.unify(x, y))
             }
             (Ty::Fn(p1, r1, e1), Ty::Fn(p2, r2, e2)) => {
-                p1.len() == p2.len() && p1.iter().zip(p2).all(|(x, y)| self.unify(x, y)) && self.unify(r1, r2) && self.eff.flow(e1, e2)
+                // Parameters are contravariant: the actual function receives what the expected one would.
+                p1.len() == p2.len()
+                    && p1.iter().zip(p2).all(|(x, y)| self.unify(y, x))
+                    && self.unify(r1, r2)
+                    && match self.eff.flow(e1, e2) {
+                        Flow::Ok => true,
+                        Flow::Fail => false,
+                        Flow::Later => {
+                            self.eff_bounds.push((a.clone(), b.clone(), self.unify_span));
+                            true
+                        }
+                    }
             }
             (Ty::Param(x), Ty::Param(y)) => x == y,
             (Ty::Int, Ty::Int) | (Ty::Float, Ty::Float) | (Ty::Bool, Ty::Bool) | (Ty::Str, Ty::Str) | (Ty::Unit, Ty::Unit) => true,
@@ -597,6 +613,7 @@ impl<'a> Checker<'a> {
 
     /// Unify or report E0101 at `span`.
     fn expect(&mut self, expected: &Ty, actual: &Ty, span: Span) -> bool {
+        self.unify_span = span;
         if self.unify(expected, actual) {
             return true;
         }
@@ -750,9 +767,6 @@ impl<'a> Checker<'a> {
         for f in fs {
             if !seen.insert(f.name.clone()) {
                 self.diag("E0109", f.span, format!("field `{}` is declared twice", f.name));
-            }
-            for d in effects::undeclared_params(&f.ty, &[]) {
-                self.def_diags.push(d);
             }
             out.push((f.name.clone(), self.conv(&f.ty, params, None)));
         }
@@ -1021,6 +1035,13 @@ impl<'a> Checker<'a> {
             // One report per constraint and type: `map_new`, `map_set`, ... share a key type.
             if reported.insert((c, self.zonk(&ty).to_string())) {
                 self.check_constraint(&ty, c, span);
+            }
+        }
+        for (exp, act, span) in std::mem::take(&mut self.eff_bounds) {
+            if let (Ty::Fn(_, _, e1), Ty::Fn(_, _, e2)) = (&exp, &act) {
+                if !self.eff.within(e1, e2) {
+                    self.mismatch(span, &exp, &act);
+                }
             }
         }
         if let Some(sig) = sig {
@@ -1359,7 +1380,8 @@ impl<'a> Checker<'a> {
                 self.exprs.push((callee.id, Ty::Error, callee.span));
                 (Ty::Error, Callee::Value, vec![], n.clone())
             }
-            _ => (self.expr(callee, None), Callee::Value, vec![], "this function".to_string()),
+            ExprKind::Lambda { .. } => (self.expr(callee, None), Callee::Value, vec![], "this lambda".to_string()),
+            _ => (self.expr(callee, None), Callee::Value, vec![], Printer { records: HashMap::new() }.expr(callee, 0)),
         };
         self.calls.push((e.id, kind, targs));
         self.apply(e.span, &fty, rest, recv, &name)
@@ -1811,8 +1833,14 @@ impl<'a> Checker<'a> {
             let t = match (&p.ty, &exp_ps) {
                 (Some(ann), Some(ps)) => {
                     let t = self.conv_local(ann);
-                    self.expect(&ps[i], &t, p.span);
-                    t
+                    // Contravariant, as in `unify`: the annotation must accept what the caller passes.
+                    // On a mismatch the parameter is an error, so the lambda is not reported again.
+                    if self.unify(&t, &ps[i]) {
+                        t
+                    } else {
+                        self.mismatch(p.span, &ps[i], &t);
+                        Ty::Error
+                    }
                 }
                 (Some(ann), None) => self.conv_local(ann),
                 (None, Some(ps)) => ps[i].clone(),
