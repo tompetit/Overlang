@@ -117,7 +117,8 @@ pub struct Charge {
 
 /// E0105: every effect a call performs must be declared by the enclosing
 /// function. One diagnostic per missing label, at the first call needing it.
-/// The fix is the signature with the label added.
+/// The fix is the signature with the label added, except for a label the
+/// effect parameter's name hides (E0111).
 pub fn check_body(charges: &[Charge], declared: &EffSet, vars: &EffVars, sig: &Signature) -> Vec<Diag> {
     let mut out = Vec::new();
     let mut reported = BTreeSet::new();
@@ -127,6 +128,12 @@ pub fn check_body(charges: &[Charge], declared: &EffSet, vars: &EffVars, sig: &S
                 continue;
             }
             let Some(lab) = label(&e) else { continue };
+            if matches!(&e, Eff::Label(l) if sig.effect_params.contains(l)) {
+                // Adding the label would only name the parameter again.
+                let msg = format!("`{}` performs the label {lab}, which the effect parameter {lab} of `{}` hides; rename the effect parameter", c.callee, sig.name);
+                out.push(Diag::error("E0111", c.span, msg));
+                continue;
+            }
             let mut fixed = sig.clone();
             fixed.effects.push(lab[1..].to_string());
             let patch = Printer { records: HashMap::new() }.signature("", &fixed, " {");
