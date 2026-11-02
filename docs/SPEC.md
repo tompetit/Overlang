@@ -156,7 +156,11 @@ Effect names are open: any identifier may be used, so a program can declare
 (console), `fs`, `net`, `rand`, `time`, `exit`.
 
 Function types carry effects: `fn(Int) -> Int !io`. A lambda's effects are
-inferred from its body.
+inferred from its body. A function may be used where a function type with
+more effects is expected, never fewer (E0101). Parameter positions are the
+other way round: a function taking a pure callback is not a
+`fn(fn(Int) -> Int !io) -> Int`, since the `!io` callback it would receive is
+charged to nobody.
 
 Effect polymorphism: a signature may declare one effect parameter, `!e`, and
 use it on function-typed parameters and its own effect list:
