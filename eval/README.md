@@ -328,7 +328,11 @@ in `examples/tracker` (1,464 lines of Overlang in four layers) and `examples/tra
 features, activity and JSON/CSV endpoints, validation, refactors, markdown and
 operations. The Overlang workspace is seeded by adding the four layer files to the
 store in order; `--lang overlang-ctx` works here too. Solutions in
-`eval/benchc/solutions/<id>/<lang>/` are full replacement files, as in Benchmark B.
+`eval/benchc/solutions/<id>/<lang>/` are full replacement files, as in Benchmark B. 79 of the 80 pass
+through `--agent mock --mock-solve`; c30's Overlang reference passes on source files but the
+program built from its store export crashes on the first request, and it was dropped rather
+than diagnosed (all 120 agent runs of that task passed through the same export path, so the
+task is sound).
 
 ## Not done / caveats
 
