@@ -534,15 +534,24 @@ fn propagate(store: &Store, mut map: HashMap<String, String>) -> Result<Vec<(Str
         for d in &defs {
             let v = ast(d)?;
             let new = |h: &str| map.get(h).cloned().unwrap_or_else(|| h.to_string());
+            // A name now bound to another kind of definition (a function's name
+            // taken by a test or a type) no longer resolves and is reported unknown.
+            let kind = |h: &str| db(store.get(h)).map(|d| d.map(|d| d.kind).unwrap_or_default());
             for (n, h) in pairs(&v["refs"], "values") {
-                scope.values.insert(n.to_string(), new(h));
+                if !matches!(kind(&new(h))?.as_str(), "test" | "type" | "schema") {
+                    scope.values.insert(n.to_string(), new(h));
+                }
             }
             for (n, h) in pairs(&v["refs"], "types") {
-                scope.types.insert(n.to_string(), new(h));
+                if kind(&new(h))? == "type" {
+                    scope.types.insert(n.to_string(), new(h));
+                }
             }
             // Columns do not matter for which tables a literal mentions.
             for (n, h) in pairs(&v["refs"], "schemas") {
-                scope.schemas.insert(n.to_string(), (new(h), Vec::new()));
+                if kind(&new(h))? == "schema" {
+                    scope.schemas.insert(n.to_string(), (new(h), Vec::new()));
+                }
             }
             // A constructor that the new type no longer has is reported as unknown.
             for (n, h) in pairs(&v["refs"], "ctors") {

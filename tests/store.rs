@@ -464,3 +464,20 @@ fn a_constructor_already_used_by_a_stored_type_is_refused() {
     let (code, out) = ov_in(&dir, &["edit", "Tree"], "type Tree = Node(l: Tree, r: Tree) | Leaf\n");
     assert_eq!(code, 0, "{out}");
 }
+
+#[test]
+fn rebinding_a_called_name_to_a_test_is_refused() {
+    let dir = workdir("test_takes_fn_name");
+    add_text(&dir, "a.ov", "fn h() -> Int { 1 }\nfn m() -> Int { h() }\n");
+    let before = ov(&dir, &["ls"]);
+    fs::write(dir.join("b.ov"), "test h { }\n").unwrap();
+    let (code, out) = ov_in(&dir, &["add", "b.ov"], "");
+    assert_eq!(code, 1, "m no longer resolves: {out}");
+    let d: Value = serde_json::from_str(out.lines().next().unwrap()).unwrap();
+    assert_eq!((d["code"].as_str(), d["name"].as_str()), (Some("E0100"), Some("m")), "{out}");
+    assert_eq!(ov(&dir, &["ls"]), before, "nothing is stored");
+    // The same goes for a function name taken by a schema.
+    let (code, out) = ov_in(&dir, &["edit", "h"], "schema h { x: Int }\n");
+    assert_eq!(code, 1, "{out}");
+    assert_eq!(ov(&dir, &["ls"]), before, "nothing is stored");
+}

@@ -546,8 +546,10 @@ lines, one `name old_hash new_hash` line each; with `--json` the output is
 dependents are re-hashed: old versions no name points to stay as they are.
 Dependents are re-hashed dependencies first, a cycle of dependents as one
 unit, so the result is what adding the edited code to an empty store gives.
-If a dependent no longer resolves (a constructor it uses was removed), the
-command fails with that diagnostic and stores nothing.
+If a dependent no longer resolves (a constructor it uses was removed, or a
+name it uses is now bound to another kind of definition, such as a function's
+name taken by a test or a schema), the command fails with that diagnostic and
+stores nothing.
 
 A dependent that still resolves can still be ill-typed under the new hashes
 (a record that gained a field, a changed signature). After storing and
