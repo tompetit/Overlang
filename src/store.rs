@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS history(name TEXT, hash TEXT, at INTEGER);
 CREATE TABLE IF NOT EXISTS deps(hash TEXT, dep_hash TEXT, PRIMARY KEY(hash, dep_hash));
 CREATE TABLE IF NOT EXISTS cache(hash TEXT, kind TEXT, instance TEXT, blob BLOB, at INTEGER, PRIMARY KEY(hash, kind, instance));
 CREATE INDEX IF NOT EXISTS deps_by_dep ON deps(dep_hash);
+CREATE INDEX IF NOT EXISTS history_by_name ON history(name);
 ";
 
 fn now() -> i64 {
@@ -104,9 +105,14 @@ impl Store {
         self.conn.query_row("SELECT hash FROM names WHERE name = ?1", params![name], |r| r.get(0)).optional()
     }
 
-    /// Names currently bound to `hash`, most recently bound first.
+    /// Names currently bound to `hash`, most recently bound first: by the
+    /// binding's `history` row, as `updated_at` only has whole seconds.
     pub fn names_of(&self, hash: &str) -> R<Vec<String>> {
-        self.strings("SELECT name FROM names WHERE hash = ?1 ORDER BY updated_at DESC, name", hash)
+        self.strings(
+            "SELECT n.name FROM names n WHERE n.hash = ?1
+             ORDER BY (SELECT max(h.rowid) FROM history h WHERE h.name = n.name AND h.hash = n.hash) DESC, n.name",
+            hash,
+        )
     }
 
     pub fn get(&self, hash: &str) -> R<Option<Def>> {
@@ -220,6 +226,9 @@ mod tests {
         assert_eq!(names(true), ["a", "z"]);
         assert_eq!(s.unbind("a").unwrap().as_deref(), Some("bb"));
         assert_eq!(s.hash_of_name("a").unwrap(), None);
+        // Within one second too, the most recent binding comes first.
+        s.bind("zz", "cc").unwrap();
+        assert_eq!(s.names_of("cc").unwrap(), ["zz", "z"]);
         s.cache_put("aa", "c", "i", b"x").unwrap();
         assert_eq!(s.cache_get("aa", "c", "i").unwrap().as_deref(), Some(&b"x"[..]));
         assert_eq!(s.cache_get("aa", "c", "j").unwrap(), None);

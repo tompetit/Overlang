@@ -533,3 +533,12 @@ fn a_dependent_that_no_longer_resolves_is_reported_in_its_canonical_text() {
     assert_eq!(d["fixes"][0]["patch"], "A", "{out}");
     assert_eq!(hash_of(&dir, "f"), f, "nothing is stored");
 }
+
+#[test]
+fn export_uses_the_most_recently_bound_name() {
+    let dir = workdir("export_latest_name");
+    add_text(&dir, "a.ov", "fn abc() -> Int { 7 }\nfn main() -> Unit !io { println(show(abc())); }\n");
+    add_text(&dir, "b.ov", "fn zed() -> Int { 7 }\n");
+    let out = ov(&dir, &["export"]);
+    assert!(out.contains("fn zed()") && out.contains("show(zed())") && !out.contains("abc"), "{out}");
+}
