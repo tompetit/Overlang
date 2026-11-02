@@ -1,0 +1,9 @@
+// Invalid UTF-8 on stdin becomes U+FFFD (SPEC 3), so str_len, chars and substr agree.
+fn main() -> Unit !io {
+  let s = read_all();
+  println(show(str_len(s)));
+  println(show(map(chars(s), |c| str_len(c))));
+  println(show(join(chars(s), "") == s));
+  println(show(substr(s, 0, 100) == s));
+  println(show(code_point(s)));
+}

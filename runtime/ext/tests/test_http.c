@@ -34,8 +34,8 @@ static client spawn_curl(char* const argv[]) {
     return (client){pid, p[0]};
 }
 
-/* Fork a child that connects to port, sends data, and relays everything it receives until EOF. */
-static client spawn_raw(int port, const char* data) {
+/* Fork a child that connects to port, sends n bytes of data, and relays everything it receives until EOF. */
+static client spawn_raw_n(int port, const char* data, size_t n) {
     int p[2];
     if (pipe(p)) exit(2);
     pid_t pid = fork();
@@ -47,7 +47,7 @@ static client spawn_raw(int port, const char* data) {
         a.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
         a.sin_port = htons((uint16_t)port);
         if (connect(s, (struct sockaddr*)&a, sizeof a)) _exit(1);
-        if (write(s, data, strlen(data)) < 0) _exit(1);
+        if (write(s, data, n) < 0) _exit(1);
         char b[4096];
         ssize_t n;
         while ((n = read(s, b, sizeof b)) > 0) if (write(p[1], b, (size_t)n) < 0) break;
@@ -56,6 +56,7 @@ static client spawn_raw(int port, const char* data) {
     close(p[1]);
     return (client){pid, p[0]};
 }
+static client spawn_raw(int port, const char* data) { return spawn_raw_n(port, data, strlen(data)); }
 
 /* Wait for the child and return everything it wrote (GC memory). */
 static char* finish(client c) {
@@ -163,6 +164,13 @@ int main(void) {
     c = spawn_raw(port, "GARBAGE\r\n\r\n");
     r = ov_http_accept(srv);
     CHECK(r < 0);
+    CHECK(strncmp(finish(c), "HTTP/1.1 400", 12) == 0);
+
+    /* raw: a NUL in the head gets 400 at once, not a wait for more bytes until the read timeout */
+    static const char nul[] = "G\0ET / HTTP/1.1\r\n\r\n";
+    c = spawn_raw_n(port, nul, sizeof nul - 1);
+    r = ov_http_accept(srv);
+    CHECK(r == -7);
     CHECK(strncmp(finish(c), "HTTP/1.1 400", 12) == 0);
 
     /* the server is still healthy after errors */

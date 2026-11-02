@@ -24,5 +24,6 @@ check plain '"detail": null}'
 check esc   '"fn": "f\"x", "hash": "abc", "detail": {"a": 1}}'
 check requires '{"kind": "requires", "fn": "f", "hash": "abc", "clause": "x > 0", "args": {"x": "-1"}}'
 check ensures  '{"kind": "ensures", "fn": "f", "hash": "abc", "clause": "result >= 0", "args": {}}'
+check repeat  '{"kind": "overflow", "fn": "f", "hash": "abc", "detail": "string too long"}'
 [ $fail = 0 ] && echo "$n trap cases ok"
 exit $fail
