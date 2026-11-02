@@ -1321,6 +1321,9 @@ impl<'a> Checker<'a> {
     fn unknown_name(&mut self, name: &str, span: Span) {
         let mut cands: Vec<String> = self.scopes.iter().flatten().map(|l| l.name.clone()).collect();
         cands.extend(self.fn_sites.keys().cloned());
+        if self.result_ty.is_some() {
+            cands.push("result".into());
+        }
         let fixes = nearest(name, cands.iter());
         let d = self.diag("E0100", span, format!("unknown name `{name}`"));
         d.fixes = fixes;
