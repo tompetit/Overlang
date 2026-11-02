@@ -569,7 +569,10 @@ derived from it for hashing and is not stored. `ov view` and `ov ctx` render
 from the named AST, replacing each global reference by the name currently
 bound to the referenced hash (falling back to the name the definition was
 written with if the hash has no binding), so a renamed dependency shows its
-current name in every caller. Comments are kept in `defs.source`, the text as
+current name in every caller. A local variable with the same name as such a
+new name would capture it, so the rendering renames that local to the first
+free `<name>2`, `<name>3`, ... (local names never change the hash): the
+rendered text always checks as the stored definition. Comments are kept in `defs.source`, the text as
 last written, which `ov view --raw` prints; `ov view`, `ov ctx` and `ov export`
 render without them.
 

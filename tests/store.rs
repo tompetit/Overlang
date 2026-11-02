@@ -500,3 +500,20 @@ fn a_field_call_hashes_the_same_whatever_globals_exist() {
     add_text(&fresh, "all.ov", &ov(&y, &["export"]));
     assert_eq!(hash_of(&fresh, "use_it"), hash_of(&x, "use_it"));
 }
+
+#[test]
+fn rendering_a_new_name_renames_a_local_it_would_capture() {
+    let dir = workdir("render_capture");
+    add_text(&dir, "a.ov", "fn g(x: Int) -> Int { x + 1 }\nfn main() -> Unit !io {\n  let y = 5;\n  println(show(g(y)));\n}\n");
+    let main = hash_of(&dir, "main");
+    add_text(&dir, "b.ov", "fn y(x: Int) -> Int { x + 1 }\n");
+    ov(&dir, &["rm", "g"]);
+    assert_eq!(hash_of(&dir, "main"), main);
+    assert_eq!(ov(&dir, &["view", "main"]), "fn main() -> Unit !io {\n  let y2 = 5;\n  println(show(y(y2)));\n}\n");
+    assert_eq!(ov(&dir, &["check"]), "");
+    assert_eq!(ov(&dir, &["run", "main"]), "6\n");
+    // The export, added to an empty store, gives the same hash.
+    let fresh = workdir("render_capture_fresh");
+    add_text(&fresh, "all.ov", &ov(&dir, &["export"]));
+    assert_eq!(hash_of(&fresh, "main"), main);
+}

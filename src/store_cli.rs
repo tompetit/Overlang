@@ -224,9 +224,21 @@ fn pairs<'a>(refs: &'a Value, table: &str) -> impl Iterator<Item = (&'a str, &'a
 
 /// The named AST with every global reference, and the definition's own name,
 /// replaced by the name currently bound to the referenced hash; with a
-/// printer that knows the referenced record types' field order.
+/// printer that knows the referenced record types' field order. A local
+/// variable named like such a new name, which would capture it, is renamed
+/// (`locals`): local names never change the hash.
 fn render(store: &Store, d: &Def) -> Result<(Item, Printer), Vec<Diag>> {
-    fn rename(v: &mut Value, vars: &HashSet<u64>, values: &HashMap<String, String>, types: &HashMap<String, String>) {
+    fn strings(v: &Value, out: &mut HashSet<String>) {
+        match v {
+            Value::String(s) => {
+                out.insert(s.clone());
+            }
+            Value::Object(m) => m.values().for_each(|x| strings(x, out)),
+            Value::Array(a) => a.iter().for_each(|x| strings(x, out)),
+            _ => {}
+        }
+    }
+    fn rename(v: &mut Value, vars: &HashSet<u64>, values: &HashMap<String, String>, locals: &HashMap<String, String>, types: &HashMap<String, String>) {
         fn swap(n: Option<&mut Value>, to: &HashMap<String, String>) {
             if let Some(n) = n
                 && let Some(new) = n.as_str().and_then(|s| to.get(s))
@@ -236,15 +248,24 @@ fn render(store: &Store, d: &Def) -> Result<(Item, Printer), Vec<Diag>> {
         }
         match v {
             Value::Object(m) => {
-                if m.get("id").and_then(Value::as_u64).is_some_and(|id| vars.contains(&id)) {
-                    swap(m.get_mut("kind").and_then(|k| k.get_mut("Var")), values);
+                let global = m.get("id").and_then(Value::as_u64).is_some_and(|id| vars.contains(&id));
+                if let Some(k) = m.get_mut("kind") {
+                    swap(k.get_mut("Var"), if global { values } else { locals });
+                    // Where patterns and assignments name locals.
+                    swap(k.get_mut("Bind"), locals);
+                    swap(k.get_mut("List").and_then(|l| l.get_mut("rest")), locals);
+                    swap(k.get_mut("Assign").and_then(|a| a.get_mut("name")), locals);
+                }
+                // Function and lambda parameters.
+                if let Some(Value::Array(ps)) = m.get_mut("params") {
+                    ps.iter_mut().for_each(|p| swap(p.get_mut("name"), locals));
                 }
                 for key in ["Named", "Record"] {
                     swap(m.get_mut(key).and_then(|r| r.get_mut("name")), types);
                 }
-                m.values_mut().for_each(|x| rename(x, vars, values, types));
+                m.values_mut().for_each(|x| rename(x, vars, values, locals, types));
             }
-            Value::Array(a) => a.iter_mut().for_each(|x| rename(x, vars, values, types)),
+            Value::Array(a) => a.iter_mut().for_each(|x| rename(x, vars, values, locals, types)),
             _ => {}
         }
     }
@@ -265,7 +286,19 @@ fn render(store: &Store, d: &Def) -> Result<(Item, Printer), Vec<Diag>> {
         types.insert(n.to_string(), current);
     }
     let mut item = v["item"].take();
-    rename(&mut item, &vars, &values, &types);
+    let mut taken = HashSet::new();
+    strings(&item, &mut taken);
+    taken.extend(values.values().cloned());
+    let mut renamed: Vec<&String> = values.iter().filter(|(w, c)| w != c).map(|p| p.1).collect();
+    renamed.sort();
+    renamed.dedup();
+    let mut locals = HashMap::new();
+    for c in renamed {
+        let fresh = (2..).map(|i| format!("{c}{i}")).find(|f| !taken.contains(f)).unwrap();
+        taken.insert(fresh.clone());
+        locals.insert(c.clone(), fresh);
+    }
+    rename(&mut item, &vars, &values, &locals, &types);
     let mut item: Item = serde_json::from_value(item).map_err(|e| vec![driver_error(format!("store error: bad AST for {}: {e}", d.hash), None)])?;
     let name = name_of(store, &d.hash)?;
     match &mut item {
