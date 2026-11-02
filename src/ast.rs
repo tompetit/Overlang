@@ -257,7 +257,7 @@ pub enum ExprKind {
     /// `p.x`
     Field { base: Box<Expr>, name: String },
     /// `t.0`
-    TupleField { base: Box<Expr>, index: u32 },
+    TupleField { base: Box<Expr>, index: u64 },
     /// `xs[i]`
     Index { base: Box<Expr>, index: Box<Expr> },
     /// `e?`

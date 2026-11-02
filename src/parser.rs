@@ -694,7 +694,7 @@ impl Parser {
                 e = self.expr_node(ExprKind::Index { base: Box::new(e), index }, start);
             } else if self.eat(&Tok::Dot) {
                 if let Tok::Int(n) = self.peek() {
-                    let index = *n as u32;
+                    let index = *n as u64; // an Int token is never negative
                     self.bump();
                     e = self.expr_node(ExprKind::TupleField { base: Box::new(e), index }, start);
                     continue;
