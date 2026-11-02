@@ -112,15 +112,18 @@ const COMPARISON_PREC: u8 = 3;
 pub const MAX_DEPTH: usize = 200;
 
 /// `Strongest_Extension` -> `strongest_extension`, `MinPath` -> `min_path`,
-/// `N` -> `n`; a keyword result gets a trailing `_`.
+/// `XMLParser` -> `xml_parser`, `N` -> `n`; a keyword result gets a trailing `_`.
 pub(crate) fn value_name(name: &str) -> String {
+    let chars: Vec<char> = name.chars().collect();
     let mut out = String::new();
-    let mut prev_lower = false;
-    for c in name.chars() {
-        if c.is_ascii_uppercase() && prev_lower {
+    for (i, &c) in chars.iter().enumerate() {
+        // A word starts at a capital after a lowercase letter or digit, or at
+        // the last capital of an acronym followed by lowercase (`XMLParser`).
+        let prev = if i > 0 { chars[i - 1] } else { '_' };
+        let next_lower = chars.get(i + 1).is_some_and(|n| n.is_ascii_lowercase());
+        if c.is_ascii_uppercase() && (prev.is_ascii_lowercase() || prev.is_ascii_digit() || (prev.is_ascii_uppercase() && next_lower)) {
             out.push('_');
         }
-        prev_lower = c.is_ascii_lowercase() || c.is_ascii_digit();
         out.push(c.to_ascii_lowercase());
     }
     if crate::lexer::keyword(&out).is_some() {

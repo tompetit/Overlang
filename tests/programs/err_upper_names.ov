@@ -1,0 +1,7 @@
+// The fix for an uppercase value name splits an acronym from the next word.
+type P = { HTTPServer: Int }
+
+fn main() -> Unit !io {
+  let mut XMLParser = 1;
+  println(show(XMLParser));
+}
