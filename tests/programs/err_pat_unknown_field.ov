@@ -1,0 +1,11 @@
+type P = { a: Int, b: Int }
+fn f(p: P) -> Int {
+  match p {
+    P { a: 1, zz: 2, .. } => 1,
+    P { a: 1, .. } => 2,
+    _ => 3,
+  }
+}
+fn main() -> Unit !io {
+  println(show(f(P { a: 1, b: 0 })));
+}

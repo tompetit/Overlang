@@ -106,7 +106,7 @@ fn fixtures_without_expected_diagnostics_have_no_errors() {
 }
 
 #[test]
-fn err_fixtures_produce_exactly_the_expected_codes() {
+fn diag_fixtures_produce_exactly_the_expected_codes() {
     let mut n = 0;
     for (name, src) in fixtures() {
         let expect = name.replace(".ov", ".expect.diag");
@@ -114,7 +114,7 @@ fn err_fixtures_produce_exactly_the_expected_codes() {
         n += 1;
         let want: Vec<&str> = text.lines().map(str::trim).filter(|l| !l.is_empty()).collect();
         let (_, diags) = check_sources(&[(name.clone(), src)]);
-        let got: Vec<&str> = errors(&diags).iter().map(|d| d.code.as_str()).collect();
+        let got: Vec<&str> = diags.iter().map(|d| d.code.as_str()).collect();
         assert_eq!(got, want, "{name}: {diags:#?}");
     }
     assert!(n >= 8, "err fixtures not found");
@@ -301,6 +301,15 @@ fn missing_list_shapes() {
     let d = only_error("fn f(xs: List[Int]) -> Int { match xs { [x, ..rest] => x + len(rest) } }", "E0104");
     assert_eq!(d.expected.unwrap(), vec!["[]"]);
     assert_clean("fn f(xs: List[Int]) -> Int { match xs { [] => 0, [..init, x] => x + len(init) } }");
+}
+
+#[test]
+fn exhaustiveness_is_not_exponential_in_tuple_columns() {
+    // 57 arms on an 8-tuple of an 8-variant sum took about a minute when every column split on every constructor.
+    let src = fs::read_to_string("tests/programs/exhaust_tuple_columns.ov").unwrap();
+    let start = std::time::Instant::now();
+    assert_clean(&src);
+    assert!(start.elapsed() < std::time::Duration::from_secs(2), "took {:?}", start.elapsed());
 }
 
 #[test]

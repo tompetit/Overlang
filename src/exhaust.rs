@@ -31,8 +31,8 @@ pub enum Ctor {
     /// The only constructor of Unit, a tuple or a record.
     Single,
     Int(i64),
-    /// Bit pattern of the literal.
-    Float(u64),
+    /// Compared with IEEE `==` like the emitted test, so `-0.0` is `0.0`.
+    Float(f64),
     Str(String),
     /// A list of exactly this length.
     Len(usize),
@@ -56,7 +56,7 @@ pub fn lower(p: &Pat, ty: &Ty, types: &Types) -> Option<P> {
     Some(match (&p.kind, ty) {
         (PatKind::Wild | PatKind::Bind(_), _) => P::Wild,
         (PatKind::Int(n), Ty::Int) => P::Ctor(Ctor::Int(*n), vec![]),
-        (PatKind::Float(x), Ty::Float) => P::Ctor(Ctor::Float(x.to_bits()), vec![]),
+        (PatKind::Float(x), Ty::Float) => P::Ctor(Ctor::Float(*x), vec![]),
         (PatKind::Str(s), Ty::Str) => P::Ctor(Ctor::Str(s.clone()), vec![]),
         (PatKind::Bool(b), Ty::Bool) => P::Ctor(Ctor::Bool(*b), vec![]),
         (PatKind::Unit, Ty::Unit) => P::Ctor(Ctor::Single, vec![]),
@@ -73,6 +73,10 @@ pub fn lower(p: &Pat, ty: &Ty, types: &Types) -> Option<P> {
         }
         (PatKind::Record { fields, .. }, Ty::Named(tn, targs)) => {
             let decl = types.get(tn)?.record_fields(targs)?;
+            // An unknown or repeated field was already reported; lowering around it would invent a pattern.
+            if fields.iter().enumerate().any(|(i, f)| !decl.iter().any(|(n, _)| n == &f.name) || fields[..i].iter().any(|g| g.name == f.name)) {
+                return None;
+            }
             let mut subs = Vec::new();
             for (fname, fty) in &decl {
                 subs.push(match fields.iter().find(|f| &f.name == fname) {
@@ -197,8 +201,14 @@ pub fn useful(rows: &[Vec<P>], v: &[P], tys: &[Ty], types: &Types) -> bool {
     let mut heads: Vec<&P> = rows.iter().map(|r| &r[0]).collect();
     heads.push(&v[0]);
     let cs = ctors(&tys[0], &heads, types);
+    // Maranget: split only when the heads use every constructor; otherwise a value
+    // with an unused constructor escapes iff the wildcard rows (the default matrix)
+    // miss its tail. List heads stand for several length classes, so they always split.
+    let complete = |cs: &[(Ctor, Vec<Ty>)]| {
+        cs.iter().all(|(c, _)| rows.iter().any(|r| matches!(&r[0], P::Ctor(c2, _) if c2 == c) || matches!(r[0], P::List(..))))
+    };
     match (&v[0], cs) {
-        (P::Wild, Some(cs)) if has_ctor_heads(&rows) => cs.iter().any(|(c, ftys)| {
+        (P::Wild, Some(cs)) if has_ctor_heads(&rows) && complete(&cs) => cs.iter().any(|(c, ftys)| {
             let v2: Vec<P> = vec![P::Wild; ftys.len()].into_iter().chain(v[1..].iter().cloned()).collect();
             useful(&spec_rows(&rows, c, ftys.len()), &v2, &cons(ftys, &tys[1..]), types)
         }),
@@ -222,6 +232,11 @@ pub fn useful(rows: &[Vec<P>], v: &[P], tys: &[Ty], types: &Types) -> bool {
 pub fn missing(rows: &[Vec<P>], tys: &[Ty], types: &Types, top: bool) -> Vec<Vec<P>> {
     if tys.is_empty() {
         return if rows.is_empty() { vec![vec![]] } else { vec![] };
+    }
+    // Descend only where a witness exists, so the work is bounded by LIMIT witnesses
+    // rather than by every constructor of every column.
+    if !useful(rows, &vec![P::Wild; tys.len()], tys, types) {
+        return vec![];
     }
     let rows = expand(rows);
     let heads: Vec<&P> = rows.iter().map(|r| &r[0]).collect();
