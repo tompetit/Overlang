@@ -200,7 +200,8 @@ unary `- !`, postfix (`?`, call, field, index). Comparisons do not chain.
   `[p, p]`, `[p, ..rest]`, `[..init, p]`, and `p | p` alternatives binding
   the same names. The rest may be written as a bare `..` (`[p, ..]`,
   `[.., p]`), which binds nothing; in the AST and in hashing it is a rest
-  whose name is `_`, distinct from a named rest.
+  whose name is `_`, distinct from a named rest. A literal pattern matches
+  the values `==` to it, so the Float patterns `0.0` and `-0.0` are the same.
 - Lambda: `|x, y| expr` or `|x, y| { block }`. Captures by value.
 - Block: `{ stmt; stmt; expr }`. The final expression is the value; a block
   ending in `;` has type Unit.

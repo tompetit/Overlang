@@ -106,7 +106,7 @@ fn fixtures_without_expected_diagnostics_have_no_errors() {
 }
 
 #[test]
-fn err_fixtures_produce_exactly_the_expected_codes() {
+fn diag_fixtures_produce_exactly_the_expected_codes() {
     let mut n = 0;
     for (name, src) in fixtures() {
         let expect = name.replace(".ov", ".expect.diag");
@@ -114,7 +114,7 @@ fn err_fixtures_produce_exactly_the_expected_codes() {
         n += 1;
         let want: Vec<&str> = text.lines().map(str::trim).filter(|l| !l.is_empty()).collect();
         let (_, diags) = check_sources(&[(name.clone(), src)]);
-        let got: Vec<&str> = errors(&diags).iter().map(|d| d.code.as_str()).collect();
+        let got: Vec<&str> = diags.iter().map(|d| d.code.as_str()).collect();
         assert_eq!(got, want, "{name}: {diags:#?}");
     }
     assert!(n >= 8, "err fixtures not found");

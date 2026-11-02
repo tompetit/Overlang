@@ -31,8 +31,8 @@ pub enum Ctor {
     /// The only constructor of Unit, a tuple or a record.
     Single,
     Int(i64),
-    /// Bit pattern of the literal.
-    Float(u64),
+    /// Compared with IEEE `==` like the emitted test, so `-0.0` is `0.0`.
+    Float(f64),
     Str(String),
     /// A list of exactly this length.
     Len(usize),
@@ -56,7 +56,7 @@ pub fn lower(p: &Pat, ty: &Ty, types: &Types) -> Option<P> {
     Some(match (&p.kind, ty) {
         (PatKind::Wild | PatKind::Bind(_), _) => P::Wild,
         (PatKind::Int(n), Ty::Int) => P::Ctor(Ctor::Int(*n), vec![]),
-        (PatKind::Float(x), Ty::Float) => P::Ctor(Ctor::Float(x.to_bits()), vec![]),
+        (PatKind::Float(x), Ty::Float) => P::Ctor(Ctor::Float(*x), vec![]),
         (PatKind::Str(s), Ty::Str) => P::Ctor(Ctor::Str(s.clone()), vec![]),
         (PatKind::Bool(b), Ty::Bool) => P::Ctor(Ctor::Bool(*b), vec![]),
         (PatKind::Unit, Ty::Unit) => P::Ctor(Ctor::Single, vec![]),
