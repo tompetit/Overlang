@@ -343,7 +343,7 @@ impl Parser {
         let start = self.span();
         if self.eat(&Tok::Fn) {
             let sig = self.signature(start)?;
-            let (requires, ensures) = self.contracts()?;
+            let (requires, ensures) = self.contracts(&sig)?;
             let body = self.block()?;
             return Ok(Item::Fn(FnDef { sig, requires, ensures, body, span: start.to(self.prev_span()) }));
         }
@@ -353,7 +353,7 @@ impl Parser {
         if self.eat(&Tok::Declare) {
             self.expect(&Tok::Fn)?;
             let sig = self.signature(start)?;
-            let (requires, ensures) = self.contracts()?;
+            let (requires, ensures) = self.contracts(&sig)?;
             return Ok(Item::Declare(DeclareDef { sig, requires, ensures, span: start.to(self.prev_span()) }));
         }
         if self.eat(&Tok::Foreign) {
@@ -438,13 +438,18 @@ impl Parser {
         Ok(effects)
     }
 
-    fn contracts(&mut self) -> PResult<(Vec<Expr>, Vec<Expr>)> {
+    fn contracts(&mut self, sig: &Signature) -> PResult<(Vec<Expr>, Vec<Expr>)> {
         let mut requires = Vec::new();
         let mut ensures = Vec::new();
         loop {
             if self.eat(&Tok::Requires) {
                 requires.push(self.expr()?);
-            } else if self.eat(&Tok::Ensures) {
+            } else if self.check(&Tok::Ensures) {
+                // In `ensures`, `result` is the return value, so it would hide the parameter.
+                if let Some(p) = sig.params.iter().find(|p| p.name == "result") {
+                    return Err(Diag::error("E0002", p.span, "a function with `ensures` cannot have a parameter named `result`, which there names the return value"));
+                }
+                self.bump();
                 self.in_ensures = true;
                 let e = self.expr();
                 self.in_ensures = false;

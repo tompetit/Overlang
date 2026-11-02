@@ -242,7 +242,7 @@ fn ufcs_flag_preserves_written_form() {
 
 #[test]
 fn result_is_special_only_in_ensures() {
-    let p = parse_ok("fn f(result: Int) -> Int requires result > 0 ensures result > 0 { result }");
+    let p = parse_ok("fn f(x: Int) -> Int requires result > 0 ensures result > 0 { result }");
     let Item::Fn(f) = &p.items[0] else { panic!() };
     let lhs = |e: &Expr| match &e.kind {
         ExprKind::Binary { lhs, .. } => lhs.kind.clone(),

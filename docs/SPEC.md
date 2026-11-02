@@ -277,7 +277,9 @@ fn total(o: Order) -> Int
 
 - Any number of `requires` and `ensures` clauses. Each is a pure Bool
   expression (E0108 if it uses effects). `requires` sees the parameters.
-  `ensures` sees the parameters and `result`.
+  `ensures` sees the parameters and `result`. So a function with `ensures`
+  cannot have a parameter named `result`, and `result` cannot be bound
+  inside `ensures` (both E0002).
 - Contracts are compiled to runtime checks on entry and exit. A failed check
   traps with kind `requires` or `ensures`.
 - `assert(c)` and `assert_eq(a, b)` are prelude functions that trap with kind
