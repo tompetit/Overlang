@@ -134,3 +134,13 @@ fn float_generation_reaches_large_magnitudes() {
     assert_eq!(v["status"], "fail", "{v}");
     assert_eq!(v["failure"]["kind"], "ensures", "{v}");
 }
+
+#[test]
+fn a_name_run_keeps_the_other_cache_entries() {
+    let dir = workdir("name_cache");
+    let f = fixture("fuzz_tree.ov");
+    ov_test(&dir, &[&f, "--seed", "1"]);
+    ov_test(&dir, &[&f, "--name", "shallow", "--seed", "1"]);
+    let s = stdout(&ov_test(&dir, &[&f, "--seed", "1"]));
+    assert!(s.lines().any(|l| l.starts_with("fuzz node_count ok") && l.ends_with(", cached)")), "{s}");
+}
