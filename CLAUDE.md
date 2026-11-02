@@ -11,7 +11,8 @@ spec in the same commit and say why in the commit message.
   (canonical form and hashing), `store` (SQLite tables), `store_cli` (store
   commands, and checking and building from stored names), `mono`
   (monomorphization), `emit` (C emission), `build` (cc and linking), `fuzz`,
-  `diag`, `cli`.
+  `diag`, `cli`, `card` (the language card, `docs/CARD.md`, and its
+  topic triggers).
 - `runtime/` C runtime (`rt.h`, `rt.c`) linked into every program, with its
   own tests in `runtime/tests/`.
 - `tests/programs/` `.ov` fixtures. Each has an `.expect` file: either the

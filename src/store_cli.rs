@@ -82,6 +82,9 @@ pub enum StoreCommand {
         target: String,
         #[arg(long, default_value_t = 0)]
         depth: u32,
+        /// Leave out the `# Syntax notes` card sections.
+        #[arg(long)]
+        no_notes: bool,
         #[arg(long)]
         json: bool,
     },
@@ -142,7 +145,7 @@ fn exec(store: &Store, cmd: StoreCommand) -> Result<(String, i32), Vec<Diag>> {
         StoreCommand::Export { file } => export(store, file.as_ref()),
         StoreCommand::Deps { target, json } => graph(store, &target, false, json),
         StoreCommand::Dependents { target, json } => graph(store, &target, true, json),
-        StoreCommand::Ctx { target, depth, json } => ctx(store, &target, depth, json),
+        StoreCommand::Ctx { target, depth, no_notes, json } => ctx(store, &target, depth, !no_notes, json),
         StoreCommand::History { name, json } => history(store, &name, json),
         StoreCommand::Diff { a, b, json } => diff(store, &a, &b, json),
     };
@@ -712,9 +715,21 @@ fn sig_type_names(item: &Item) -> BTreeSet<String> {
     out
 }
 
-fn ctx(store: &Store, target: &str, depth: u32, json: bool) -> Out {
+fn ctx(store: &Store, target: &str, depth: u32, notes: bool, json: bool) -> Out {
     let hash = resolve(store, target)?;
-    let main = text(store, &def(store, &hash)?)?;
+    let main_def = def(store, &hash)?;
+    let main = text(store, &main_def)?;
+    // Card topics for the constructs in what is printed; prelude signatures
+    // are summarized by the core card and do not count.
+    let prelude_hashes: HashSet<&str> = prelude().defs.iter().map(|d| d.hash.as_str()).collect();
+    let mut tags = BTreeSet::new();
+    let mut note = |d: &Def, body: bool| -> Result<(), Vec<Diag>> {
+        if notes && !prelude_hashes.contains(d.hash.as_str()) {
+            crate::card::constructs(&item_of(d)?, body, &mut tags);
+        }
+        Ok(())
+    };
+    note(&main_def, true)?;
     // Types to show: those the definition references, those named in its
     // dependencies' signatures, and the types those types reference.
     let mut pending = Vec::new();
@@ -735,6 +750,7 @@ fn ctx(store: &Store, target: &str, depth: u32, json: bool) -> Out {
                 pending.push(t);
             }
         }
+        note(&d, depth >= 1)?;
         let full = if depth >= 1 { Some(text(store, &d)?) } else { None };
         deps.insert((name_of(store, &h)?, h), (signature(store, &d)?, full));
     }
@@ -750,8 +766,10 @@ fn ctx(store: &Store, target: &str, depth: u32, json: bool) -> Out {
                 pending.push(u);
             }
         }
+        note(&td, true)?;
         types.insert((name_of(store, &t)?, t), text(store, &td)?);
     }
+    let notes = crate::card::notes(&tags);
 
     if json {
         let deps: Vec<Value> = deps
@@ -771,6 +789,7 @@ fn ctx(store: &Store, target: &str, depth: u32, json: bool) -> Out {
             "source": main,
             "deps": deps,
             "types": types,
+            "notes": notes,
         }));
     }
     let mut out = format!("{main}\n");
@@ -779,6 +798,9 @@ fn ctx(store: &Store, target: &str, depth: u32, json: bool) -> Out {
     }
     for s in types.values() {
         out.push_str(&format!("\n{s}\n"));
+    }
+    if !notes.is_empty() {
+        out.push_str(&format!("\n# Syntax notes\n\n{notes}\n"));
     }
     Ok(out)
 }

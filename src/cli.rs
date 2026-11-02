@@ -4,7 +4,7 @@
 use crate::ast::{Program, Span};
 use crate::diag::Diag;
 use crate::diag::Severity;
-use crate::{build, fuzz, parser, printer, store_cli, types};
+use crate::{build, card, fuzz, parser, printer, store_cli, types};
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
@@ -54,6 +54,12 @@ enum Command {
         files: Vec<PathBuf>,
         #[command(flatten)]
         fuzz: Fuzz,
+    },
+    /// Print the language card: the core, one topic section, or everything.
+    Card {
+        topic: Option<String>,
+        #[arg(long, conflicts_with = "topic")]
+        full: bool,
     },
     /// Parse a file and dump its AST.
     Parse {
@@ -164,6 +170,23 @@ pub fn run() -> i32 {
                 Err(diags) => report(&diags),
             }
         }
+        Command::Card { topic, full } => match topic {
+            None if full => {
+                println!("{}", card::full());
+                0
+            }
+            None => {
+                println!("{}", card::core());
+                0
+            }
+            Some(t) => match card::topic(&t) {
+                Some(text) => {
+                    println!("{text}");
+                    0
+                }
+                None => report(&[driver_error(format!("unknown card topic `{t}`; topics: {}", card::topic_names().join(" ")), None)]),
+            },
+        },
         Command::Parse { file, json } => {
             let program = match load(&file) {
                 Ok(p) => p,

@@ -539,7 +539,7 @@ own exit code (1 for an `Err` from `main`, section 8).
 | `ov ls [--kind k] [--sort order\|name]` | List bound names with hashes, by `names.order` (default) or alphabetically. |
 | `ov export [file]` | Every bound definition in canonical text under current names, in `ov ls` order, one blank line apart, to stdout or `file`: the store as one `.ov` file that `ov check` accepts. A hash bound to several names is written once, under its most recently bound name. Comments are not included (they are only in `defs.source`, see `ov view --raw`). |
 | `ov deps <name>` / `ov dependents <name>` | Transitive dependency graph by name and hash, as a list ordered by depth. |
-| `ov ctx <name> [--depth N]` | The minimal context for working on `name`: its full source, then the signature (including effects and contracts) of each definition it references directly, then the full definition of every type those signatures mention. `--depth 1` adds the bodies of direct dependencies. This is the command the agent uses instead of reading files. |
+| `ov ctx <name> [--depth N]` | The minimal context for working on `name`: its full source, then the signature (including effects and contracts) of each definition it references directly, then the full definition of every type those signatures mention. `--depth 1` adds the bodies of direct dependencies. Then a `# Syntax notes` section with the card topics (section 10.4) for the constructs in what it printed; `--no-notes` leaves it out (with `--json`, the `notes` string, empty then). This is the command the agent uses instead of reading files. |
 | `ov check [name]` | Typecheck, effect-check, exhaustiveness-check one definition or the whole store. Emits diagnostics. Exit 0 if no errors. |
 | `ov build <name>` | Monomorphize from `name`, emit one C file per reachable definition (cached by hash), compile with `cc`, link `runtime/rt.c` and `-lgc`. Produces `./<name>`. |
 | `ov run <name>` | `ov build` then execute, forwarding stdin, stdout, stderr and exit code. |
@@ -589,6 +589,35 @@ fits in 100 columns, otherwise one parameter per line; `requires` and
 line; record fields in declaration order; trailing commas in multi-line
 lists; `a.f(b)` preserved as written. `parse(print(ast))` must equal `ast`,
 and the hash must be unchanged.
+
+### 10.4 The language card
+
+`docs/CARD.md` is the language reference handed to agents that have never
+seen Overlang, compiled into `ov`. It is a core card (what every task needs:
+signatures and effects, `Option`/`Result` and `?`, `match`, `let`, basic
+prelude, `test`, diagnostics, store commands; at most 6,000 characters)
+followed by topic sections. Each topic starts with a line
+`<!-- topic NAME: trigger trigger ... -->` and runs to the next one.
+
+| Command | Behavior |
+|---|---|
+| `ov card` | Print the core card. |
+| `ov card <topic>` | Print one topic section; an unknown topic is E0000 listing the topics. |
+| `ov card --full` | Print the core card and every topic, in file order. |
+
+A trigger is a construct tag or a name. `ov ctx` collects, from the AST of
+each definition it printed (bodies only where it printed them; prelude
+definitions excluded, the core card summarizes them), the names of called
+functions, the type names written, and these tags: `requires`, `ensures`,
+`declare`, `foreign`, `main-fn` (a `fn main`), `record-type`, `record-expr`,
+`record-pattern`, `field-access`, `sum-type`, `ctor` (a constructor other
+than `Some None Ok Err`), `type-params`, `effect-params`, `effect-label` (a
+label other than `io` or an effect parameter), `fn-type`, `lambda-expr`,
+`tuple` (type, expression, pattern or `t.0`), `list-pattern` (any list
+pattern but `[]` and `[x, ..rest]`), `or-pattern`, `float-literal`, `let-mut`,
+`assign`, `while`, `for`, `break`, `continue`. A topic is included when any
+of its triggers was collected; included topics appear once each, in card
+order.
 
 ## 11. Diagnostics
 

@@ -2,6 +2,7 @@
 
 pub mod ast;
 pub mod build;
+pub mod card;
 pub mod cli;
 pub mod diag;
 pub mod emit;
