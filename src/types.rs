@@ -271,8 +271,17 @@ pub fn check_sources(sources: &[(String, String)]) -> (Checked, Vec<Diag>) {
     } else {
         TypedProgram::default()
     };
+    let checked = Checked { prelude, files, typed };
+    // Constraints that depend on type parameters hold only per instantiation
+    // (spec section 3), so check every instance reachable from concrete code.
+    if !diags.iter().any(|d| d.severity == Severity::Error) {
+        let defs = crate::mono::Defs::new(&checked, HashMap::new());
+        if let Err(ds) = crate::mono::collect(&checked, &defs, crate::mono::Root::All) {
+            diags.extend(ds);
+        }
+    }
     sort_diags(&mut diags);
-    (Checked { prelude, files, typed }, diags)
+    (checked, diags)
 }
 
 pub fn sort_diags(diags: &mut [Diag]) {

@@ -128,6 +128,12 @@ would need infinitely many instances. `type Nest[T] = Leaf(v: T) | Deep(n:
 Nest[List[T]])` and `fn f[T](x: T) -> Int { f((x, x)) }` are E0122; `type
 Tree[T] = Node(kids: List[Tree[T]])` and `fn g[A, B](a: A, b: B) -> Int { g(b,
 a) }` are not.
+Rules in this section that depend on a type argument (ordering, equality and
+`show` on function types, Map keys and Set elements, and the element types the
+prelude's `sort`, `min_of`, `max_of` and `unique` need) hold for generic code
+at each instantiation: `ov check` instantiates everything reachable from every
+non-generic definition and test, as section 12 does from the entry point, and
+reports a violation as E0101 at the call that instantiated the generic code.
 Equality `==` and `!=` are structural and defined on every type except
 function types (E0101 if attempted). Ordering `< <= > >=` is defined on Int,
 Float and Str only. `show[T](x: T) -> Str` is defined structurally on every

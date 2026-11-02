@@ -6,10 +6,11 @@
 //! (definition, concrete type arguments). Generic types are instantiated by
 //! the emitter as it meets them; every type it sees is concrete.
 //!
-//! The checker accepts generic code whose operator and intrinsic constraints
-//! depend on type parameters (`x == y` on `T`, `sort` on `List[T]`, a Map
-//! keyed by `K`). Those constraints are re-checked here at each instantiation
-//! and reported as E0101 at the call that instantiated the generic code.
+//! Operator and intrinsic constraints that depend on type parameters
+//! (`x == y` on `T`, `sort` on `List[T]`, a Map keyed by `K`) are checked
+//! here at each instantiation and reported as E0101 at the call that
+//! instantiated the generic code. `check_sources` runs this from
+//! [`Root::All`], so `ov check` reports them too (spec section 3).
 
 use crate::ast::*;
 use crate::diag::Diag;
@@ -197,6 +198,8 @@ pub struct Instance {
 pub enum Root<'s> {
     Entry(&'s str),
     Tests,
+    /// Every test and non-generic definition: what `ov check` instantiates.
+    All,
 }
 
 struct Origin {
@@ -221,7 +224,16 @@ pub fn collect(c: &Checked, defs: &Defs, root: Root) -> Result<Vec<Instance>, Ve
             seen.insert(inst.c_name.clone());
             work.push((inst, None));
         }
-        Root::Tests => {
+        Root::Tests | Root::All => {
+            if let Root::All = root {
+                let mut names: Vec<&String> = defs.fns.keys().filter(|n| tp.fns[*n].type_params.is_empty()).collect();
+                names.sort();
+                for name in names {
+                    let inst = Instance { name: name.clone(), type_args: vec![], c_name: defs.instance_name(name, &[]), is_test: false };
+                    seen.insert(inst.c_name.clone());
+                    work.push((inst, None));
+                }
+            }
             for (t, _) in &defs.tests {
                 let inst = Instance { name: t.name.clone(), type_args: vec![], c_name: defs.test_name(&t.name), is_test: true };
                 seen.insert(inst.c_name.clone());
