@@ -178,6 +178,10 @@ impl Printer {
             Item::Test(t) => format!("test {} {}", t.name, self.block(&t.body, 0)),
             Item::Intrinsic(i) => format!("{} = {}", self.signature("intrinsic ", &i.sig, ""), escape_str(&i.symbol)),
             Item::Type(t) => self.type_def(t),
+            Item::Schema(t) => {
+                let cols: Vec<String> = t.columns.iter().map(|f| format!("{}: {}", f.name, self.ty(&f.ty))).collect();
+                format!("schema {} {{ {} }}", t.name, cols.join(", "))
+            }
             Item::Comment(c) => format!("//{}", c.text),
         }
     }
@@ -333,6 +337,7 @@ impl Printer {
             ExprKind::Int(n) => n.to_string(),
             ExprKind::Float(x) => float_text(*x),
             ExprKind::Str(s) => escape_str(s),
+            ExprKind::Sql(s) => format!("sql {}", escape_str(s)),
             ExprKind::Bool(b) => b.to_string(),
             ExprKind::Unit => "()".to_string(),
             ExprKind::Var(name) => name.clone(),
@@ -477,6 +482,6 @@ pub fn print_signature(item: &Item) -> Option<String> {
     match item {
         Item::Fn(f) => Some(p.signature("", &f.sig, "") + &p.contracts(&f.requires, &f.ensures)),
         Item::Declare(_) | Item::Foreign(_) | Item::Intrinsic(_) => Some(p.item(item)),
-        Item::Type(_) | Item::Test(_) | Item::Comment(_) => None,
+        Item::Type(_) | Item::Schema(_) | Item::Test(_) | Item::Comment(_) => None,
     }
 }

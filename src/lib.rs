@@ -15,6 +15,7 @@ pub mod mono;
 pub mod parser;
 pub mod prelude;
 pub mod printer;
+pub mod sql;
 pub mod store;
 pub mod store_cli;
 pub mod types;

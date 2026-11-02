@@ -462,7 +462,7 @@ impl<'a> Emitter<'a> {
         match &e.kind {
             ExprKind::Int(n) => int_lit(*n),
             ExprKind::Float(x) => float_lit(*x),
-            ExprKind::Str(s) => self.bind_tmp(&t, str_new(s)),
+            ExprKind::Str(s) | ExprKind::Sql(s) => self.bind_tmp(&t, str_new(s)),
             ExprKind::Bool(b) => b.to_string(),
             ExprKind::Unit => "0".into(),
             ExprKind::Var(_) => self.var(e, &t),

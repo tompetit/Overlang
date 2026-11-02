@@ -275,6 +275,7 @@ fn render(store: &Store, d: &Def) -> Result<(Item, Printer), Vec<Diag>> {
         Item::Intrinsic(x) => x.sig.name = name,
         Item::Test(t) => t.name = name,
         Item::Type(t) => t.name = name,
+        Item::Schema(t) => t.name = name,
         Item::Comment(_) => {}
     }
     Ok((item, Printer { records }))
@@ -298,7 +299,7 @@ fn store_scope(store: &Store) -> Result<Scope, Vec<Diag>> {
     for (name, hash, kind) in db(store.names(None, true))? {
         match kind.as_str() {
             "test" => {}
-            "type" => scope.bind(&name, &hash, &item_of(&def(store, &hash)?)?),
+            "type" | "schema" => scope.bind(&name, &hash, &item_of(&def(store, &hash)?)?),
             _ => {
                 scope.values.insert(name, hash);
             }
@@ -424,10 +425,12 @@ fn store_items(store: &Store, items: &[Item], sources: &[(String, String)], file
     // (the whole store if a name does not resolve, so the checker reports every
     // error); a stored definition they replace (by name) is left out.
     let new_names: HashSet<String> = items.iter().filter_map(item_name).map(String::from).collect();
-    let roots: Vec<String> = match &hashed {
+    let mut roots: Vec<String> = match &hashed {
         Ok(hs) => hs.iter().flat_map(|h| h.deps.iter()).filter(|d| !hs.iter().any(|h| &h.hash == *d)).cloned().collect(),
         Err(_) => db(store.names(None, true))?.into_iter().map(|n| n.1).collect(),
     };
+    // Every schema, so an unknown table in a `sql` literal gets the nearest declared name.
+    roots.extend(db(store.names(Some("schema"), true))?.into_iter().map(|n| n.1));
     let (mut checked, _) = closure_sources(store, &roots, &new_names)?;
     checked.extend(sources.iter().cloned());
     let (errors, warnings): (Vec<Diag>, Vec<Diag>) = store_diags(crate::types::check_sources(&checked).1).into_iter().partition(|d| d.severity == Severity::Error);
@@ -530,6 +533,10 @@ fn propagate(store: &Store, mut map: HashMap<String, String>) -> Result<Vec<(Str
             }
             for (n, h) in pairs(&v["refs"], "types") {
                 scope.types.insert(n.to_string(), new(h));
+            }
+            // Columns do not matter for which tables a literal mentions.
+            for (n, h) in pairs(&v["refs"], "schemas") {
+                scope.schemas.insert(n.to_string(), (new(h), Vec::new()));
             }
             // A constructor that the new type no longer has is reported as unknown.
             for (n, h) in pairs(&v["refs"], "ctors") {

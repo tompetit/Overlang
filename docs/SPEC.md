@@ -25,7 +25,9 @@ simplifications with a named upgrade path.
   `Strongest_Extension` to `strongest_extension`).
 - Keywords: `fn type declare foreign link intrinsic let mut if else match while
   for in return break continue requires ensures test true false result`.
-  `result` is a keyword only inside an `ensures` clause.
+  `result` is a keyword only inside an `ensures` clause. `schema` is a keyword
+  only at the start of a definition when a name follows, and `sql` only when a
+  string literal follows, so both remain usable as names.
 - Literals:
   - Int: decimal digits with optional `_` separators (`1_000_000`). Must fit
     in a signed 64-bit integer, otherwise lex error E0001.
@@ -57,6 +59,7 @@ fn name[T, U](param: Type, param: Type) -> Type !eff !eff
 declare fn name(param: Type) -> Type !eff requires Expr ensures Expr
 foreign c "header.h" link "libname" fn name(param: Type) -> Type !eff
 test name { Block }
+schema table { column: Type, column: Type }
 ```
 
 - Type parameters are listed in `[...]` after the name. Effect parameters
@@ -80,6 +83,11 @@ test name { Block }
   a runtime C function (`"ov_..."`) or to a compiler-generated instance
   (`"@show"`, `"@sort"`). It is legal only in `src/prelude.ov`, which is
   compiled into `ov` and loaded before every program. Elsewhere it is E0002.
+- `schema todos { id: Int, title: Str, done: Int }` declares a SQL table for
+  `sql` literals (section 6.1). Column types are Int, Str, Float or Bool
+  (otherwise E0002); there is at least one column. The table's name is the
+  definition's name, in the same namespace as functions (E0109 on a clash or
+  a column declared twice). A schema has no runtime representation.
 - Comments are kept by the parser and printer (`ov fmt` never drops one); a
   comment inside an expression or signature moves to the next statement, arm
   or definition. Hashing strips them.
@@ -209,9 +217,47 @@ unary `- !`, postfix (`?`, call, field, index). Comparisons do not chain.
   the loop, and one in a `while` condition does not either (E0117). Like
   `return`, they never complete, so a block or match arm ending in one fits
   any expected type: `let n = match o { Some(v) => v, None => { break; } };`.
+- `sql "..."` is a Str literal whose text is SQL checked against the declared
+  schemas (section 6.1). It is pure and compiles exactly like the plain string.
 - `e?` on `Result[T, E]` evaluates to `T` or returns `Err(e)` from the
   enclosing function, whose return type must be `Result[_, E]`. On
   `Option[T]` it returns `None` likewise.
+
+### 6.1 SQL literals
+
+The checker of a `sql` literal is a tokenizer plus name extraction, not a SQL
+parser: it never rejects SQL it does not understand. SQL names are compared
+without regard to case. The text is split into statements at `;`. A statement
+that does not start with SELECT, INSERT, REPLACE, UPDATE, DELETE, WITH or
+VALUES (DDL such as CREATE TABLE, PRAGMA, ...) is accepted unchecked; a
+declared table named anywhere in it counts as mentioned. In the others:
+
+- The word after FROM, JOIN, INTO or UPDATE (or after a `,` in a FROM list),
+  ignoring `OR <action>` and a `schema.` prefix, is a table, with an optional
+  alias (`AS a` or a bare word). It must be a declared schema (E0118), unless
+  it is a common table expression (`name AS (`), a `sqlite_` table, a
+  table-valued function call or a parenthesized subquery, whose columns are
+  unknown.
+- Columns are checked in the SELECT list, the column list of INSERT, the
+  targets of SET, and in WHERE, ON and ORDER BY: a bare word, or `q.c` where
+  `q` is a declared table in scope or its alias (E0119 if the table has no
+  column `c`). A bare column must belong to exactly one table of the innermost
+  SELECT that has it (E0120 if two do); else to an enclosing one (correlated
+  subqueries); it is E0119 only when every table in scope is declared.
+- Skipped: anything inside a function call's parentheses, string, blob and
+  number literals, quoted identifiers, `?`/`:name` placeholders, SQLite
+  keywords, `rowid`, `*`, aliases defined in the SELECT list, the word after
+  AS, COLLATE, OVER or IN, the right-hand sides of SET, GROUP BY, HAVING,
+  RETURNING and an upsert's `DO UPDATE SET`.
+
+A `sql` literal that mentions no declared table, and has no unknown table, is
+E0121: plain strings are for SQL that touches no declared table. Spans point
+at the offending name inside the literal (the whole literal for E0121 and for
+a literal written over several lines, **shortcut**). Fixes for E0118 and
+E0119 are the three nearest declared names by edit distance, however far.
+
+A definition depends on every schema its `sql` literals mention (section 10),
+so editing a schema re-checks them.
 
 ## 7. Contracts
 
@@ -422,8 +468,9 @@ Tables:
   `{"item": ..., "refs": ...}`: `refs` is its resolution table, the hash each
   global name written in it resolved to (`values`, `types`, and `ctors`
   mapping to the constructor's type), plus the ids of the expressions that
-  are global references. `kind` is `fn`, `type`, `declare`, `foreign` or
-  `test`, or `intrinsic` for prelude bindings. `source` is the definition's
+  are global references; `schemas` maps the tables its `sql` literals
+  mention to their schemas. `kind` is `fn`, `type`, `declare`, `foreign`,
+  `test` or `schema`, or `intrinsic` for prelude bindings. `source` is the definition's
   canonical text as last written, comments included (`ov view --raw`).
   Re-adding a definition with the same hash replaces `ast` and `source`
   without adding a row. Every prelude definition is in `defs`, unbound in `names`;
@@ -452,6 +499,10 @@ canonical form is the AST serialized as JSON with:
 - every local variable replaced by its de Bruijn index;
 - every reference to another top-level definition replaced by that
   definition's hash;
+- for `schema` definitions the name is kept, as for types: SQL text refers
+  to the table by name;
+- a `sql` literal is its text plus the sorted hashes of the schemas it
+  mentions (section 6.1), so a schema edit re-hashes and propagates to it;
 - every reference to a type replaced by that type's hash (built-in types
   hash to their name; for hashing, `Option` and `Result` count as built-in,
   and their constructors are `("Option", 0)` for `Some` and so on);
@@ -486,7 +537,8 @@ hash. Propagation never changes a dependent's named AST, only the hashes it
 resolves to, so a dependent's text does not change.
 
 A `type` edit propagates the same way to every definition that mentions the
-type.
+type, and a `schema` edit to every definition whose `sql` literals mention
+the table; the re-check below then reports SQL that no longer fits it.
 
 `ov add` and `ov edit` print the rebound dependents after the `name hash`
 lines, one `name old_hash new_hash` line each; with `--json` the output is
@@ -539,7 +591,7 @@ own exit code (1 for an `Err` from `main`, section 8).
 | `ov ls [--kind k] [--sort order\|name]` | List bound names with hashes, by `names.order` (default) or alphabetically. |
 | `ov export [file]` | Every bound definition in canonical text under current names, in `ov ls` order, one blank line apart, to stdout or `file`: the store as one `.ov` file that `ov check` accepts. A hash bound to several names is written once, under its most recently bound name. Comments are not included (they are only in `defs.source`, see `ov view --raw`). |
 | `ov deps <name>` / `ov dependents <name>` | Transitive dependency graph by name and hash, as a list ordered by depth. |
-| `ov ctx <name> [--depth N]` | The minimal context for working on `name`: its full source, then the signature (including effects and contracts) of each definition it references directly, then the full definition of every type those signatures mention. `--depth 1` adds the bodies of direct dependencies. Then a `# Syntax notes` section with the card topics (section 10.4) for the constructs in what it printed; `--no-notes` leaves it out (with `--json`, the `notes` string, empty then). This is the command the agent uses instead of reading files. |
+| `ov ctx <name> [--depth N]` | The minimal context for working on `name`: its full source, then the signature (including effects and contracts) of each definition it references directly (a schema in full), then the full definition of every type those signatures mention. `--depth 1` adds the bodies of direct dependencies. Then a `# Syntax notes` section with the card topics (section 10.4) for the constructs in what it printed; `--no-notes` leaves it out (with `--json`, the `notes` string, empty then). This is the command the agent uses instead of reading files. |
 | `ov check [name]` | Typecheck, effect-check, exhaustiveness-check one definition or the whole store. Emits diagnostics. Exit 0 if no errors. |
 | `ov build <name>` | Monomorphize from `name`, emit one C file per reachable definition (cached by hash), compile with `cc`, link `runtime/rt.c` and `-lgc`. Produces `./<name>`. |
 | `ov run <name>` | `ov build` then execute, forwarding stdin, stdout, stderr and exit code. |
@@ -550,8 +602,9 @@ own exit code (1 for an `Err` from `main`, section 8).
 
 Typechecking `ov add` and `ov edit`: the new definitions are checked
 together with the prelude and the stored dependency closure of what they
-reference, rendered with current names; a stored definition whose name a new
-definition takes is left out. Any error aborts the command and stores
+reference, plus every bound schema (so an unknown table gets the nearest
+declared name), rendered with current names; a stored definition whose name a
+new definition takes is left out. Any error aborts the command and stores
 nothing. Warnings do not abort; they are printed to stderr, one JSON object
 per line, so stdout stays the command's output. A diagnostic inside a stored
 definition carries its `hash` and no `file`, and its `span` is relative to
@@ -671,6 +724,10 @@ Codes:
 | E0115 | Recursive type without indirection through a constructor | |
 | E0116 | Ambiguous hash prefix | `actual`: the matching hashes |
 | E0117 | `break` or `continue` outside a loop | |
+| E0118 | Unknown table in a `sql` literal | `expected`: declared tables; `fixes`: nearest names |
+| E0119 | Unknown column in a `sql` literal | `expected`: the table's columns; `fixes`: nearest names |
+| E0120 | Column ambiguous without a qualifier in a `sql` literal | `expected`, `fixes`: each `table.column` |
+| E0121 | `sql` literal mentions no declared table | `fixes`: the plain string |
 | W0001 | Unimplemented `declare` | |
 | W0002 | Unused variable | `fixes`: rename to `_x` |
 | W0003 | Unreachable match arm | |

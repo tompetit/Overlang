@@ -1,0 +1,5 @@
+schema todos { id: Int, title: Str, done: Int }
+
+fn add() -> Str {
+  sql "insert into todos (titel) values (?)"
+}

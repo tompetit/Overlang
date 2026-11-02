@@ -1,0 +1,5 @@
+schema todos { id: Int, title: Str, done: Int }
+
+fn mode() -> Str {
+  sql "pragma journal_mode = wal"
+}

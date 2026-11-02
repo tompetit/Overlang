@@ -391,3 +391,60 @@ fn a_cycle_is_re_hashed_as_a_unit() {
         assert_eq!(hash_of(&dir, n), hash_of(&fresh, n), "{n}");
     }
 }
+
+const TODOS: &str = "schema todos { id: Int, title: Str, done: Int }\nfn list() -> Str { sql \"select id, title, done from todos order by id\" }\nfn add() -> Str { sql \"insert into todos (title) values (?)\" }\nfn plain() -> Str { \"select nothing from nowhere\" }\n";
+
+#[test]
+fn sql_literals_depend_on_their_schemas() {
+    let dir = workdir("sql_schema");
+    add_text(&dir, "todos.ov", TODOS);
+    assert_eq!(ov(&dir, &["view", "todos"]), "schema todos { id: Int, title: Str, done: Int }\n");
+    assert_eq!(ov(&dir, &["ls", "--kind", "schema"]), format!("todos {}\n", hash_of(&dir, "todos")));
+    let dependents: Vec<String> = json(&dir, &["dependents", "todos"]).as_array().unwrap().iter().map(|d| d["name"].as_str().unwrap().to_string()).collect();
+    assert_eq!(dependents.len(), 2, "{dependents:?}");
+    assert!(dependents.contains(&"list".to_string()) && dependents.contains(&"add".to_string()), "{dependents:?}");
+    // `ov ctx` of a function shows the schemas its SQL mentions.
+    let ctx = ov(&dir, &["ctx", "list"]);
+    assert!(ctx.lines().any(|l| l == "schema todos { id: Int, title: Str, done: Int }"), "{ctx}");
+    assert_eq!(json(&dir, &["ctx", "list"])["deps"][0]["name"], "todos");
+
+    // Dropping a column re-hashes both dependents and reports the one that uses it.
+    let (code, out) = ov_in(&dir, &["edit", "todos"], "schema todos { id: Int, title: Str }\n");
+    assert_eq!(code, 2, "{out}");
+    let lines: Vec<&str> = out.lines().collect();
+    assert_eq!(lines.len(), 4, "{out}");
+    assert!(lines[1..3].iter().any(|l| l.starts_with("list ")) && lines[1..3].iter().any(|l| l.starts_with("add ")), "{out}");
+    let d: Value = serde_json::from_str(lines[3]).unwrap();
+    assert_eq!((d["code"].as_str(), d["name"].as_str()), (Some("E0119"), Some("list")));
+    assert_eq!(d["hash"].as_str().unwrap(), hash_of(&dir, "list"));
+    assert_eq!(d["expected"], serde_json::json!(["id", "title"]));
+
+    // Renaming a column breaks both, listed in `dependents_diagnostics`.
+    let (code, out) = ov_in(&dir, &["edit", "todos", "--json"], "schema todos { id: Int, name: Str, done: Int }\n");
+    assert_eq!(code, 2, "{out}");
+    let v: Value = serde_json::from_str(&out).unwrap();
+    let mut broken: Vec<&str> = v["dependents_diagnostics"].as_array().unwrap().iter().map(|d| d["name"].as_str().unwrap()).collect();
+    broken.sort();
+    assert_eq!(broken, ["add", "list"], "{out}");
+    let fixes = v["dependents_diagnostics"][0]["fixes"].as_array().unwrap();
+    assert!(fixes.iter().any(|f| f["patch"] == "name"), "{out}");
+
+    // Restoring the schema leaves no errors, and the hashes are those of a fresh add.
+    let (code, out) = ov_in(&dir, &["edit", "todos"], "schema todos { id: Int, title: Str, done: Int }\n");
+    assert_eq!(code, 0, "{out}");
+    let fresh = workdir("sql_schema_fresh");
+    add_text(&fresh, "todos.ov", TODOS);
+    for n in ["todos", "list", "add"] {
+        assert_eq!(hash_of(&dir, n), hash_of(&fresh, n), "{n}");
+    }
+
+    // An unknown table in a new definition gets the nearest declared table, from the whole store.
+    let (code, out) = ov_in(&dir, &["edit", "plain"], "fn plain() -> Str { sql \"select id from todo\" }\n");
+    assert_eq!(code, 1, "{out}");
+    let d: Value = serde_json::from_str(out.lines().next().unwrap()).unwrap();
+    assert_eq!((d["code"].as_str(), d["fixes"][0]["patch"].as_str()), (Some("E0118"), Some("todos")));
+
+    // `ov rm` unbinds a schema like any other name.
+    ov(&dir, &["rm", "todos"]);
+    assert!(!ov(&dir, &["ls"]).contains("todos "));
+}

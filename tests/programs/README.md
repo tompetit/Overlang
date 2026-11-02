@@ -7,4 +7,6 @@ Each `<name>.ov` has one of:
   `<name>.expect` holding any stdout before the trap.
 - `<name>.expect.diag`: one diagnostic `code` per line that `ov check` must
   emit for the file, and nothing with severity error beyond them.
+- `<name>.expect.json`: optionally, next to `.expect.diag`, the exact error
+  diagnostics as JSON lines, as `ov check` prints them.
 - `<name>.stdin`: optional stdin.

@@ -1,0 +1,1 @@
+{"code":"E0118","severity":"error","name":"list","span":{"line":4,"col":30,"end_line":4,"end_col":34},"message":"unknown table `todo` in sql literal","expected":["todos"],"fixes":[{"rank":1,"description":"did you mean `todos`","patch":"todos"}],"file":"tests/programs/err_sql_table.ov"}

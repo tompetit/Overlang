@@ -2,6 +2,10 @@
 
 An HTTP todo list backed by SQLite, in one file (`main.ov`), using the `foreign c` shims in `runtime/ext/`.
 
+The table is declared as `schema todos { ... }` and every query is a `sql "..."` literal, so a misspelled
+table or column is an error at `ov check`/`ov add`, and `ov edit todos` re-checks every function whose SQL
+mentions it (spec section 6.1).
+
 ## Run
 
 ```

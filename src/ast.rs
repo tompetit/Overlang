@@ -48,7 +48,19 @@ pub enum Item {
     Test(TestDef),
     /// `intrinsic fn name[T](..) -> R = "symbol"`, legal only in the prelude.
     Intrinsic(IntrinsicDef),
+    /// `schema todos { id: Int, title: Str }`: a SQLite table that `sql`
+    /// literals are checked against.
+    Schema(SchemaDef),
     Comment(Comment),
+}
+
+/// Column types are Int, Str, Float or Bool (the parser enforces it).
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub struct SchemaDef {
+    pub name: String,
+    pub columns: Vec<Field>,
+    #[serde(default)]
+    pub span: Span,
 }
 
 /// A `//` comment. `text` is everything after the `//`, trailing whitespace removed.
@@ -224,6 +236,8 @@ pub enum ExprKind {
     Float(f64),
     /// The decoded string value (escapes already resolved).
     Str(String),
+    /// `sql "..."`: a Str checked against the declared schemas.
+    Sql(String),
     Bool(bool),
     Unit,
     /// A value or function name.

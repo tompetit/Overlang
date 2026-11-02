@@ -1,0 +1,6 @@
+schema todos { id: Int, title: Str, done: Int }
+schema tags { id: Int, todo_id: Int, name: Str }
+
+fn tagged() -> Str {
+  sql "select title, name from todos join tags on todo_id = todos.id where id = ?"
+}
