@@ -498,7 +498,8 @@ Tables:
   `{"item": ..., "refs": ...}`: `refs` is its resolution table, the hash each
   global name written in it resolved to (`values`, `types`, and `ctors`
   mapping to the constructor's type), plus the ids of the expressions that
-  are global references; `schemas` maps the tables its `sql` literals
+  are global references (`vars`) and of the `a.f(b)` calls of a field
+  (`fields`); `schemas` maps the tables its `sql` literals
   mention to their schemas. `kind` is `fn`, `type`, `declare`, `foreign`,
   `test` or `schema`, or `intrinsic` for prelude bindings. `source` is the definition's
   canonical text as last written, comments included (`ov view --raw`).
@@ -537,7 +538,10 @@ canonical form is the AST serialized as JSON with:
   hash to their name; for hashing, `Option` and `Result` count as built-in,
   and their constructors are `("Option", 0)` for `Some` and so on);
 - constructor references replaced by `(type hash, constructor index)`;
-- record field names kept (they are part of the type's identity);
+- record field names kept (they are part of the type's identity), including
+  in `a.f(b)` when the checker resolves it to a call of `a`'s field `f`
+  (section 4): that is never a reference to a top-level `f`, whatever is
+  defined;
 - type parameter names replaced by position;
 - all source positions and comments removed.
 
@@ -576,8 +580,10 @@ lines, one `name old_hash new_hash` line each; with `--json` the output is
 dependents are re-hashed: old versions no name points to stay as they are.
 Dependents are re-hashed dependencies first, a cycle of dependents as one
 unit, so the result is what adding the edited code to an empty store gives.
-If a dependent no longer resolves (a constructor it uses was removed), the
-command fails with that diagnostic and stores nothing.
+If a dependent no longer resolves (a constructor it uses was removed, or a
+name it uses is now bound to another kind of definition, such as a function's
+name taken by a test or a schema), the command fails with that diagnostic and
+stores nothing.
 
 A dependent that still resolves can still be ill-typed under the new hashes
 (a record that gained a field, a changed signature). After storing and
@@ -593,7 +599,10 @@ derived from it for hashing and is not stored. `ov view` and `ov ctx` render
 from the named AST, replacing each global reference by the name currently
 bound to the referenced hash (falling back to the name the definition was
 written with if the hash has no binding), so a renamed dependency shows its
-current name in every caller. Comments are kept in `defs.source`, the text as
+current name in every caller. A local variable with the same name as such a
+new name would capture it, so the rendering renames that local to the first
+free `<name>2`, `<name>3`, ... (local names never change the hash): the
+rendered text always checks as the stored definition. Comments are kept in `defs.source`, the text as
 last written, which `ov view --raw` prints; `ov view`, `ov ctx` and `ov export`
 render without them.
 
@@ -633,7 +642,8 @@ own exit code (1 for an `Err` from `main`, section 8).
 Typechecking `ov add` and `ov edit`: the new definitions are checked
 together with the prelude and the stored dependency closure of what they
 reference, plus every bound schema (so an unknown table gets the nearest
-declared name), rendered with current names; a stored definition whose name a
+declared name) and every bound type with a constructor of the same name as
+one of theirs (so the clash is E0109), rendered with current names; a stored definition whose name a
 new definition takes is left out. Any error aborts the command and stores
 nothing. Warnings do not abort; they are printed to stderr, one JSON object
 per line, so stdout stays the command's output. A diagnostic inside a stored
