@@ -73,6 +73,10 @@ pub fn lower(p: &Pat, ty: &Ty, types: &Types) -> Option<P> {
         }
         (PatKind::Record { fields, .. }, Ty::Named(tn, targs)) => {
             let decl = types.get(tn)?.record_fields(targs)?;
+            // An unknown or repeated field was already reported; lowering around it would invent a pattern.
+            if fields.iter().enumerate().any(|(i, f)| !decl.iter().any(|(n, _)| n == &f.name) || fields[..i].iter().any(|g| g.name == f.name)) {
+                return None;
+            }
             let mut subs = Vec::new();
             for (fname, fty) in &decl {
                 subs.push(match fields.iter().find(|f| &f.name == fname) {
