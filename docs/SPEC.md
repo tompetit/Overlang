@@ -100,12 +100,6 @@ Built-in types: `Int` (signed 64-bit, overflow traps), `Float` (IEEE double),
 **shortcut**), tuples `(A, B, ...)` of arity 2 to 8, and function types
 `fn(A, B) -> R !eff`.
 
-Every `Str` is valid UTF-8. Bytes that enter from outside (`read_line`,
-`read_all`, `args`, a `foreign c` return) and are not valid UTF-8 are
-replaced, each maximal ill-formed subpart by one U+FFFD (as Rust's
-`String::from_utf8_lossy` does), so `str_len`, `chars` and `substr` always
-agree and `join(chars(s), "") == s`.
-
 `Option[T]` and `Result[T, E]` are ordinary prelude sum types:
 
 ```
@@ -125,21 +119,6 @@ diagnostics but positional in use: `Circle(1.0)`, `match s { Circle(r) => ... }`
 A constructor with no fields is written without parentheses.
 
 Generics: type parameters on types and functions. No bounds, no traits.
-Recursion through generics must be regular (E0122): following a type
-parameter `T` of a generic type or function into the type arguments of the
-types it mentions and the functions it calls or uses as values, and of theirs
-in turn, it may come back to the same definition only as the bare parameter,
-never inside a bigger type argument. Otherwise monomorphization (section 12)
-would need infinitely many instances. `type Nest[T] = Leaf(v: T) | Deep(n:
-Nest[List[T]])` and `fn f[T](x: T) -> Int { f((x, x)) }` are E0122; `type
-Tree[T] = Node(kids: List[Tree[T]])` and `fn g[A, B](a: A, b: B) -> Int { g(b,
-a) }` are not.
-Rules in this section that depend on a type argument (ordering, equality and
-`show` on function types, Map keys and Set elements, and the element types the
-prelude's `sort`, `min_of`, `max_of` and `unique` need) hold for generic code
-at each instantiation: `ov check` instantiates everything reachable from every
-non-generic definition and test, as section 12 does from the entry point, and
-reports a violation as E0101 at the call that instantiated the generic code.
 Equality `==` and `!=` are structural and defined on every type except
 function types (E0101 if attempted). Ordering `< <= > >=` is defined on Int,
 Float and Str only. `show[T](x: T) -> Str` is defined structurally on every
@@ -173,19 +152,11 @@ caller's declared effects. Violation is error E0105, whose fix suggestion is
 the exact label to add.
 
 Effect names are open: any identifier may be used, so a program can declare
-`!db` or `!gpu` for its own foreign functions. A name is the effect parameter
-only where the signature's brackets declare it; elsewhere `!e` is a label like
-any other. Inside its signature the effect parameter hides a label of the same
-name, so a body that performs that label (`fn f[!io]() -> Unit !io` calling
-`println`) is E0111: rename the parameter. The prelude uses `io`
+`!db` or `!gpu` for its own foreign functions. The prelude uses `io`
 (console), `fs`, `net`, `rand`, `time`, `exit`.
 
 Function types carry effects: `fn(Int) -> Int !io`. A lambda's effects are
-inferred from its body. A function may be used where a function type with
-more effects is expected, never fewer (E0101). Parameter positions are the
-other way round: a function taking a pure callback is not a
-`fn(fn(Int) -> Int !io) -> Int`, since the `!io` callback it would receive is
-charged to nobody.
+inferred from its body.
 
 Effect polymorphism: a signature may declare one effect parameter, `!e`, and
 use it on function-typed parameters and its own effect list:
@@ -205,6 +176,13 @@ is invisible outside the function.
 
 Precedence, lowest to highest: `||`, `&&`, comparisons, `++`, `+ -`, `* / %`,
 unary `- !`, postfix (`?`, call, field, index). Comparisons do not chain.
+
+Nesting is at most 200 levels deep (E0002, without `expected`). Each
+expression, block, pattern and type is one level inside the one that contains
+it, and each binary or postfix operator in a chain adds one (`a + b + c` and
+`f(x).y` are two deeper than their first operand). The limit keeps every
+recursive pass of the compiler within its stack; bind part of the expression
+with `let` to go deeper.
 
 - Literals, variables, tuples `(a, b)`, lists `[a, b, c]`.
 - Call: `f(a, b)`. Uniform call syntax: `a.f(b)` means `f(a, b)` whenever `a`
@@ -299,8 +277,9 @@ fn total(o: Order) -> Int
 
 - Any number of `requires` and `ensures` clauses. Each is a pure Bool
   expression (E0108 if it uses effects). `requires` sees the parameters.
-  `ensures` sees the parameters and `result`, so a function with an
-  `ensures` clause cannot have a parameter named `result` (E0109).
+  `ensures` sees the parameters and `result`. So a function with `ensures`
+  cannot have a parameter named `result`, and `result` cannot be bound
+  inside `ensures` (both E0002).
 - Contracts are compiled to runtime checks on entry and exit. A failed check
   traps with kind `requires` or `ensures`.
 - `assert(c)` and `assert_eq(a, b)` are prelude functions that trap with kind
@@ -498,8 +477,7 @@ Tables:
   `{"item": ..., "refs": ...}`: `refs` is its resolution table, the hash each
   global name written in it resolved to (`values`, `types`, and `ctors`
   mapping to the constructor's type), plus the ids of the expressions that
-  are global references (`vars`) and of the `a.f(b)` calls of a field
-  (`fields`); `schemas` maps the tables its `sql` literals
+  are global references; `schemas` maps the tables its `sql` literals
   mention to their schemas. `kind` is `fn`, `type`, `declare`, `foreign`,
   `test` or `schema`, or `intrinsic` for prelude bindings. `source` is the definition's
   canonical text as last written, comments included (`ov view --raw`).
@@ -538,10 +516,7 @@ canonical form is the AST serialized as JSON with:
   hash to their name; for hashing, `Option` and `Result` count as built-in,
   and their constructors are `("Option", 0)` for `Some` and so on);
 - constructor references replaced by `(type hash, constructor index)`;
-- record field names kept (they are part of the type's identity), including
-  in `a.f(b)` when the checker resolves it to a call of `a`'s field `f`
-  (section 4): that is never a reference to a top-level `f`, whatever is
-  defined;
+- record field names kept (they are part of the type's identity);
 - type parameter names replaced by position;
 - all source positions and comments removed.
 
@@ -580,10 +555,8 @@ lines, one `name old_hash new_hash` line each; with `--json` the output is
 dependents are re-hashed: old versions no name points to stay as they are.
 Dependents are re-hashed dependencies first, a cycle of dependents as one
 unit, so the result is what adding the edited code to an empty store gives.
-If a dependent no longer resolves (a constructor it uses was removed, or a
-name it uses is now bound to another kind of definition, such as a function's
-name taken by a test or a schema), the command fails with that diagnostic and
-stores nothing.
+If a dependent no longer resolves (a constructor it uses was removed), the
+command fails with that diagnostic and stores nothing.
 
 A dependent that still resolves can still be ill-typed under the new hashes
 (a record that gained a field, a changed signature). After storing and
@@ -599,10 +572,7 @@ derived from it for hashing and is not stored. `ov view` and `ov ctx` render
 from the named AST, replacing each global reference by the name currently
 bound to the referenced hash (falling back to the name the definition was
 written with if the hash has no binding), so a renamed dependency shows its
-current name in every caller. A local variable with the same name as such a
-new name would capture it, so the rendering renames that local to the first
-free `<name>2`, `<name>3`, ... (local names never change the hash): the
-rendered text always checks as the stored definition. Comments are kept in `defs.source`, the text as
+current name in every caller. Comments are kept in `defs.source`, the text as
 last written, which `ov view --raw` prints; `ov view`, `ov ctx` and `ov export`
 render without them.
 
@@ -642,8 +612,7 @@ own exit code (1 for an `Err` from `main`, section 8).
 Typechecking `ov add` and `ov edit`: the new definitions are checked
 together with the prelude and the stored dependency closure of what they
 reference, plus every bound schema (so an unknown table gets the nearest
-declared name) and every bound type with a constructor of the same name as
-one of theirs (so the clash is E0109), rendered with current names; a stored definition whose name a
+declared name), rendered with current names; a stored definition whose name a
 new definition takes is left out. Any error aborts the command and stores
 nothing. Warnings do not abort; they are printed to stderr, one JSON object
 per line, so stdout stays the command's output. A diagnostic inside a stored
@@ -745,7 +714,7 @@ Codes:
 |---|---|---|
 | E0000 | Command-line or file error | `message` |
 | E0001 | Lexical error | `message` |
-| E0002 | Parse error | `expected` tokens; for an uppercase value name, `fixes`: the snake-case name |
+| E0002 | Parse error | `expected` tokens (none for nesting deeper than 200 levels); for an uppercase value name, `fixes`: the snake-case name |
 | E0100 | Unknown name | `fixes`: nearest names by edit distance |
 | E0101 | Type mismatch | `expected`, `actual` types |
 | E0102 | Wrong argument count | `expected`, `actual` counts |
@@ -768,7 +737,6 @@ Codes:
 | E0119 | Unknown column in a `sql` literal | `expected`: the table's columns; `fixes`: nearest names |
 | E0120 | Column ambiguous without a qualifier in a `sql` literal | `expected`, `fixes`: each `table.column` |
 | E0121 | `sql` literal mentions no declared table | `fixes`: the plain string |
-| E0122 | Type parameter recurses into a bigger type (section 3) | `actual`: the instantiation that grows |
 | W0001 | Unimplemented `declare` | |
 | W0002 | Unused variable | `fixes`: rename to `_x` |
 | W0003 | Unreachable match arm | |
@@ -804,9 +772,7 @@ Codes:
   correct inside whatever C the lowering of `match` and `if` emits.
 - `show` is generated per monomorphized type.
 - Traps call `ov_trap(kind, fn, hash, detail_json)` which prints and exits 3;
-  `hash` is the full store hash of the definition that trapped. A trap
-  raised inside an intrinsic (`repeat`, `to_int`, indexing) reports the
-  definition that called it, never a C symbol.
+  `hash` is the full store hash of the definition that trapped.
 - `main` is generated for the entry point: initializes the GC, captures argv
   for `args()`, calls the entry, maps `Err` to exit 1.
 - The `--fuzz <name>` protocol (section 7.1) is generated for every

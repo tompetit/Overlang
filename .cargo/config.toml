@@ -1,0 +1,4 @@
+# Tests run the compiler in-process on test threads, which default to 2 MB;
+# give them the 8 MB the `ov` binary's main thread has.
+[env]
+RUST_MIN_STACK = "8388608"

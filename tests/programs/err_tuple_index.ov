@@ -1,0 +1,5 @@
+// A tuple index too large for 32 bits must not wrap around to a valid one.
+fn main() -> Unit !io {
+  let t = (7, 8);
+  println(show(t.4294967296));
+}

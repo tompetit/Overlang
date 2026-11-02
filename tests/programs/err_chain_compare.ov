@@ -1,0 +1,8 @@
+// Comparisons do not chain, also on the right of `&&` and `||`.
+fn f(a: Bool) -> Bool {
+  a && 1 == 1 == false
+}
+
+fn g(x: Int) -> Bool {
+  false || x == 3 != true
+}

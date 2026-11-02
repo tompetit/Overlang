@@ -1612,6 +1612,9 @@ impl<'a> Checker<'a> {
             }
             ExprKind::ResultRef => self.result_ty.clone().unwrap_or(Ty::Error),
             ExprKind::Tuple(es) => {
+                if !(2..=8).contains(&es.len()) {
+                    self.diag("E0101", e.span, format!("tuples have 2 to 8 elements, not {}", es.len()));
+                }
                 let exp = expected.map(|t| self.shallow(t));
                 let ts = es
                     .iter()

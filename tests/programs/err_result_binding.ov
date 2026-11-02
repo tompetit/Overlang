@@ -1,0 +1,12 @@
+// Inside `ensures`, `result` is a keyword: it cannot be bound.
+fn f(xs: List[Int]) -> Int
+  ensures all(xs, |result| result > 0)
+{
+  0 - 1
+}
+
+fn g(x: Int) -> Int
+  ensures { let result = 1; result == 1 }
+{
+  x
+}
