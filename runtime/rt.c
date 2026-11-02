@@ -129,13 +129,43 @@ static int64_t cp_off(const ov_str* s, int64_t cp) {
   return off;
 }
 
+/* Length of the well-formed UTF-8 sequence at p (n bytes available), or minus the length of its maximal
+   ill-formed subpart, which becomes one U+FFFD (Unicode 3.9, as Rust's from_utf8_lossy and WHATWG do). */
+static int utf8_seq(const unsigned char* p, int64_t n) {
+  unsigned char c = p[0], lo = 0x80, hi = 0xBF;
+  int need;
+  if (c < 0x80) return 1;
+  if (c >= 0xC2 && c <= 0xDF) need = 1;
+  else if (c >= 0xE0 && c <= 0xEF) { need = 2; if (c == 0xE0) lo = 0xA0; if (c == 0xED) hi = 0x9F; }
+  else if (c >= 0xF0 && c <= 0xF4) { need = 3; if (c == 0xF0) lo = 0x90; if (c == 0xF4) hi = 0x8F; }
+  else return -1;
+  for (int i = 1; i <= need; i++, lo = 0x80, hi = 0xBF)
+    if (i >= n || p[i] < lo || p[i] > hi) return -i;
+  return need + 1;
+}
+
+/* Every Str is valid UTF-8 (SPEC 3): bytes from outside (stdin, args, foreign returns) are repaired here. */
 ov_str* ov_str_new(const char* bytes, int64_t len) {
+  const unsigned char* b = (const unsigned char*)bytes;
+  int64_t cps = 0, out = 0;
+  bool bad = false;
+  for (int64_t i = 0; i < len; cps++) {
+    int k = b[i] < 0x80 ? 1 : utf8_seq(b + i, len - i);
+    out += k > 0 ? k : 3;
+    bad |= k < 0;
+    i += k > 0 ? k : -k;
+  }
   ov_str* s = GC_MALLOC(sizeof *s);
-  char* d = alloc_bytes(len + 1);
-  if (len > 0) memcpy(d, bytes, (size_t)len);
-  d[len] = 0;
-  int64_t cps = 0;
-  for (int64_t i = 0; i < len; i++) cps += ((unsigned char)d[i] & 0xC0) != 0x80;
+  char* d = alloc_bytes(out + 1);
+  if (!bad) { if (len > 0) memcpy(d, bytes, (size_t)len); }
+  else
+    for (int64_t i = 0, o = 0; i < len;) {
+      int k = utf8_seq(b + i, len - i);
+      if (k > 0) memcpy(d + o, b + i, (size_t)k), o += k, i += k;
+      else memcpy(d + o, "\xef\xbf\xbd", 3), o += 3, i -= k;
+    }
+  d[out] = 0;
+  len = out;
   s->len = len;
   s->cps = cps;
   s->data = d;

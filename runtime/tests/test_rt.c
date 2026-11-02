@@ -69,6 +69,31 @@ static void test_utf8(void) {
   CHECK(ov_str_concat(s, s)->cps == 6);
 }
 
+/* Invalid UTF-8 (stdin, args, foreign returns) becomes U+FFFD per maximal ill-formed subpart. */
+static void test_utf8_invalid(void) {
+  struct { const char* in; int64_t len; const char* out; int64_t cps; } cs[] = {
+    {"\x80" "a", 2, "\xef\xbf\xbd" "a", 2},
+    {"\xe2\x82" "a", 3, "\xef\xbf\xbd" "a", 2},           /* truncated 3-byte sequence */
+    {"\xc0\xaf", 2, "\xef\xbf\xbd\xef\xbf\xbd", 2},     /* overlong */
+    {"\xed\xa0\x80", 3, "\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd", 3}, /* surrogate */
+    {"\xf4\x90\x80\x80", 4, "\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd", 4}, /* > U+10FFFF */
+    {"\xf0\x9f\x98", 3, "\xef\xbf\xbd", 1},
+    {"x\xff", 2, "x\xef\xbf\xbd", 2},
+  };
+  for (size_t i = 0; i < sizeof cs / sizeof cs[0]; i++) {
+    ov_str* s = ov_str_new(cs[i].in, cs[i].len);
+    CHECK(STR_IS(s, cs[i].out));
+    CHECK(s->len == (int64_t)strlen(cs[i].out));
+    CHECK(s->cps == cs[i].cps);
+    ov_list* xs = ov_str_chars(s);
+    CHECK(xs->len == s->cps);
+    for (int64_t j = 0; j < xs->len; j++) CHECK(((ov_str*)xs->items[j].p)->len > 0);
+    CHECK(ov_str_eq(ov_str_join(xs, S("")), s));
+  }
+  CHECK(STR_IS(ov_str_new("\xf0\x9f\x98\x80\xc3\xa9", 6), "\xf0\x9f\x98\x80\xc3\xa9"));
+  CHECK(ov_str_new("a\0b", 3)->cps == 3);
+}
+
 static void test_strings(void) {
   CHECK(ov_str_eq(S("ab"), S("ab")));
   CHECK(!ov_str_eq(S("ab"), S("abc")));
@@ -308,6 +333,7 @@ int main(void) {
   ov_init(1, argv);
   test_arith();
   test_utf8();
+  test_utf8_invalid();
   test_strings();
   test_parse_show();
   test_lists();

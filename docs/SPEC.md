@@ -100,6 +100,12 @@ Built-in types: `Int` (signed 64-bit, overflow traps), `Float` (IEEE double),
 **shortcut**), tuples `(A, B, ...)` of arity 2 to 8, and function types
 `fn(A, B) -> R !eff`.
 
+Every `Str` is valid UTF-8. Bytes that enter from outside (`read_line`,
+`read_all`, `args`, a `foreign c` return) and are not valid UTF-8 are
+replaced, each maximal ill-formed subpart by one U+FFFD (as Rust's
+`String::from_utf8_lossy` does), so `str_len`, `chars` and `substr` always
+agree and `join(chars(s), "") == s`.
+
 `Option[T]` and `Result[T, E]` are ordinary prelude sum types:
 
 ```
