@@ -294,6 +294,15 @@ impl Parser {
         }
     }
 
+    /// Error if `close` comes next: the list must not be empty.
+    fn nonempty(&mut self, close: &Tok, what: &str) -> PResult<()> {
+        if self.peek() == close {
+            self.expect_kind(what);
+            return Err(self.error());
+        }
+        Ok(())
+    }
+
     fn take_comments(&mut self) -> Vec<Comment> {
         let mut out = Vec::new();
         while let Some(c) = self.comments.get(self.next_comment) {
@@ -468,10 +477,7 @@ impl Parser {
     fn schema_def(&mut self, start: Span) -> PResult<Item> {
         let name = self.ident()?;
         self.expect(&Tok::LBrace)?;
-        if self.peek() == &Tok::RBrace {
-            self.expect_kind("identifier");
-            return Err(self.error());
-        }
+        self.nonempty(&Tok::RBrace, "identifier")?;
         let columns = self
             .comma_list(&Tok::RBrace, |p| {
                 let f = p.field()?;
@@ -496,17 +502,20 @@ impl Parser {
         self.expect(&Tok::Eq)?;
         let body = if self.eat(&Tok::LBrace) {
             // At least one field: `P {}` could not be told apart from `P` and a block.
-            if self.peek() == &Tok::RBrace {
-                self.expect_kind("identifier");
-                return Err(self.error());
-            }
+            self.nonempty(&Tok::RBrace, "identifier")?;
             TypeBody::Record(self.comma_list(&Tok::RBrace, |p| p.field())?.0)
         } else {
             let mut variants = Vec::new();
             loop {
                 let vstart = self.span();
                 let name = self.type_name()?;
-                let fields = if self.eat(&Tok::LParen) { self.comma_list(&Tok::RParen, |p| p.field())?.0 } else { Vec::new() };
+                // A constructor with no fields has no parentheses, here and in expressions and patterns.
+                let fields = if self.eat(&Tok::LParen) {
+                    self.nonempty(&Tok::RParen, "identifier")?;
+                    self.comma_list(&Tok::RParen, |p| p.field())?.0
+                } else {
+                    Vec::new()
+                };
                 variants.push(Variant { name, fields, span: vstart.to(self.prev_span()) });
                 if !self.eat(&Tok::Pipe) {
                     break;
@@ -772,6 +781,7 @@ impl Parser {
                 if is_record {
                     self.record_literal(name)?
                 } else if self.eat(&Tok::LParen) {
+                    self.nonempty(&Tok::RParen, "expression")?;
                     ExprKind::Ctor { name, args: self.comma_list(&Tok::RParen, |p| p.expr())?.0 }
                 } else {
                     ExprKind::Ctor { name, args: Vec::new() }
@@ -969,6 +979,7 @@ impl Parser {
             Tok::TypeName(name) => {
                 self.bump();
                 if self.eat(&Tok::LParen) {
+                    self.nonempty(&Tok::RParen, "pattern")?;
                     PatKind::Ctor { name, args: self.comma_list(&Tok::RParen, |p| p.pattern())?.0 }
                 } else if self.eat(&Tok::LBrace) {
                     self.record_pattern(name)?
